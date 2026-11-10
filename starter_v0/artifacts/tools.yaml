@@ -151,3 +151,13 @@ tools:
         sort: {type: string, enum: [stars, forks, updated], default: "stars", description: "Tiêu chí sắp xếp: 'stars' (nhiều sao nhất), 'forks', hoặc 'updated' (mới cập nhật)."}
         limit: {type: integer, default: 5, description: "Số lượng repository trả về (1-20)."}
       required: [query]
+  - name: export_chat
+    description: "Xuất lịch sử một phiên chat đã lưu (transcripts/*.transcript.json) ra file Markdown hoặc text trong thư mục exports/, trả về đường dẫn file và bản xem trước. Chỉ dùng khi người dùng yêu cầu xuất/lưu/tải/tải về lịch sử hội thoại hoặc transcript. KHÔNG dùng để tóm tắt hay trả lời câu hỏi về nội dung tin tức, KHÔNG dùng để gửi đi (gửi Telegram dùng send)."
+    parameters:
+      type: object
+      properties:
+        transcript_id: {type: string, default: "", description: "ID phiên chat cần xuất (tên file transcript, bỏ đuôi .transcript.json, hoặc tiền tố duy nhất). Để trống để xuất phiên mới nhất/hiện tại. Không tự bịa ID."}
+        format: {type: string, enum: [markdown, text], default: "markdown", description: "Định dạng file: 'markdown' (.md, mặc định) hoặc 'text' (.txt) khi người dùng nói rõ muốn văn bản thuần/txt."}
+        include_tools: {type: boolean, default: false, description: "true nếu người dùng muốn kèm các lần gọi tool (tên tool + arguments) trong file xuất."}
+        max_turns: {type: integer, default: 50, description: "Chỉ giữ N lượt gần nhất (1-200). Chỉ đặt khi người dùng nói số lượt cụ thể."}
+      required: []
