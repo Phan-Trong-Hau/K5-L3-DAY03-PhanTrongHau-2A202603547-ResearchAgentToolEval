@@ -17,6 +17,8 @@ Accepts 1–4096 characters as plain text, preserving URLs without Markdown pars
 Returns Telegram message ID after a successful send. Invalid input, missing credentials,
 HTTP failures and API rejection return an error dictionary; bot tokens are redacted.
 
-In the Streamlit UI, a model call to `send` creates a draft even if it sets `confirmed=true`.
-The user reviews the destination/content and confirms in the Telegram dialog before sending.
-The sidebar connection check uses `getMe` and `getChat`; it does not send a message.
+In the Streamlit UI, the user controls a Telegram sync toggle (off by default).
+When enabled, each new completed chat turn mirrors the user message, agent answer,
+model, duration and tool names. Enabling the toggle authorizes this delivery until disabled.
+Long messages are split into chunks. Existing history is not replayed, and failed/partial
+deliveries are recorded without automatic retries. Model calls to `send` never bypass the toggle.

@@ -35,7 +35,7 @@ Mở http://localhost:8501.
 - Nhập câu hỏi hoặc chọn một câu mẫu; trả lời tiếp khi agent hỏi thêm thông tin.
 - Mở **Hoạt động của agent** để xem tool, arguments và kết quả.
 - Khi xử lý, đồng hồ cập nhật thời gian đã chờ và nhật ký hiển thị các bước gọi model, chọn tool, chạy tool, nhận kết quả. Sau khi hoàn tất, tổng thời gian và các bước vẫn nằm trong hội thoại và transcript.
-- Bấm **Gửi Telegram** bên dưới câu trả lời để sửa/xem trước nội dung, xác nhận nơi nhận rồi gửi. Kết quả và message ID được lưu trong transcript.
+- Bật **Đồng bộ Telegram** ở thanh bên để tự gửi câu hỏi, câu trả lời, model, thời gian xử lý và tên tool của các lượt chat mới. Tắt công tắc để dừng. Kết quả đồng bộ và message ID được lưu trong transcript.
 - Mỗi lượt tự lưu vào `transcripts/ui_*.transcript.json`; có thể tải JSON ở thanh bên. Bắt đầu phiên mới sẽ xóa lịch sử trên giao diện, file phiên trước vẫn được giữ.
 - Trong **Lịch sử hội thoại**, tìm theo nội dung, bấm trực tiếp vào một phiên trong danh sách để hiển thị nội dung và tiếp tục hội thoại. Lịch sử vẫn còn sau khi khởi động lại ứng dụng vì được lưu trên máy chạy app.
 
@@ -52,7 +52,9 @@ TELEGRAM_BOT_TOKEN=<token bot>
 TELEGRAM_CHAT_ID=<chat ID hoặc @channel_username>
 ```
 
-4. Tải lại UI, mở mục **Telegram** ở thanh bên và bấm **Kiểm tra kết nối Telegram**. Thao tác này kiểm tra bot/nơi nhận, không gửi tin.
-5. Chat để tạo nội dung, bấm **Gửi Telegram**, kiểm tra nội dung/nơi nhận, tích xác nhận rồi bấm **Xác nhận và gửi**.
+4. Tải lại UI và bật **Đồng bộ Telegram** ở đầu thanh bên.
+5. Chat bình thường: sau mỗi lượt hoàn tất, câu hỏi và câu trả lời tự được gửi sang nơi nhận đã cấu hình. Không cần xác nhận từng tin.
 
-Nội dung tối đa 4096 ký tự. UI luôn yêu cầu người dùng xác nhận qua hộp thoại, kể cả khi model tự đưa `confirmed=true`. Chi tiết cấu hình channel/chat ID: [TOOL-SETUP.md](../TOOL-SETUP.md#6-telegram-bonus--send).
+Công tắc mặc định tắt. Bật công tắc cho phép đồng bộ các lượt mới cho đến khi tắt; mở lại phiên cũ không tự gửi lại lịch sử. Nội dung dài được chia thành nhiều tin. Nếu lỗi giữa chừng, UI ghi nhận trạng thái đồng bộ chưa đầy đủ và không tự gửi lại để tránh trùng tin. Model không thể tự bật đồng bộ hoặc gửi vượt qua công tắc.
+
+Chi tiết cấu hình channel/chat ID: [TOOL-SETUP.md](../TOOL-SETUP.md#6-telegram-bonus--send).

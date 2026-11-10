@@ -3,7 +3,7 @@ import pytest
 
 from conftest import FakeResponse
 from providers.base import ToolCall
-from telegram_delivery import execute_ui_tool
+from telegram_delivery import execute_ui_tool, message_chunks, sync_chat_turn
 from tools.send.tool import check_telegram_connection, send_telegram
 
 
@@ -81,3 +81,60 @@ def test_model_cannot_bypass_ui_confirmation_even_with_confirmed_true(fake_http)
 def test_other_ui_tools_still_execute():
     event = execute_ui_tool(ToolCall("clarify", {"question": "Which source?"}))
     assert event["result"]["awaiting_user"] is True
+
+
+@pytest.fixture
+def chat_turn():
+    return (
+        {"transcript_id": "demo", "provider": "ollama", "model": "qwen2.5:7b"},
+        {"turn_index": 1, "user": "Tin AI hôm nay?", "assistant_text": "Bản tin AI và nguồn: https://example.com",
+         "duration_seconds": 2.5, "tool_events": [{"tool": "lookup"}]},
+    )
+
+
+def test_sync_off_never_sends(chat_turn, fake_http):
+    calls = fake_http(FakeResponse())
+    result = sync_chat_turn(*chat_turn, enabled=False)
+    assert result["status"] == "skipped"
+    assert calls == []
+
+
+def test_sync_includes_both_sides_and_metadata_once(chat_turn, telegram_env, fake_http):
+    calls = fake_http(FakeResponse({"ok": True, "result": {"message_id": 9}}))
+    result = sync_chat_turn(*chat_turn, enabled=True)
+    assert result["status"] == "sent"
+    text = calls[0]["json"]["text"]
+    for value in [chat_turn[1]["user"], chat_turn[1]["assistant_text"], "qwen2.5:7b", "lookup", "2.5s"]:
+        assert value in text
+    assert result["deliveries"][0]["confirmed_by"] == "ui_sync_toggle"
+    sync_chat_turn(*chat_turn, enabled=True)
+    assert len(calls) == 1
+
+
+def test_long_sync_splits_without_losing_text(chat_turn, telegram_env, fake_http):
+    calls = fake_http(FakeResponse({"ok": True, "result": {"message_id": 9}}))
+    chat_turn[1]["assistant_text"] = "Bản tin rất dài\n" * 1000
+    result = sync_chat_turn(*chat_turn, enabled=True)
+    assert result["status"] == "sent"
+    assert len(calls) > 1
+    assert all(len(call["json"]["text"]) <= 4000 for call in calls)
+    assert chat_turn[1]["assistant_text"] in "".join(call["json"]["text"] for call in calls)
+
+
+def test_partial_sync_stops_and_does_not_resend_on_rerun(chat_turn, monkeypatch):
+    from unittest.mock import Mock
+    sender = Mock(side_effect=[{"status": "sent", "message_id": 1}, {"error": "HTTPError", "message": "429"}])
+    monkeypatch.setattr("telegram_delivery.send_telegram", sender)
+    chat_turn[1]["assistant_text"] = "x" * 10000
+    result = sync_chat_turn(*chat_turn, enabled=True)
+    assert result["status"] == "partial"
+    assert sender.call_count == 2
+    sync_chat_turn(*chat_turn, enabled=True)
+    assert sender.call_count == 2
+
+
+def test_chunking_keeps_newlines_and_unicode():
+    text = "Nội dung tiếng Việt 🔎\n" * 500
+    chunks = message_chunks(text)
+    assert "".join(chunks) == text
+    assert all(0 < len(chunk) <= 4000 for chunk in chunks)
