@@ -1,0 +1,21 @@
+{
+  "version": "v4-local",
+  "changed_artifact": "system_prompt.md",
+  "hypothesis": "A shorter, ordered decision checklist makes missing-information tool calls and latest user corrections more explicit for small models.",
+  "control": "Tool declaration bytes unchanged from v3; same base cases, model settings and grading.",
+  "evidence_before": {
+    "run": "runs/v3-local-qwen4b_B_base_ollama_20261110T213920970342.json",
+    "failures": [
+      "R11: asks for URL in ordinary text instead of calling clarify",
+      "M03: keeps the earlier account after the user corrected it"
+    ]
+  },
+  "evidence_before_qwen7b": {
+    "run": "runs/v3-local-qwen7b_B_base_ollama_20261110T215537134063.json",
+    "failures": [
+      "R11: asks for missing URL without structured tool call",
+      "R12: confirmation question not emitted through clarify",
+      "M02: query includes an added time phrase and topic is general instead of news"
+    ]
+  }
+}

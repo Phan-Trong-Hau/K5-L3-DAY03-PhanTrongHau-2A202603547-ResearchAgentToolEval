@@ -3,3 +3,5 @@ starter_v0/artifacts/versions/**/system_prompt.md -text whitespace=cr-at-eol
 starter_v0/artifacts/versions/**/tools.yaml -text whitespace=cr-at-eol
 starter_v0/artifacts/evidence/**/system_prompt.md -text whitespace=cr-at-eol
 starter_v0/artifacts/evidence/**/tools.yaml -text whitespace=cr-at-eol
+starter_v0/artifacts/local_versions/**/system_prompt.md -text whitespace=cr-at-eol
+starter_v0/artifacts/local_versions/**/tools.yaml -text whitespace=cr-at-eol

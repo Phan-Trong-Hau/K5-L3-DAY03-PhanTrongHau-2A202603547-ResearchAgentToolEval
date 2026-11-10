@@ -207,9 +207,9 @@ Ba lượt này do Đức chạy. Việc chuyển nguồn trong phiên live thà
 
 ### Unit test
 
-Kết quả kiểm tra sau khi hoàn thiện UI v0–v3: **158 passed, 0 failed, 0 skipped**. [Bản ghi lệnh và kết quả](../analysis/pytest_report.txt). Unit test chạy offline, gồm contract, mock HTTP và tool mới; không phải điểm model.
+Kết quả kiểm tra sau khi hoàn thiện UI v0–v3: **160 passed, 0 failed, 0 skipped**. [Bản ghi lệnh và kết quả](../analysis/pytest_report.txt). Unit test chạy offline, gồm contract, mock HTTP và tool mới; không phải điểm model.
 
-Đức bổ sung 14 test offline cho clarify, format, send, lookup, fetch, timeline, social_search và policy tại [test_vietduc_existing_tools.py](../tests/test_vietduc_existing_tools.py). Đây là phần kiểm thử của Đức. Báo cáo thành viên ghi 131 pass ở thời điểm tích hợp riêng; sau merge v3, suite chung đạt 151. Hậu bổ sung 7 test cho catalog/so sánh và điều hướng hội thoại v0–v3, nâng tổng lên 158. Các test UI chạy offline, không gọi model thật.
+Đức bổ sung 14 test offline cho clarify, format, send, lookup, fetch, timeline, social_search và policy tại [test_vietduc_existing_tools.py](../tests/test_vietduc_existing_tools.py). Đây là phần kiểm thử của Đức. Báo cáo thành viên ghi 131 pass ở thời điểm tích hợp riêng; sau merge v3, suite chung đạt 151. Hậu bổ sung 7 test cho catalog/so sánh và điều hướng hội thoại v0–v3, nâng tổng lên 158. Các test UI chạy offline, không gọi model thật. Hai test mới cho local artifacts giữ đúng phạm vi thay đổi v4/v5 và schema, nâng tổng hiện tại lên 160.
 
 Ví dụ unit test bắt được lỗi mà routing eval có thể bỏ sót: `send` không phát HTTP khi chưa có boolean xác nhận; GitHub trả 403/rate limit phải có trạng thái lỗi/reset rõ ràng; export transcript phải chặn `../.env`. Eval chỉ nhìn tên tool/args không xác minh những hành vi thực thi này.
 
@@ -225,20 +225,59 @@ Ví dụ unit test bắt được lỗi mà routing eval có thể bỏ sót: `s
 
 **Kết quả v3 và ưu tiên tiếp:** rule active request/source selection của Đức sửa R03, M06, G07 mà vẫn giữ R13 pass. Cần tập trung G08, thêm biến thể chuyển nguồn và case factual có nguồn; bổ sung routing eval cho export_chat. Giữ nguyên base cases và tạo version mới nếu sửa tiếp.
 
-## B7. Chạy local và kết nối Telegram — đã triển khai
+## B7. Small Local Model Challenge — v4-local và v5-local
 
-Đã chạy agent trên máy bằng Ollama `qwen2.5:7b`, tích hợp UI Streamlit và thực thi tool thật. Đã kết nối bot Telegram, kiểm tra nơi nhận và đồng bộ cả câu hỏi lẫn câu trả lời khi bật công tắc. [Transcript local và Telegram](../transcripts/evidence/telegram_sync_demo.transcript.json) ghi nhận hai lượt đồng bộ thành công; [GitHub live](../transcripts/evidence/github_search_demo.transcript.json) ghi nhận tool trả đủ 3 repo.
+Hậu chạy mới toàn bộ 7 run (140 lượt case): baseline v3 trên hai model local, hai vòng v4/v5 trên từng model và kiểm tra ngược v5 trên cloud. Cloud v3 là bằng chứng gốc của Đức; không chạy lại hoặc đổi số liệu của thành viên. Mỗi run dùng nguyên 20 case Base (14 single-turn, 6 multi-turn), cùng grader và tool-choice. Không sửa bộ đề để tăng điểm.
 
-Ngoài phần vận hành local đã hoàn thành, nhóm có thử prompt/tools local riêng để kiểm tra hành vi hỏi lại:
+**Môi trường:** Ollama 0.34.1; `qwen3:4b-instruct` 4.0B và `qwen2.5:7b` 7.6B, đều ≤8B, Q4_K_M. Context quan sát 4096 token; temperature gửi từ adapter là 0. Chạy hai model lần lượt trên cùng máy. [Metadata môi trường](../analysis/local_eval_environment.json). Inference chạy local; tool research vẫn gọi API ngoài. Telegram publishing bị tắt riêng trong process eval.
 
-| Kiểm tra | Prompt/tools | Quan sát | Kết quả |
-|---|---|---|---|
-| Thiếu handle, cloud R10 | v1 cloud | clarify(text) | PASS theo base |
-| Thiếu handle, live local | v1 snapshot | Tự chọn daily_ai_vn rồi timeline bị lỗi | FAIL; [trích đoạn](../transcripts/evidence/local_missing_handle_demo.transcript.json) |
-| Thiếu handle, local trial | Prompt ngắn tiếng Việt + description clarify/timeline rõ hơn | Gọi clarify(text), 17,55s | PASS ở smoke case |
-| Thiếu URL, local trial | Cùng bản local trial | Hỏi URL bằng text thường, không structured tool call, 2,75s | FAIL theo yêu cầu gọi clarify |
+**Thiết kế hai vòng:** v4 chỉ đổi system prompt thành checklist ngắn (latest correction, nguồn đang được yêu cầu, native clarify); tools giữ nguyên byte của v3. v5 giữ nguyên byte prompt v4, chỉ sửa declaration/description, bắt buộc `clarify.response_type`, làm rõ query/topic/timeframe và ranh giới đổi nguồn. Giữ đủ 11 tool của v3. Hai test kiểm tra cách ly thay đổi và schema. [Artifact, giả thuyết và lệnh chạy lại](local_versions/README.md).
 
-[Smoke log local](../analysis/local_clarify_smoke.json) giữ model và hash. Đây là 2 case kiểm tra, không dùng làm accuracy của toàn bộ base. Kết luận bước đầu: prompt/declaration riêng giúp case thiếu tài khoản gọi tool đúng; model vẫn có thể hỏi đúng ý nhưng không tuân thủ structured tool calling. Chưa đủ dữ liệu để khẳng định khả năng tổng quát.
+| Version | Model | Pass | Routing | Args | Multi-turn | Thời gian | Run JSON |
+|---|---|---:|---:|---:|---:|---:|---|
+| v3 | openai/gpt-4o-mini | 20/20 (100.00%) | 100.00% | 100.00% | 100.00% | Không ghi | [log](../runs/v3_B_base_openrouter_20261110T195239893928.json) |
+| v3-local-qwen4b | qwen3:4b-instruct | 18/20 (90.00%) | 95.00% | 90.00% | 83.33% | 464.9s | [log](../runs/v3-local-qwen4b_B_base_ollama_20261110T213920970342.json) |
+| v4-local | qwen3:4b-instruct | 19/20 (95.00%) | 95.00% | 95.00% | 100.00% | 160.1s | [log](../runs/v4-local_B_base_ollama_20261110T220700986891.json) |
+| v5-local | qwen3:4b-instruct | 17/20 (85.00%) | 85.00% | 85.00% | 100.00% | 127.4s | [log](../runs/v5-local_B_base_ollama_20261110T220917523176.json) |
+| v3-local-qwen7b | qwen2.5:7b | 17/20 (85.00%) | 90.00% | 85.00% | 83.33% | 914.9s | [log](../runs/v3-local-qwen7b_B_base_ollama_20261110T215537134063.json) |
+| v4-local | qwen2.5:7b | 16/20 (80.00%) | 95.00% | 80.00% | 83.33% | 522.4s | [log](../runs/v4-local_B_base_ollama_20261110T220420628433.json) |
+| v5-local | qwen2.5:7b | 15/20 (75.00%) | 85.00% | 75.00% | 100.00% | 152.0s | [log](../runs/v5-local_B_base_ollama_20261110T221149743141.json) |
+| v5-local-cloud | openai/gpt-4o-mini | 20/20 (100.00%) | 100.00% | 100.00% | 100.00% | 63.9s | [log](../runs/v5-local-cloud_B_base_openrouter_20261110T221253846082.json) |
+
+Thời gian là end-to-end, gồm tải/cache model, inference và API research; các run dùng tài nguyên CPU/GPU hỗn hợp nên không coi đây là benchmark tốc độ inference thuần. Cloud v3 cũ không có duration metadata.
+
+### Phân loại lỗi và kết quả từng vòng
+
+| Version / model | JSON lỗi | Không gọi tool dù cần | Thiếu call | Thừa call | Tool lạ | Lặp tool | Provider / tool API lỗi |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| v3 / openai/gpt-4o-mini | 0 | 0 | 0 | 0 | 0 | 0 | 0 / 0 |
+| v3-local-qwen4b / qwen3:4b-instruct | 0 | 1 | 1 | 0 | 0 | 0 | 0 / 0 |
+| v4-local / qwen3:4b-instruct | 0 | 1 | 1 | 0 | 0 | 0 | 0 / 0 |
+| v5-local / qwen3:4b-instruct | 0 | 2 | 3 | 1 | 0 | 0 | 0 / 0 |
+| v3-local-qwen7b / qwen2.5:7b | 0 | 2 | 2 | 0 | 0 | 0 | 0 / 0 |
+| v4-local / qwen2.5:7b | 0 | 0 | 1 | 1 | 0 | 0 | 0 / 0 |
+| v5-local / qwen2.5:7b | 0 | 1 | 3 | 2 | 0 | 0 | 0 / 0 |
+| v5-local-cloud / openai/gpt-4o-mini | 0 | 0 | 0 | 0 | 0 | 0 | 0 / 0 |
+
+Các nhóm lỗi có thể trùng nhau: gọi sai tool có thể đồng thời thiếu tool đúng và thừa tool sai. Tool API lỗi được đếm từ `tool_results`, tách khỏi điểm routing. [CSV metric, hash đầy đủ](../analysis/local_eval_comparison.csv), [lỗi/call từng case](../analysis/local_eval_failures.csv).
+
+- **qwen3:4b-instruct, v3-local-qwen4b (18/20):** `R11_missing_url`: missing tool call clarify; `M03_correction_handle`: screenname: expected 'karpathy', got 'sama'.
+- **qwen3:4b-instruct, v4-local (19/20):** `R11_missing_url`: missing tool call clarify. Sửa được: M03_correction_handle; regression: không có.
+- **qwen3:4b-instruct, v5-local (17/20):** `R10_missing_handle`: missing tool call clarify, extra tool call timeline; `R11_missing_url`: missing tool call clarify; `R12_confirm_before_send`: missing tool call clarify. Sửa được: không có; regression: R10_missing_handle, R12_confirm_before_send.
+- **qwen2.5:7b, v3-local-qwen7b (17/20):** `R11_missing_url`: missing tool call clarify; `R12_confirm_before_send`: missing tool call clarify; `M02_carryover_timeframe`: query: expected 'robotics', got 'robotics hôm nay', topic: expected 'news', got 'general'.
+- **qwen2.5:7b, v4-local (16/20):** `R03_web_news_routing`: query: expected 'AI', got 'AI hôm nay'; `R06_timeframe_arg`: topic: expected 'news', got 'general'; `R12_confirm_before_send`: response_type: expected 'yes_no', got 'text'; `M06_switch_tool`: missing tool call lookup, extra tool call social_search. Sửa được: M02_carryover_timeframe, R11_missing_url; regression: M06_switch_tool, R03_web_news_routing, R06_timeframe_arg.
+- **qwen2.5:7b, v5-local (15/20):** `R03_web_news_routing`: query: expected 'AI', got 'AI hôm nay'; `R10_missing_handle`: missing tool call clarify, extra tool call social_search; `R11_missing_url`: missing tool call clarify; `R12_confirm_before_send`: response_type: expected 'yes_no', got 'text'; `R13_parallel_web_and_tweets`: query: expected 'AI', got 'AI hôm nay', missing tool call social_search, extra tool call timeline. Sửa được: M06_switch_tool, R06_timeframe_arg; regression: R10_missing_handle, R11_missing_url, R13_parallel_web_and_tweets.
+
+**Kết luận có bằng chứng:** checklist prompt ở v4 giúp 4B sửa `M03_correction_handle`, tăng 18/20 → 19/20 và multi-turn đạt 6/6. Cùng thay đổi lại làm 7B giảm 17/20 → 16/20; không thể suy rộng rằng prompt ngắn luôn tốt hơn. V5 trên 4B giảm về 17/20, regression tại thiếu tài khoản và xác nhận gửi; mô tả tiếng Anh/ràng buộc schema rõ hơn chưa bảo đảm model tuân thủ native tool calling. Câu hỏi bằng text thường có thể đúng ý nhưng vẫn fail yêu cầu structured `clarify`. Không gán riêng tác động cho ngôn ngữ hay trường required vì vòng v5 thay đổi cả hai.
+
+Kiểm tra ngược v5 cloud đạt **20/20**, chênh **+0 điểm phần trăm** so với v3 cloud. Vì vậy cần chọn artifact theo kết quả từng model, không mặc định v5 là bản tốt nhất.
+
+- Bản local tốt nhất trong phép đo cho `qwen3:4b-instruct`: **v4-local**, 19/20.
+- Bản local tốt nhất trong phép đo cho `qwen2.5:7b`: **v3-local-qwen7b**, 17/20.
+
+Giới hạn: mỗi cấu hình chạy một lần trên 20 case đã biết; chưa có kiểm định thống kê hay tập local holdout. Điểm đo lựa chọn tool/arguments, không đo tính đúng thực tế của câu trả lời cuối. Giữ toàn bộ run kể cả regression, không chọn bỏ case. Các run/hypothesis nằm riêng, không thay snapshot hoặc catalog UI v0–v3.
+
+**Local UI và Telegram đã hoàn thành trước đó:** [transcript](../transcripts/evidence/telegram_sync_demo.transcript.json) có hai lượt sync user/agent thành công. [Smoke log cũ](../analysis/local_clarify_smoke.json) chỉ là hai case thăm dò, không tính vào bảng full eval trên.
 
 ## B8. Triển khai và chia sẻ demo
 

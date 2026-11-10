@@ -5,7 +5,7 @@
 - Tên nhóm: Nhóm 3 miền.
 - Bài lab: Day 03 Lab v2 — Research Agent Tool Eval.
 - Mục tiêu: xây research agent chạy thật, phân tích log và cải tiến prompt/tool declaration qua các version.
-- Provider/model: OpenRouter `openai/gpt-4o-mini` (eval cloud); Ollama `qwen2.5:7b` (live chat/local trial).
+- Provider/model: OpenRouter `openai/gpt-4o-mini` (eval cloud); Ollama `qwen2.5:7b` và `qwen3:4b-instruct` (full local eval).
 - UI local: `http://localhost:8501` sau khi chạy script; link public chưa triển khai.
 - Đề bài: [README.md](README.md).
 - Báo cáo nộp bài: [starter_v0/artifacts/REPORT.md](starter_v0/artifacts/REPORT.md).
@@ -33,7 +33,7 @@
 | Tool mới và unit test | Đức | Viết ít nhất 1 tool mới, TOOL.md và ≥3 test; hoàn thành TODO test; tích hợp registry/declaration sau khi nhận v2 | Tool mới đăng ký đầy đủ, kết quả pytest, ghi nhận bug nếu có |
 | v3 — Tích hợp và cải tiến | Đức | Nhận v2; ghi rõ thay đổi thêm tool; kiểm chứng một giả thuyết cải tiến; chạy base và group eval | Commit/tag v3, run JSON base/group, metric, dòng version log |
 | Report A và B | Hậu | Viết A trước 16:30; thu thập bằng chứng từng người; hoàn thiện B theo dữ liệu thật | `artifacts/REPORT.md`; poster tùy chọn |
-| Local và bonus tích hợp | Hậu | Chạy agent qua Ollama trên máy; tích hợp UI, prompt/tools local riêng và công tắc đồng bộ hội thoại Telegram; ghi nhận kết quả thử nghiệm | UI local, transcript gọi tool và receipt Telegram, local smoke log, REPORT B5/B7 |
+| v4-local, v5-local và bonus | Hậu | Baseline v3 trên 2 model; 2 vòng tối ưu riêng prompt/tools, full Base và cloud backcheck; UI và Telegram sync | 7 run JSON, local_eval_comparison.csv, local_versions, version log, REPORT B7 |
 | Live chat và nộp bài | Hậu | Chạy `chat.py` ít nhất 3 lượt; kiểm tra bản UI cuối cùng; rà soát đủ artifacts, không lộ key | Transcript JSON, checklist nộp bài, bản tích hợp cuối |
 
 ## Phối hợp và bàn giao
@@ -159,8 +159,9 @@ Lỗi còn lại và gợi ý vòng sau:
 - Hoàn thiện chọn snapshot v0–v3 đúng hash. Chuyển version tự mở hội thoại riêng theo model; có nút Chat mới. Màn so sánh có tổng quan 4 bản, chọn cặp version, Base/Group, metric, case, tool calls và diff prompt/tools; script chạy Linux/macOS và Windows.
 - Nối Telegram: công tắc đồng bộ câu hỏi/câu trả lời, metadata model/thời gian/tool; không gửi trùng khi rerun, chia nội dung dài, lưu receipt vào transcript. Có hai lượt sync thật thành công.
 - Bổ sung GitHub token tùy chọn và xử lý rate-limit; kiểm tra tool trả 3 repo thật.
-- Chạy thành công Ollama qwen2.5:7b trên UI local, gọi tool thật và đồng bộ hội thoại Telegram; ghi nhận lỗi tự đoán tài khoản và tạo prompt/tools local riêng. Smoke test mới: thiếu handle gọi clarify đúng; thiếu URL vẫn hỏi bằng text thường nên chưa pass structured tool calling.
-- Tổng hợp report v0–v3 từ bằng chứng thành viên, phát hiện group run cũ trỏ nhầm base và các tool v2 thiếu key. Chạy kiểm chứng đúng snapshot: base 18/20, group 8/10, không có tool error. Đối chiếu riêng hai run v2-verified; report dùng cặp run tối ưu v2–v3 của Đức. Bổ sung 7 test catalog/UI để kiểm tra snapshot, so sánh đúng dataset/model và cách ly hội thoại giữa các version; suite cuối đạt 158 pass, 0 fail/skip.
+- Chạy agent Ollama trên UI local và đồng bộ user/agent qua Telegram thành công.
+- Hoàn thành Small Local Model Challenge: 2 model ≤8B, baseline v3 + hai vòng v4-local/v5-local trên từng model và cloud backcheck, tổng 7 full run / 140 lượt case. V4 chỉ đổi prompt; v5 chỉ đổi tools. Giữ regression và phân tích từng case trong report B7. qwen3:4b-instruct: 18/20 → 19/20 → 17/20; qwen2.5:7b: 17/20 → 16/20 → 15/20; v5 cloud 20/20.
+- Tổng hợp report v0–v3 từ bằng chứng thành viên, phát hiện group run cũ trỏ nhầm base và các tool v2 thiếu key. Chạy kiểm chứng đúng snapshot: base 18/20, group 8/10, không có tool error. Đối chiếu riêng hai run v2-verified; report dùng cặp run tối ưu v2–v3 của Đức. Bổ sung 7 test catalog/UI để kiểm tra snapshot, so sánh đúng dataset/model và cách ly hội thoại giữa các version; suite tại bước UI đạt 158 pass, 0 fail/skip.
 
 **Bằng chứng:**
 
@@ -168,7 +169,8 @@ Lỗi còn lại và gợi ý vòng sau:
 - [UI](starter_v0/app.py), [hướng dẫn](starter_v0/UI.md), [catalog version](starter_v0/version_catalog.py), [màn so sánh](starter_v0/version_comparison.py).
 - [Telegram delivery](starter_v0/telegram_delivery.py), [test](starter_v0/tests/test_telegram_delivery.py), [receipt live](starter_v0/transcripts/evidence/telegram_sync_demo.transcript.json).
 - [GitHub live](starter_v0/transcripts/evidence/github_search_demo.transcript.json), [local smoke](starter_v0/analysis/local_clarify_smoke.json).
-- [Tổng hợp run](starter_v0/analysis/report_run_summary.csv), [kết quả group](starter_v0/analysis/group_eval_results.csv), [pytest 158 pass](starter_v0/analysis/pytest_report.txt).
+- [Tổng hợp run](starter_v0/analysis/report_run_summary.csv), [kết quả group](starter_v0/analysis/group_eval_results.csv), [pytest 160 pass](starter_v0/analysis/pytest_report.txt).
+- [Full local eval](starter_v0/analysis/local_eval_comparison.csv), [case failures](starter_v0/analysis/local_eval_failures.csv), [v4/v5 artifacts](starter_v0/artifacts/local_versions/README.md). Hai test kiểm tra kiểm soát artifact nâng suite lên 160 pass.
 
 **Điều mình học được từ phần nhóm:**
 
@@ -183,6 +185,7 @@ Lỗi còn lại và gợi ý vòng sau:
 - [x] Có ít nhất 5 tool khai báo.
 - [x] Có run JSON và version log v0, v1, v2, v3.
 - [x] Agent chạy local qua Ollama, gọi tool thật và có transcript bằng chứng.
+- [x] Small Local Model Challenge: 2 model, baseline, 2 vòng v4/v5, cloud backcheck, run log và report B7.
 - [x] Kết nối Telegram và đồng bộ tin nhắn user/agent thành công.
 - [x] Các phần bonus đã triển khai có bằng chứng trong báo cáo B5.
 - [x] Có tool mới, TOOL.md, registry và declaration đồng bộ.

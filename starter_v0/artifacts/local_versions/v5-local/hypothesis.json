@@ -1,0 +1,7 @@
+{
+  "version": "v5-local",
+  "changed_artifact": "tools.yaml",
+  "hypothesis": "Explicit native clarification protocol, latest source/account boundaries and separate query/time/news fields reduce missing calls and argument leakage observed in v4.",
+  "control": "Prompt byte-identical to v4; same 20 base cases, provider settings and grader; all 11 tools retained.",
+  "evidence_before": "v4-local runs for both installed models; retain regressions as evidence."
+}
