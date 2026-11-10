@@ -94,7 +94,9 @@ def redact(value):
 
 def start_session(provider, model, version, rounds, history_window):
     st.session_state.view_only = False
-    artifact = build_artifact_version(version, PROMPT, TOOLS)
+    prompt_path = ROOT / "artifacts/system_prompt_local.md" if provider == "ollama" else PROMPT
+    tools_path = ROOT / "artifacts/tools_local.yaml" if provider == "ollama" else TOOLS
+    artifact = build_artifact_version(version, prompt_path, tools_path)
     stamp = datetime.now().strftime("%Y%m%dT%H%M%S%f")
     session_id = f"ui_{safe_slug(version)}_{provider}_{stamp}_{uuid4().hex[:8]}"
     st.session_state.research = {
@@ -102,16 +104,16 @@ def start_session(provider, model, version, rounds, history_window):
         **artifact_version_dict(artifact),
         "provider": provider,
         "model": model,
-        "system_prompt": str(PROMPT),
-        "tools": str(TOOLS),
+        "system_prompt": str(prompt_path),
+        "tools": str(tools_path),
         "history_window": history_window,
         "max_tool_rounds": rounds,
         "created_at": now_iso(),
         "updated_at": now_iso(),
         "turns": [],
     }
-    st.session_state.prompt_snapshot = PROMPT.read_text(encoding="utf-8")
-    st.session_state.tools_snapshot = to_openai_tools(load_tool_declarations(TOOLS))
+    st.session_state.prompt_snapshot = prompt_path.read_text(encoding="utf-8")
+    st.session_state.tools_snapshot = to_openai_tools(load_tool_declarations(tools_path))
     st.session_state.research["prompt_snapshot"] = st.session_state.prompt_snapshot
     st.session_state.research["tools_snapshot"] = st.session_state.tools_snapshot
 

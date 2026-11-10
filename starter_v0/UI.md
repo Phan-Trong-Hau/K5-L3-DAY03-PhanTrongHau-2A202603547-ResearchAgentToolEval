@@ -41,6 +41,12 @@ Mở http://localhost:8501.
 
 UI dùng lại vòng lặp trong `chat.py`, prompt và tool declaration trong `artifacts/`. Mỗi phiên giữ snapshot prompt/tools và hash để đối chiếu bằng chứng. Sau khi sửa artifacts, bắt đầu phiên mới để dùng bản mới. Các phiên trên cùng máy chạy app dùng chung danh sách lịch sử.
 
+Phiên Ollama mới dùng `artifacts/system_prompt_local.md` và `artifacts/tools_local.yaml`, tập trung vào hỏi lại khi thiếu tài khoản/URL và trả lời tiếng Việt. Cloud vẫn dùng `system_prompt.md`/`tools.yaml`. Phiên cũ giữ snapshot cũ; bấm **＋ Chat mới** để nhận bản local mới. Đây là bản thử cải tiến local, chưa phải kết quả full base eval.
+
+## GitHub repository search
+
+`github_repos` hỗ trợ tìm repository theo từ khóa, ngôn ngữ và số sao. Nếu GitHub báo hết quota, chờ hạn mức reset; có thể thêm `GITHUB_TOKEN` tùy chọn vào `.env` để dùng request có xác thực. Không gọi lại liên tục khi bị rate limit.
+
 ## Kết nối Telegram
 
 1. Tạo bot bằng `@BotFather`, lấy bot token.

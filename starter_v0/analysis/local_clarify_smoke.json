@@ -1,0 +1,35 @@
+{
+  "model": "qwen2.5:7b",
+  "version": "local-clarify-trial",
+  "artifact_version": "local-clarify-trial+p988f7efa28c2+t7ac5dc6a9318",
+  "prompt_hash": "988f7efa28c2084c3d30ca3b906076c4b151b35079e981cda586b2151365f1d0",
+  "tools_hash": "7ac5dc6a93189ce76a446faed046101d980cbbc8cea1db5903bbd5efbdbd163c",
+  "system_prompt": "artifacts/system_prompt_local.md",
+  "tools": "artifacts/tools_local.yaml",
+  "results": [
+    {
+      "case": "missing_handle",
+      "query": "Tóm tắt 5 tweet mới nhất giúp tôi.",
+      "tool_calls": [
+        {
+          "name": "clarify",
+          "args": {
+            "question": "Bạn muốn tôi tóm tắt 5 tweet từ tài khoản nào?",
+            "response_type": "text"
+          }
+        }
+      ],
+      "text": "",
+      "seconds": 17.55,
+      "passed": true
+    },
+    {
+      "case": "missing_url",
+      "query": "Tóm tắt bài viết này giúp tôi.",
+      "tool_calls": [],
+      "text": "Tôi cần URL của bài viết để giúp bạn tóm tắt. Hãy cho tôi biết URL của bài viết đó nhé.",
+      "seconds": 2.75,
+      "passed": false
+    }
+  ]
+}
