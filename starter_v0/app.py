@@ -158,6 +158,15 @@ def select_saved_session(data):
         st.session_state.view_only = True
 
 
+def new_chat():
+    session = st.session_state.get("research")
+    if session:
+        start_session(session["provider"], session["model"], session["version"],
+                      session["max_tool_rounds"], session["history_window"])
+    st.session_state.pop("pending_query", None)
+    st.session_state.history_search = ""
+
+
 def telegram_ready():
     return all(os.getenv(key, "").strip() for key in ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"))
 
@@ -209,6 +218,7 @@ def progress_label(event):
 with st.sidebar:
     st.title("🔎 Research Desk")
     st.caption("Tra cứu, đọc nguồn và tổng hợp thông tin.")
+    st.button("＋ Chat mới", key="new_chat", type="primary", use_container_width=True, on_click=new_chat)
     st.toggle(
         "✈ Đồng bộ Telegram", key="telegram_sync_enabled", disabled=not telegram_ready(),
         help="Bật để tự gửi câu hỏi và câu trả lời của các lượt chat mới sang Telegram. Tắt để dừng đồng bộ.",
@@ -219,7 +229,7 @@ with st.sidebar:
         st.caption("Cấu hình TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID trong .env để bật đồng bộ.")
     st.divider()
     st.subheader("🕘 Lịch sử hội thoại")
-    search = st.text_input("Tìm trong hội thoại", placeholder="Nhập từ khóa…")
+    search = st.text_input("Tìm trong hội thoại", placeholder="Nhập từ khóa…", key="history_search")
     saved = saved_sessions(search.strip())
     if saved:
         active_id = st.session_state.get("research", {}).get("transcript_id")
@@ -244,7 +254,7 @@ with st.sidebar:
         with st.expander("Tùy chỉnh"):
             rounds = st.slider("Số vòng tool tối đa", 1, 8, 4)
             history_window = st.slider("Số lượt hội thoại ghi nhớ", 1, 10, 5)
-        new_session = st.form_submit_button("Bắt đầu phiên mới", disabled=not enabled_providers, use_container_width=True)
+        new_session = st.form_submit_button("Áp dụng cấu hình", disabled=not enabled_providers, use_container_width=True)
 
     if not enabled_providers:
         st.warning("Chạy Ollama với model đã cài hoặc cấu hình API key trong .env để bắt đầu.")
@@ -278,7 +288,7 @@ st.title("Bạn muốn tìm hiểu điều gì?")
 st.caption("Tìm trên web, theo dõi bài đăng, đọc tài liệu và tổng hợp từ nguồn thực tế.")
 st.markdown(f"**Đang dùng:** `{session['model']}` · {session['provider']}")
 if provider != session["provider"] or (model.strip() or default_model) != session["model"]:
-    st.caption("Bấm “Bắt đầu phiên mới” để áp dụng model đã chọn ở thanh bên.")
+    st.caption("Bấm “Áp dụng cấu hình” để bắt đầu phiên với model đã chọn ở thanh bên.")
 
 if not session["turns"]:
     st.info("Chọn nhà cung cấp và model ở thanh bên, hoặc nhập câu hỏi để bắt đầu ngay.")
