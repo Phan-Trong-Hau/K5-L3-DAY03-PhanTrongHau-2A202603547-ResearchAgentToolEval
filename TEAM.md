@@ -79,15 +79,24 @@ Lỗi còn lại và gợi ý vòng sau:
 
 **Đóng góp cụ thể:**
 
-- Chưa cập nhật.
+- Setup môi trường (`.venv`, requirements, `.env` với OpenRouter, Tavily, Firecrawl, RapidAPI); preflight OpenRouter thành công.
+- Thử Gemini free tier và ghi nhận giới hạn 20 request/ngày/model làm hỏng base eval (429/503) → đề xuất nhóm thống nhất OpenRouter `openai/gpt-4o-mini` cho v0–v3.
+- Baseline v0 trên prompt/tools starter: case 0.65, routing 0.75, argument 0.65, multiturn 1.00 (20/20 case đo được).
+- Phân loại 7 case fail thành 3 nhóm nguyên nhân (chỉ dẫn xấu trong prompt, thiếu ranh giới phạm vi, convention args `lookup`) và gợi ý giả thuyết cho v1/v2.
 
 **Bằng chứng** (commit, run JSON, version log, kết quả preflight và bảng lỗi baseline):
 
-- Chưa cập nhật.
+- Tag `v0` (prompt/tools starter, hash `eb1c8179815b` / `5b22a2476d41`).
+- Run JSON: `starter_v0/runs/v0_B_base_openrouter_20261110T104306962524.json`.
+- Bảng lỗi baseline: `starter_v0/analysis/v0_baseline_failures.md`; CSV: `starter_v0/analysis/v0_base_runs.csv`.
+- Version log: dòng `v0` trong `starter_v0/artifacts/version_log.csv`.
+- Preflight: `OK provider=openrouter model=openai/gpt-4o-mini` → `timeline(screenname="sama")`.
 
 **Điều mình học được từ phần nhóm:**
 
-- Chưa cập nhật.
+- Baseline chỉ có giá trị khi đo đủ case: run bị lỗi provider (quota) phải loại, không ghép kết quả nhiều run.
+- Đọc `actual_tool_calls` cho thấy phần lớn lỗi v0 đến từ chỉ dẫn trong prompt, không phải do model kém — sửa prompt là đòn bẩy lớn nhất.
+- Hash artifact phụ thuộc cả ký tự xuống dòng (CRLF/LF), nên cả nhóm cần chạy eval trên cùng kiểu checkout để hash khớp.
 
 ### NgoDucThinh-2A202603548
 
