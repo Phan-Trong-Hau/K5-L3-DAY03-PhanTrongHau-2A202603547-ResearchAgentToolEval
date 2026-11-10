@@ -161,3 +161,19 @@ tools:
         include_tools: {type: boolean, default: false, description: "true nếu người dùng muốn kèm các lần gọi tool (tên tool + arguments) trong file xuất."}
         max_turns: {type: integer, default: 50, description: "Chỉ giữ N lượt gần nhất (1-200). Chỉ đặt khi người dùng nói số lượt cụ thể."}
       required: []
+
+  - name: extract_links
+    description: >
+      Trích xuất hoặc liệt kê các URL HTTP/HTTPS đã có trong văn bản hoặc Markdown
+      người dùng cung cấp, giữ thứ tự, loại URL trùng và giới hạn số kết quả.
+      Chỉ dùng khi người dùng muốn lấy danh sách URL từ nội dung có sẵn.
+      Truyền nguyên văn đoạn cần xử lý vào text, không tự bịa hay viết lại nội dung.
+      Chạy offline, không tìm kiếm web, không tải/đọc trang, không kiểm tra truy cập
+      và không xuất file. Không dùng thay lookup (tìm web), fetch (đọc URL),
+      github_repos (tìm repo) hoặc export_chat (xuất lịch sử hội thoại).
+    parameters:
+      type: object
+      properties:
+        text: {type: string, description: "Nguyên văn đoạn văn bản/Markdown người dùng muốn trích URL; bắt buộc, không được bịa nội dung."}
+        max_results: {type: integer, default: 10, minimum: 1, maximum: 50, description: "Số URL duy nhất tối đa trả về, từ 1 đến 50; mặc định 10."}
+      required: [text]

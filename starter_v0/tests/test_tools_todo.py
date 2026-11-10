@@ -244,3 +244,198 @@ def test_my_new_tool_failure_returns_error_dict(fake_http) -> None:
     result = github_tool(query="AI agent")
     assert result["tool"] == "search_github_repos"
     assert result["error"] == "HTTPError"
+
+
+# ---------------- extract_links (Luu Van Viet Duc — 2A202603445) ----------------
+
+def _assert_extract_links_success(result, expected, *, total_unique=None) -> None:
+    assert set(result) == {"tool", "items", "item_count", "total_unique", "truncated"}
+    assert result["tool"] == "extract_links"
+    assert isinstance(result["items"], list)
+    assert type(result["item_count"]) is int
+    assert type(result["total_unique"]) is int
+    assert type(result["truncated"]) is bool
+    assert result["items"] == [
+        {"title": url, "url": url, "source": host, "summary": ""}
+        for url, host in expected
+    ]
+    assert result["item_count"] == len(expected)
+    assert result["total_unique"] == (len(expected) if total_unique is None else total_unique)
+    assert result["truncated"] is (result["total_unique"] > len(expected))
+
+
+def _assert_extract_links_error(result, error, argument) -> None:
+    assert set(result) == {"tool", "error", "message"}
+    assert result["tool"] == "extract_links"
+    assert result["error"] == error
+    assert isinstance(result["message"], str)
+    assert argument in result["message"]
+
+
+def test_extract_links_bare_markdown_and_autolinks_in_appearance_order() -> None:
+    result = TOOL_FUNCTIONS["extract_links"](
+        "First https://example.org/b, then [A](https://example.com/a) "
+        "and <http://docs.example.net/start>."
+    )
+    _assert_extract_links_success(result, [
+        ("https://example.org/b", "example.org"),
+        ("https://example.com/a", "example.com"),
+        ("http://docs.example.net/start", "docs.example.net"),
+    ])
+
+
+def test_extract_links_deduplicates_url_labels_and_keeps_first_occurrence() -> None:
+    result = TOOL_FUNCTIONS["extract_links"](
+        "Sources: [A](https://example.com/a), "
+        "[https://example.com/a](https://example.com/a) and "
+        "[https://example.org/b](https://example.org/b) <https://example.com/a>."
+    )
+    _assert_extract_links_success(result, [
+        ("https://example.com/a", "example.com"),
+        ("https://example.org/b", "example.org"),
+    ])
+
+
+def test_extract_links_deduplication_is_string_based_without_normalization() -> None:
+    urls = [
+        "HTTPS://Example.COM/A?utm_source=Mail#Part",
+        "https://example.com/A?utm_source=Mail#Part",
+        "https://example.com/A?utm_source=Mail#part",
+        "https://example.com/A/?utm_source=Mail#Part",
+    ]
+    result = TOOL_FUNCTIONS["extract_links"](" ".join(urls + urls))
+    _assert_extract_links_success(result, [(url, "example.com") for url in urls])
+
+
+@pytest.mark.parametrize("max_results", [1, 2, 3, 10, 50])
+def test_extract_links_limit_counts_unique_urls_even_after_truncation(max_results) -> None:
+    urls = [f"https://example.com/{index}" for index in range(3)]
+    text = " ".join([urls[0], urls[0], urls[1], urls[2], urls[1]])
+    result = TOOL_FUNCTIONS["extract_links"](text, max_results=max_results)
+    _assert_extract_links_success(
+        result, [(url, "example.com") for url in urls[:max_results]], total_unique=3,
+    )
+
+
+@pytest.mark.parametrize("max_results, unique_count", [(None, 12), (50, 51)])
+def test_extract_links_default_ten_and_maximum_fifty(max_results, unique_count) -> None:
+    urls = [f"https://example.com/{index}" for index in range(unique_count)]
+    kwargs = {} if max_results is None else {"max_results": max_results}
+    result = TOOL_FUNCTIONS["extract_links"]("\n".join(urls), **kwargs)
+    limit = 10 if max_results is None else max_results
+    _assert_extract_links_success(
+        result, [(url, "example.com") for url in urls[:limit]], total_unique=unique_count,
+    )
+
+
+@pytest.mark.parametrize("text", ["No links in these notes.", "Ghi chú không có URL."])
+def test_extract_links_no_urls_succeeds_with_empty_items(text) -> None:
+    _assert_extract_links_success(TOOL_FUNCTIONS["extract_links"](text), [])
+
+
+@pytest.mark.parametrize("text", ["", "   ", "\t\r\n"])
+def test_extract_links_empty_text_returns_value_error(text) -> None:
+    _assert_extract_links_error(TOOL_FUNCTIONS["extract_links"](text), "ValueError", "text")
+
+
+@pytest.mark.parametrize("text", [None, 42, 1.5, [], {}, True])
+def test_extract_links_invalid_text_type_returns_type_error(text) -> None:
+    _assert_extract_links_error(TOOL_FUNCTIONS["extract_links"](text), "TypeError", "text")
+
+
+@pytest.mark.parametrize("max_results", [None, "10", 2.5, [], {}, True, False])
+def test_extract_links_invalid_limit_type_including_bool_returns_type_error(max_results) -> None:
+    result = TOOL_FUNCTIONS["extract_links"]("https://example.com", max_results=max_results)
+    _assert_extract_links_error(result, "TypeError", "max_results")
+
+
+@pytest.mark.parametrize("max_results", [-1, 0, 51])
+def test_extract_links_out_of_range_limit_returns_value_error(max_results) -> None:
+    result = TOOL_FUNCTIONS["extract_links"]("https://example.com", max_results=max_results)
+    _assert_extract_links_error(result, "ValueError", "max_results")
+
+
+def test_extract_links_ignores_unsupported_schemes_relative_paths_and_missing_hosts() -> None:
+    result = TOOL_FUNCTIONS["extract_links"](
+        "mailto:hello@example.com javascript:alert(1) ftp://example.com/a "
+        "/relative/path //example.com/path [relative](../page) "
+        "http:// https:///missing https://?q=nohost https://#nohost"
+    )
+    _assert_extract_links_success(result, [])
+
+
+@pytest.mark.parametrize("candidate", [
+    "https://bad_host.example/path",
+    "https://-bad.example/path",
+    "https://bad-.example/path",
+    "https://bad..example/path",
+    "https://example.com:abc/path",
+    "https://example.com:70000/path",
+    "https://example.com:/path",
+    "https://999.1.2.3/path",
+    "https://[not-ipv6]/path",
+    "https://[::1/path",
+    "https://example.com/%ZZ",
+    "https://example.com/a\x00b",
+    "https://example.com\\path",
+    "https://" + "a" * 64 + ".example/path",
+])
+def test_extract_links_malformed_candidate_does_not_drop_valid_neighbors(candidate) -> None:
+    result = TOOL_FUNCTIONS["extract_links"](
+        f"https://example.org/before {candidate} https://example.org/after"
+    )
+    _assert_extract_links_success(result, [
+        ("https://example.org/before", "example.org"),
+        ("https://example.org/after", "example.org"),
+    ])
+
+
+def test_extract_links_preserves_queries_fragments_and_balanced_brackets() -> None:
+    result = TOOL_FUNCTIONS["extract_links"](
+        '"https://example.com/a?utm_source=Mail&x=%2F#Part", '
+        "(https://example.org/b). [https://example.net/c]; "
+        "[D](https://example.edu/wiki/Topic_(detail)?q=(x)#Frag)). "
+        "{https://example.info/e}! **https://example.biz/f** "
+        "<https://example.dev/g>。"
+    )
+    _assert_extract_links_success(result, [
+        ("https://example.com/a?utm_source=Mail&x=%2F#Part", "example.com"),
+        ("https://example.org/b", "example.org"),
+        ("https://example.net/c", "example.net"),
+        ("https://example.edu/wiki/Topic_(detail)?q=(x)#Frag", "example.edu"),
+        ("https://example.info/e", "example.info"),
+        ("https://example.biz/f", "example.biz"),
+        ("https://example.dev/g", "example.dev"),
+    ])
+
+
+@pytest.mark.parametrize("url, host", [
+    ("https://www.Example.com:8443/path", "www.example.com"),
+    ("http://127.0.0.1:8080/path", "127.0.0.1"),
+    ("http://[2001:db8::1]:8080/path", "2001:db8::1"),
+    ("https://bücher.example/path", "bücher.example"),
+    ("http://localhost/path", "localhost"),
+])
+def test_extract_links_source_is_hostname_without_rewriting_url(url, host) -> None:
+    _assert_extract_links_success(TOOL_FUNCTIONS["extract_links"](url), [(url, host)])
+
+
+def test_extract_links_url_in_query_is_kept_as_part_of_the_original_url() -> None:
+    url = "https://example.com/redirect?next=https://example.org/path#Frag"
+    _assert_extract_links_success(TOOL_FUNCTIONS["extract_links"](url), [(url, "example.com")])
+
+
+def test_extract_links_malformed_prefix_does_not_hide_a_later_url() -> None:
+    result = TOOL_FUNCTIONS["extract_links"]("https://?next=https://example.org/valid")
+    _assert_extract_links_success(result, [("https://example.org/valid", "example.org")])
+
+
+@pytest.mark.parametrize("wrapper", ["<{}>", "[A]({})"])
+@pytest.mark.parametrize("url", [
+    "https://example.com/?q=wow!",
+    "https://example.com/#part?",
+    "https://example.com/?q=one,two;",
+])
+def test_extract_links_explicit_link_delimiters_preserve_query_and_fragment_punctuation(wrapper, url) -> None:
+    result = TOOL_FUNCTIONS["extract_links"](wrapper.format(url) + ", https://example.org/next.")
+    _assert_extract_links_success(result, [(url, "example.com"), ("https://example.org/next", "example.org")])
