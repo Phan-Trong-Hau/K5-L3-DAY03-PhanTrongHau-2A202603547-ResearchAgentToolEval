@@ -31,4 +31,4 @@ Thumbs.db
 .vscode/
 
 # Active demo session; frozen evidence lives in transcripts/evidence/
-starter_v0/transcripts/ui_ui-demo_ollama_20261110T104001155264_60fda10d.transcript.json
+starter_v0/transcripts/ui_ui-demo_*.transcript.json

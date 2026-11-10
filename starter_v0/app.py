@@ -17,6 +17,8 @@ from env_loader import load_lab_env
 from providers import make_provider
 from tools import load_tool_declarations, to_openai_tools
 from versioning import artifact_version_dict, build_artifact_version
+from telegram_delivery import execute_ui_tool
+from tools.send.tool import check_telegram_connection, send_telegram
 
 
 ROOT = Path(__file__).resolve().parent
@@ -157,6 +159,36 @@ def select_saved_session(data):
         st.session_state.view_only = True
 
 
+def telegram_ready():
+    return all(os.getenv(key, "").strip() for key in ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"))
+
+
+@st.dialog("Gửi nội dung lên Telegram")
+def telegram_preview(turn_index, draft):
+    session = st.session_state.research
+    turn = session["turns"][turn_index]
+    if any(item.get("status") == "sent" for item in turn.get("telegram_deliveries", [])):
+        st.success("Nội dung của lượt này đã được gửi.")
+        return
+    st.caption("Nơi nhận")
+    st.text(os.getenv("TELEGRAM_CHAT_ID", ""))
+    text = st.text_area("Nội dung gửi", value=draft, height=240, key=f"telegram_draft_{session['transcript_id']}_{turn_index}")
+    st.caption(f"{len(text)}/4096 ký tự · Gửi dạng văn bản, giữ nguyên đường dẫn.")
+    confirmed = st.checkbox("Tôi xác nhận gửi nội dung trên đến nơi nhận này.", key=f"telegram_confirm_{session['transcript_id']}_{turn_index}")
+    if st.button("Xác nhận và gửi", type="primary", disabled=not (confirmed and text.strip() and len(text) <= 4096 and telegram_ready())):
+        with st.spinner("Đang gửi Telegram…"):
+            delivery = redact(send_telegram(text=text, confirmed=True))
+        turn.setdefault("telegram_deliveries", []).append({**delivery, "text": redact(text), "confirmed_by": "ui_user", "created_at": now_iso()})
+        try:
+            write_transcript(ROOT / "transcripts" / f"{session['transcript_id']}.transcript.json", session)
+        except OSError:
+            st.warning("Chưa lưu được kết quả vào file; kết quả gửi vẫn được giữ trong phiên hiện tại.")
+        if delivery.get("status") == "sent":
+            st.rerun()
+        else:
+            st.error(delivery.get("message", "Không gửi được Telegram. Kiểm tra cấu hình và thử lại."))
+
+
 def render_turn(turn):
     with st.chat_message("user"):
         st.markdown(turn["user"])
@@ -181,6 +213,18 @@ def render_turn(turn):
                 for event in events:
                     st.markdown(f"**{event['tool']}**")
                     st.json(event, expanded=False)
+        sent = [item for item in turn.get("telegram_deliveries", []) if item.get("status") == "sent"]
+        if sent:
+            st.success(f"Đã gửi Telegram · Message ID: {sent[-1].get('message_id')}")
+        elif turn.get("assistant_text") and turn.get("status") != "provider_error":
+            index = turn["turn_index"] - 1
+            draft = turn["assistant_text"]
+            for event in events:
+                if event.get("tool") == "send" and isinstance(event.get("args", {}).get("text"), str):
+                    draft = event["args"]["text"] or draft
+            if st.button("✈ Gửi Telegram", key=f"telegram_{st.session_state.research['transcript_id']}_{index}",
+                         disabled=not telegram_ready(), help="Xem trước và xác nhận nội dung trước khi gửi."):
+                telegram_preview(index, draft)
 
 
 def progress_label(event):
@@ -254,6 +298,19 @@ with st.sidebar:
         for tool in st.session_state.tools_snapshot:
             fn = tool["function"]
             st.markdown(f"**{fn['name']}** — {fn['description']}")
+    with st.expander("✈ Telegram"):
+        if telegram_ready():
+            st.caption("Nơi nhận")
+            st.text(os.getenv("TELEGRAM_CHAT_ID"))
+            if st.button("Kiểm tra kết nối Telegram"):
+                with st.spinner("Đang kiểm tra bot và nơi nhận…"):
+                    connection = redact(check_telegram_connection())
+                if connection.get("status") == "connected":
+                    st.success(f"Bot @{connection.get('bot_username')} · {connection.get('chat_title')}")
+                else:
+                    st.error(connection.get("message", "Chưa kết nối được Telegram."))
+        else:
+            st.caption("Điền TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID trong starter_v0/.env, rồi tải lại trang.")
 
 st.title("Bạn muốn tìm hiểu điều gì?")
 st.caption("Tìm trên web, theo dõi bài đăng, đọc tài liệu và tổng hợp từ nguồn thực tế.")
@@ -320,6 +377,7 @@ if query and session_available:
                     model=session["model"],
                     max_tool_rounds=session["max_tool_rounds"],
                     on_progress=progress_queue.put,
+                    tool_executor=execute_ui_tool,
                 )
                 while True:
                     try:
