@@ -2,6 +2,11 @@
 
 ## UI Streamlit
 
+Chạy nhanh từ thư mục gốc repo:
+
+- Linux/macOS: `./run_ui.sh`
+- Windows (PowerShell/CMD): `.\run_ui.bat`
+
 Chạy từ `starter_v0/`:
 
 ```bash

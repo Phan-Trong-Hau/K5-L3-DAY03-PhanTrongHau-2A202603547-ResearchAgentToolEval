@@ -87,6 +87,7 @@ def run_model_tool_loop(
     model: str | None,
     max_tool_rounds: int,
     on_progress: Callable[[dict[str, Any]], None] | None = None,
+    tool_executor: Callable[[ToolCall], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     started = monotonic()
 
@@ -126,7 +127,7 @@ def run_model_tool_loop(
             emit("tool_started", round=round_index, tool=call.name)
             tool_started = monotonic()
             print(f"🔧 {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
-            event = execute_tool_call(call)
+            event = (tool_executor or execute_tool_call)(call)
             round_record["tool_results"].append(event)
             all_tool_events.append(event)
             output = event.get("result", {})
