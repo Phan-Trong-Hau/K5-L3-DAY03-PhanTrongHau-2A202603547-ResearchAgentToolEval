@@ -1,5 +1,16 @@
 # Day 03 Lab v2 — Research Agent Tool Eval
 
+## UI Streamlit
+
+Chạy từ `starter_v0/`:
+
+```bash
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m streamlit run app.py
+```
+
+Mở http://localhost:8501. Chọn Ollama hoặc provider cloud ở thanh bên; xem [hướng dẫn UI](starter_v0/UI.md) để cấu hình phiên chat và tải transcript.
+
 ## Brief
 
 Trong lab này, nhóm build một research agent nhỏ nhưng chạy thật. Agent nhận request của user, chọn tool, truyền arguments, chạy tool thật, lưu full JSON log, rồi dùng log đó để tối ưu prompt/tool declaration qua nhiều version.
