@@ -5,6 +5,9 @@ import os
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
+from concurrent.futures import ThreadPoolExecutor
+from queue import Empty, Queue
+from time import monotonic
 
 import streamlit as st
 import requests
@@ -158,6 +161,8 @@ def render_turn(turn):
     with st.chat_message("user"):
         st.markdown(turn["user"])
     with st.chat_message("assistant", avatar="🔎"):
+        if "duration_seconds" in turn:
+            st.caption(f"Thời gian xử lý: {turn['duration_seconds']:.1f} giây")
         if turn.get("status") == "provider_error":
             st.error(turn["error"])
         else:
@@ -167,11 +172,28 @@ def render_turn(turn):
         if turn.get("status") == "max_tool_rounds":
             st.warning("Đã đạt giới hạn xử lý. Bạn có thể tiếp tục ở lượt sau.")
         events = turn.get("tool_events", [])
+        if turn.get("progress"):
+            with st.expander("Các bước xử lý"):
+                for step in turn["progress"]:
+                    st.caption(f"{step['elapsed_seconds']:.1f}s · {progress_label(step)}")
         if events:
             with st.expander(f"Hoạt động của agent · {len(events)} tool call"):
                 for event in events:
                     st.markdown(f"**{event['tool']}**")
                     st.json(event, expanded=False)
+
+
+def progress_label(event):
+    stage = event["stage"]
+    if stage == "model_started":
+        action = "Đang phân tích yêu cầu" if event["round"] == 1 else "Đang đọc kết quả và chuẩn bị câu trả lời"
+        return f"{action} · vòng {event['round']}"
+    if stage == "model_completed":
+        return "Đã chọn công cụ: " + ", ".join(event["tools"]) if event["tools"] else "Đã tạo câu trả lời"
+    if stage == "tool_started":
+        return f"Đang chạy {event['tool']}"
+    suffix = "gặp lỗi" if event.get("error") else "hoàn tất"
+    return f"{event['tool']} {suffix} · {event['duration_seconds']:.1f}s"
 
 
 with st.sidebar:
@@ -195,10 +217,6 @@ with st.sidebar:
     st.divider()
     availability = provider_availability()
     enabled_providers = [name for name, ready in availability.items() if ready]
-    for name, ready in availability.items():
-        if not ready:
-            reason = "Chưa kết nối hoặc chưa có model" if name == "ollama" else "Chưa cấu hình API key"
-            st.button(f"{name} · {reason}", key=f"unavailable_{name}", disabled=True, use_container_width=True)
     provider = st.selectbox("Nhà cung cấp", enabled_providers, disabled=not enabled_providers)
     default_model = make_provider(provider).default_model if provider else ""
     with st.form("settings"):
@@ -281,22 +299,51 @@ if query and session_available:
     turn = {"turn_index": len(session["turns"]) + 1, "started_at": now_iso(), "user": query}
     with st.chat_message("user"):
         st.markdown(query)
-    with st.spinner("Agent đang tra cứu và xử lý…"):
+    started = monotonic()
+    progress_queue = Queue()
+    progress_events = []
+    with st.status("Agent đang xử lý…", expanded=True) as status:
+        timer = st.empty()
+        activity = st.empty()
+        current_step = "Đang kết nối model"
         try:
-            result = run_model_tool_loop(
-                provider=make_provider(session["provider"]),
-                messages=[
-                    {"role": "system", "content": st.session_state.prompt_snapshot},
-                    *trim_history(history, session["history_window"]),
-                    {"role": "user", "content": query},
-                ],
-                tools=st.session_state.tools_snapshot,
-                model=session["model"],
-                max_tool_rounds=session["max_tool_rounds"],
-            )
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(
+                    run_model_tool_loop,
+                    provider=make_provider(session["provider"]),
+                    messages=[
+                        {"role": "system", "content": st.session_state.prompt_snapshot},
+                        *trim_history(history, session["history_window"]),
+                        {"role": "user", "content": query},
+                    ],
+                    tools=st.session_state.tools_snapshot,
+                    model=session["model"],
+                    max_tool_rounds=session["max_tool_rounds"],
+                    on_progress=progress_queue.put,
+                )
+                while True:
+                    try:
+                        event = progress_queue.get(timeout=0.2)
+                        progress_events.append(event)
+                        current_step = progress_label(event)
+                    except Empty:
+                        pass
+                    elapsed = monotonic() - started
+                    timer.markdown(f"⏱ **Đã chờ {elapsed:.0f} giây** · {current_step}")
+                    activity.markdown("\n\n".join(
+                        f"`{step['elapsed_seconds']:.1f}s` · {progress_label(step)}"
+                        for step in progress_events
+                    ))
+                    if future.done() and progress_queue.empty():
+                        break
+                result = future.result()
             turn.update(result)
+            status.update(label=f"Hoàn tất sau {monotonic() - started:.1f} giây", state="complete")
         except Exception as exc:
             turn.update(status="provider_error", error=f"{type(exc).__name__}: {exc}", rounds=[], tool_events=[])
+            status.update(label="Có lỗi khi xử lý", state="error")
+    turn["duration_seconds"] = round(monotonic() - started, 2)
+    turn["progress"] = progress_events
     turn["ended_at"] = now_iso()
     session["turns"].append(redact(turn))
     try:

@@ -22,6 +22,7 @@ starter_v0/analysis/SETUP_CHECK.md
 starter_v0/analysis/setup_api_smoke.json
 starter_v0/transcripts/setup-smoke-*.transcript.json
 starter_v0/transcripts/ui_setup-smoke-*.transcript.json
+starter_v0/transcripts/local-test_*.transcript.json
 
 # OS / editor
 .DS_Store

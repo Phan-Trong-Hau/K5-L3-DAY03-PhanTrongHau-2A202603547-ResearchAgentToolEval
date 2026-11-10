@@ -6,6 +6,8 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from collections.abc import Callable
+from time import monotonic
 
 from env_loader import load_lab_env
 from providers import make_provider
@@ -84,14 +86,23 @@ def run_model_tool_loop(
     tools: list[dict[str, Any]],
     model: str | None,
     max_tool_rounds: int,
+    on_progress: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
+    started = monotonic()
+
+    def emit(stage: str, **details: Any) -> None:
+        if on_progress:
+            on_progress({"stage": stage, "elapsed_seconds": round(monotonic() - started, 2), **details})
+
     working_messages = list(messages)
     rounds: list[dict[str, Any]] = []
     all_tool_events: list[dict[str, Any]] = []
 
     for round_index in range(1, max_tool_rounds + 1):
+        emit("model_started", round=round_index)
         response = provider.complete(working_messages, tools, model=model, temperature=0.0)
         calls = response.tool_calls
+        emit("model_completed", round=round_index, tools=[call.name for call in calls])
         round_record: dict[str, Any] = {
             "round": round_index,
             "assistant_text": response.text,
@@ -112,10 +123,16 @@ def run_model_tool_loop(
         non_clarification_events: list[dict[str, Any]] = []
 
         for call in calls:
+            emit("tool_started", round=round_index, tool=call.name)
+            tool_started = monotonic()
             print(f"🔧 {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
             event = execute_tool_call(call)
             round_record["tool_results"].append(event)
             all_tool_events.append(event)
+            output = event.get("result", {})
+            emit("tool_completed", round=round_index, tool=call.name,
+                 duration_seconds=round(monotonic() - tool_started, 2),
+                 error=bool(isinstance(output, dict) and output.get("error")))
 
             # Detect the clarification/pause tool by its output flag (rename-proof),
             # not by a hard-coded tool name.
