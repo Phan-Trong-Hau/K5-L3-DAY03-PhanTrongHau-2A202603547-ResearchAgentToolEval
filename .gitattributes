@@ -1,0 +1,3 @@
+# Preserve the exact bytes used by recorded eval hashes across OS checkouts.
+starter_v0/artifacts/versions/**/system_prompt.md -text whitespace=cr-at-eol
+starter_v0/artifacts/versions/**/tools.yaml -text whitespace=cr-at-eol

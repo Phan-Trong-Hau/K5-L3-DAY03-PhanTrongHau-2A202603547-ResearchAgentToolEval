@@ -18,6 +18,8 @@ from providers import make_provider
 from tools import load_tool_declarations, to_openai_tools
 from versioning import artifact_version_dict, build_artifact_version
 from telegram_delivery import execute_ui_tool, sync_chat_turn
+from version_catalog import load_versions
+from version_comparison import render_comparison
 
 
 ROOT = Path(__file__).resolve().parent
@@ -94,8 +96,12 @@ def redact(value):
 
 def start_session(provider, model, version, rounds, history_window):
     st.session_state.view_only = False
-    prompt_path = ROOT / "artifacts/system_prompt_local.md" if provider == "ollama" else PROMPT
-    tools_path = ROOT / "artifacts/tools_local.yaml" if provider == "ollama" else TOOLS
+    saved_version = load_versions().get(version)
+    if saved_version:
+        prompt_path, tools_path = saved_version["prompt_path"], saved_version["tools_path"]
+    else:
+        prompt_path = ROOT / "artifacts/system_prompt_local.md" if provider == "ollama" else PROMPT
+        tools_path = ROOT / "artifacts/tools_local.yaml" if provider == "ollama" else TOOLS
     artifact = build_artifact_version(version, prompt_path, tools_path)
     stamp = datetime.now().strftime("%Y%m%dT%H%M%S%f")
     session_id = f"ui_{safe_slug(version)}_{provider}_{stamp}_{uuid4().hex[:8]}"
@@ -132,7 +138,7 @@ def saved_sessions(search):
             haystack = " ".join(str(t.get("user", "")) + " " + str(t.get("assistant_text", "")) for t in turns)
             if search.casefold() not in haystack.casefold():
                 continue
-            label = f"{data.get('updated_at', '')} · {title[:65]} · {data.get('model', '')}"
+            label = f"{data.get('updated_at', '')} · {title[:65]} · {data.get('version', '')} · {data.get('model', '')}"
             sessions.append((path, label, data))
         except (OSError, ValueError, TypeError, AttributeError):
             continue
@@ -158,12 +164,14 @@ def select_saved_session(data):
         st.session_state.research = data
         st.session_state.tools_snapshot = to_openai_tools(load_tool_declarations(TOOLS))
         st.session_state.view_only = True
+    if data.get("version") in load_versions():
+        st.session_state.selected_version = data["version"]
 
 
 def new_chat():
     session = st.session_state.get("research")
     if session:
-        start_session(session["provider"], session["model"], session["version"],
+        start_session(session["provider"], session["model"], st.session_state.get("selected_version", session["version"]),
                       session["max_tool_rounds"], session["history_window"])
     st.session_state.pop("pending_query", None)
     st.session_state.history_search = ""
@@ -230,6 +238,10 @@ with st.sidebar:
     elif not telegram_ready():
         st.caption("Cấu hình TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID trong .env để bật đồng bộ.")
     st.divider()
+    versions = load_versions()
+    version = st.selectbox("Phiên bản agent", list(versions), index=len(versions)-1,
+                           key="selected_version", format_func=lambda name: f"{name} · {versions[name]['description']}")
+    st.caption("Chọn phiên bản rồi bấm Chat mới hoặc Áp dụng cấu hình.")
     st.subheader("🕘 Lịch sử hội thoại")
     search = st.text_input("Tìm trong hội thoại", placeholder="Nhập từ khóa…", key="history_search")
     saved = saved_sessions(search.strip())
@@ -242,7 +254,7 @@ with st.sidebar:
                 type="primary" if data.get("transcript_id") == active_id else "secondary",
                 use_container_width=True, on_click=select_saved_session, args=(data,),
             )
-            st.caption(f"{data.get('updated_at', '')} · {data.get('model', '')}")
+            st.caption(f"{data.get('updated_at', '')} · {data.get('version', '')} · {data.get('model', '')}")
     else:
         st.caption("Không tìm thấy hội thoại." if search else "Chưa có hội thoại đã lưu.")
     st.divider()
@@ -252,7 +264,6 @@ with st.sidebar:
     default_model = make_provider(provider).default_model if provider else ""
     with st.form("settings"):
         model = st.text_input("Model", value=default_model, key=f"model_{provider}")
-        version = st.text_input("Phiên bản", value="ui-demo")
         with st.expander("Tùy chỉnh"):
             rounds = st.slider("Số vòng tool tối đa", 1, 8, 4)
             history_window = st.slider("Số lượt hội thoại ghi nhớ", 1, 10, 5)
@@ -286,11 +297,16 @@ with st.sidebar:
             fn = tool["function"]
             st.markdown(f"**{fn['name']}** — {fn['description']}")
 
+view = st.radio("Chế độ", ["Trò chuyện", "So sánh v0–v1"], horizontal=True, label_visibility="collapsed")
+if view == "So sánh v0–v1":
+    render_comparison(versions)
+    st.stop()
+
 st.title("Bạn muốn tìm hiểu điều gì?")
 st.caption("Tìm trên web, theo dõi bài đăng, đọc tài liệu và tổng hợp từ nguồn thực tế.")
-st.markdown(f"**Đang dùng:** `{session['model']}` · {session['provider']}")
-if provider != session["provider"] or (model.strip() or default_model) != session["model"]:
-    st.caption("Bấm “Áp dụng cấu hình” để bắt đầu phiên với model đã chọn ở thanh bên.")
+st.markdown(f"**Đang dùng:** `{session['version']}` · `{session['model']}` · {session['provider']}")
+if provider != session["provider"] or (model.strip() or default_model) != session["model"] or version != session["version"]:
+    st.caption("Bấm “Áp dụng cấu hình” để bắt đầu phiên với model và version đã chọn ở thanh bên.")
 
 if not session["turns"]:
     st.info("Chọn nhà cung cấp và model ở thanh bên, hoặc nhập câu hỏi để bắt đầu ngay.")

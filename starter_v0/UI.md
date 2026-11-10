@@ -31,7 +31,7 @@ Mở http://localhost:8501.
 
 - Mặc định dùng Ollama; chạy Ollama và chọn model đã cài, ví dụ `qwen2.5:7b`.
 - Dùng cloud: chọn `openrouter` hoặc provider tương ứng với key đã điền trong `.env`.
-- Ô model tự điền model mặc định theo provider. Model đang dùng hiển thị ở đầu khung chat và trong thông tin phiên. Nhập version dùng cho phiên demo rồi bấm **Áp dụng cấu hình** để bắt đầu phiên với cấu hình đã chọn.
+- Ô model tự điền model mặc định theo provider. Model đang dùng hiển thị ở đầu khung chat và trong thông tin phiên. Chọn **Phiên bản agent** v0/v1 rồi bấm **Áp dụng cấu hình** để bắt đầu phiên với cấu hình đã chọn.
 - Nhập câu hỏi hoặc chọn một câu mẫu; trả lời tiếp khi agent hỏi thêm thông tin.
 - Mở **Hoạt động của agent** để xem tool, arguments và kết quả.
 - Khi xử lý, đồng hồ cập nhật thời gian đã chờ và nhật ký hiển thị các bước gọi model, chọn tool, chạy tool, nhận kết quả. Sau khi hoàn tất, tổng thời gian và các bước vẫn nằm trong hội thoại và transcript.
@@ -41,7 +41,14 @@ Mở http://localhost:8501.
 
 UI dùng lại vòng lặp trong `chat.py`, prompt và tool declaration trong `artifacts/`. Mỗi phiên giữ snapshot prompt/tools và hash để đối chiếu bằng chứng. Sau khi sửa artifacts, bắt đầu phiên mới để dùng bản mới. Các phiên trên cùng máy chạy app dùng chung danh sách lịch sử.
 
-Phiên Ollama mới dùng `artifacts/system_prompt_local.md` và `artifacts/tools_local.yaml`, tập trung vào hỏi lại khi thiếu tài khoản/URL và trả lời tiếng Việt. Cloud vẫn dùng `system_prompt.md`/`tools.yaml`. Phiên cũ giữ snapshot cũ; bấm **＋ Chat mới** để nhận bản local mới. Đây là bản thử cải tiến local, chưa phải kết quả full base eval.
+## Chọn và so sánh v0/v1
+
+- Chọn **Phiên bản agent** ở thanh bên rồi bấm **＋ Chat mới** hoặc **Áp dụng cấu hình**. Khung chat hiển thị version và model đang chạy.
+- v0/v1 dùng snapshot riêng trong `artifacts/versions/`, kiểm tra hash theo run eval đã lưu. Cả cloud và Ollama đều dùng đúng prompt/tools của version đã chọn.
+- Chọn **So sánh v0–v1** để xem metric, pass/fail từng case, expected/actual tool calls, prompt diff và tải run JSON. Các metric đã lưu dùng OpenRouter `openai/gpt-4o-mini`, không phải điểm của Ollama.
+- Version hiện tại so sánh prompt và khai báo tool; implementation tool chạy bằng code hiện tại của app. UI giữ nguyên cơ chế đồng bộ Telegram và không cho model tự gửi vượt công tắc.
+- Các bản thử local `system_prompt_local.md`/`tools_local.yaml` vẫn được giữ riêng; không tự áp dụng vào v0/v1. Muốn kiểm tra riêng bằng CLI, truyền `--system-prompt artifacts/system_prompt_local.md --tools artifacts/tools_local.yaml`.
+- Phiên chat cũ giữ snapshot cũ và vẫn có thể mở lại từ lịch sử.
 
 ## GitHub repository search
 
