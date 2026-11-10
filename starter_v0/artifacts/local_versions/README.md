@@ -9,7 +9,7 @@ Hai model đã cài trên máy: `qwen3:4b-instruct` (4.0B) và `qwen2.5:7b` (7.6
 | v5-local | Byte-identical v4 | `v5-local/tools.yaml` | Chỉ đổi declaration: native clarify, required response_type, source boundaries, query/topic/timeframe |
 | v5-local-cloud | Cùng v5-local | Cùng v5-local | Kiểm tra lại trên `openai/gpt-4o-mini` |
 
-Không sửa eval cases, grader, tool implementations hoặc tool-choice để tăng điểm. Giữ đủ 11 tool của v3; v5 không thêm/bỏ tool. UI vẫn dùng catalog v0–v3; các artifact thử nghiệm nằm riêng ở đây. V4 không cải thiện đồng đều trên hai model, mọi regression vẫn được lưu.
+Các vòng dùng cùng eval cases, grader, tool implementations và tool-choice, giữ đủ 11 tool của v3. Artifact local lưu riêng với catalog UI v0–v3.
 
 Chạy từ thư mục `starter_v0`, sau khi cài dependencies và cấu hình Ollama/các key research trong `.env`:
 

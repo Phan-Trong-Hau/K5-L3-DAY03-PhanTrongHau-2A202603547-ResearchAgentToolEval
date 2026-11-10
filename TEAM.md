@@ -18,21 +18,21 @@
 | 2 | Ngô Đức Thịnh | 2A202603548 | v1, cải tiến prompt, 5 eval case single-turn | [NgooThinh05](https://github.com/NgooThinh05) |
 | 3 | Bùi Gia Huy | 2A202603525 | v2, tool declaration, 5 eval case multi-turn và tổng hợp eval nhóm | [huy9ai](https://github.com/huy9ai) |
 | 4 | Lưu Văn Việt Đức | 2A202603445 | v3, tool mới, unit test và kiểm thử tích hợp | [IVietDucI](https://github.com/IVietDucI) |
-| 5 | Phan Trọng Hậu | 2A202603547 | v4 — bonus và local model; UI, report và live chat | [Phan-Trong-Hau](https://github.com/Phan-Trong-Hau) |
+| 5 | Phan Trọng Hậu | 2A202603547 | v4-local/v5-local, UI, report và Telegram | [Phan-Trong-Hau](https://github.com/Phan-Trong-Hau) |
 
 ## Phân công theo version và mảng công việc
 
 | Version / mảng | Người chính | Công việc | Sản phẩm bàn giao |
 |---|---|---|---|
 | v0 — Setup và baseline | Hoàng | Setup provider và tool API; chạy preflight; chạy base eval trước khi sửa prompt/declaration; phân loại case fail; ghi log v0 | Commit/tag v0, run JSON, bảng lỗi baseline, dòng version log |
-| UI và link demo | Hậu | Làm Streamlit nối agent thật song song với các vòng v0–v3; duy trì link demo và chuyển sang bản tích hợp đã kiểm tra | Code UI, hướng dẫn chạy, link thử trước 16:30 |
+| UI và link demo | Hậu | Xây Streamlit, chọn version và so sánh kết quả v0–v3 | Code UI, hướng dẫn chạy, link demo |
 | v1 — Prompt | Thịnh | Nhận v0; chọn một giả thuyết từ log; sửa prompt; chạy base eval và so với v0 | Commit/tag v1, run JSON, metric trước/sau, dòng version log |
 | Eval single-turn | Thịnh | Viết 5 case đơn lượt đúng schema, mô tả rõ hành vi và expected tool/args | 5 case gửi Huy tổng hợp |
 | v2 — Tool declaration | Huy | Nhận v1; chọn một giả thuyết về description/args; sửa declaration; chạy base eval và so với v1 | Commit/tag v2, run JSON, metric trước/sau, dòng version log |
 | Eval multi-turn và tổng hợp | Huy | Viết 5 case nhiều lượt; ghép với 5 case của Thịnh; phối hợp Đức bảo đảm có case cho tool mới | `data/eval_group.json` đủ 10 case, đúng 5 + 5 |
 | Tool mới và unit test | Đức | Viết ít nhất 1 tool mới, TOOL.md và ≥3 test; hoàn thành TODO test; tích hợp registry/declaration sau khi nhận v2 | Tool mới đăng ký đầy đủ, kết quả pytest, ghi nhận bug nếu có |
 | v3 — Tích hợp và cải tiến | Đức | Nhận v2; ghi rõ thay đổi thêm tool; kiểm chứng một giả thuyết cải tiến; chạy base và group eval | Commit/tag v3, run JSON base/group, metric, dòng version log |
-| Report A và B | Hậu | Viết A trước 16:30; thu thập bằng chứng từng người; hoàn thiện B theo dữ liệu thật | `artifacts/REPORT.md`; poster tùy chọn |
+| Report A và B | Hậu | Tổng hợp chức năng, kết quả eval và đóng góp thành viên | `artifacts/REPORT.md`; poster tùy chọn |
 | v4-local, v5-local và bonus | Hậu | Baseline v3 trên 2 model; 2 vòng tối ưu riêng prompt/tools, full Base và cloud backcheck; UI và Telegram sync | 7 run JSON, local_eval_comparison.csv, local_versions, version log, REPORT B7 |
 | Live chat và nộp bài | Hậu | Chạy `chat.py` ít nhất 3 lượt; kiểm tra bản UI cuối cùng; rà soát đủ artifacts, không lộ key | Transcript JSON, checklist nộp bài, bản tích hợp cuối |
 
@@ -44,32 +44,6 @@
 - Thịnh gửi 5 single-turn cho Huy tổng hợp; Đức phối hợp Huy thêm case cho tool mới.
 - Mỗi người ghi version log và gửi metric, lỗi, run JSON cho Hậu tổng hợp report.
 - Prompt/tools local dùng file riêng để giữ bản v3 cloud phục vụ so sánh.
-
-### Mẫu bàn giao mỗi version
-
-```text
-Version:
-Người phụ trách:
-Commit/tag:
-Provider/model:
-Giả thuyết:
-Artifact đã sửa:
-Metric trước → sau (case/tool routing/argument/multiturn accuracy):
-Run JSON:
-Prompt hash / tools hash:
-Dòng version log:
-Lỗi còn lại và gợi ý vòng sau:
-```
-
-## Phân công theo checkpoint
-
-| Mốc | Người chính | Sản phẩm cần có |
-|---|---|---|
-| 15:00 | Hoàng, Hậu | Hoàng chạy baseline v0; Hậu dựng khung UI và report; Đức phát triển tool riêng |
-| 15:30 | Thịnh, Đức | v1; tool mới có implementation và test ban đầu |
-| 16:00 | Huy | v2 và 10 eval case để tích hợp |
-| Trước 16:30 | Hậu | UI/link demo hoạt động; report A có chức năng, tool và câu hỏi mẫu |
-| 17:30 | Đức, Hậu | v3, group eval, test và report B; Hậu thực hiện bonus và local model |
 
 ## Cá nhân
 
@@ -100,7 +74,7 @@ Lỗi còn lại và gợi ý vòng sau:
 
 ### NgoDucThinh-2A202603548
 
-**Phần việc phụ trách:** v1, cải tiến prompt theo một giả thuyết, 5 eval case single-turn.
+**Phần việc phụ trách:** v1, cải tiến prompt, 5 eval case single-turn.
 
 **Đóng góp cụ thể:**
 
@@ -159,8 +133,7 @@ Lỗi còn lại và gợi ý vòng sau:
 - Hoàn thiện chọn snapshot v0–v3 đúng hash. Chuyển version tự mở hội thoại riêng theo model; có nút Chat mới. Màn so sánh có tổng quan 4 bản, chọn cặp version, Base/Group, metric, case, tool calls và diff prompt/tools; script chạy Linux/macOS và Windows.
 - Nối Telegram: công tắc đồng bộ câu hỏi/câu trả lời, metadata model/thời gian/tool; không gửi trùng khi rerun, chia nội dung dài, lưu receipt vào transcript. Có hai lượt sync thật thành công.
 - Bổ sung GitHub token tùy chọn và xử lý rate-limit; kiểm tra tool trả 3 repo thật.
-- Chạy agent Ollama trên UI local và đồng bộ user/agent qua Telegram thành công.
-- Hoàn thành Small Local Model Challenge: 2 model ≤8B, baseline v3 + hai vòng v4-local/v5-local trên từng model và cloud backcheck, tổng 7 full run / 140 lượt case. V4 chỉ đổi prompt; v5 chỉ đổi tools. Giữ regression và phân tích từng case trong report B7. qwen3:4b-instruct: 18/20 → 19/20 → 17/20; qwen2.5:7b: 17/20 → 16/20 → 15/20; v5 cloud 20/20.
+- Hoàn thành Small Local Model Challenge: 2 model ≤8B, baseline v3 + hai vòng v4-local/v5-local trên từng model và cloud backcheck, tổng 7 full run / 140 lượt case. V4 chỉ đổi prompt; v5 chỉ đổi tools. qwen3:4b-instruct: 18/20 → 19/20 → 17/20; qwen2.5:7b: 17/20 → 16/20 → 15/20; v5 cloud 20/20.
 - Tổng hợp report v0–v3 từ bằng chứng thành viên, phát hiện group run cũ trỏ nhầm base và các tool v2 thiếu key. Chạy kiểm chứng đúng snapshot: base 18/20, group 8/10, không có tool error. Đối chiếu riêng hai run v2-verified; report dùng cặp run tối ưu v2–v3 của Đức. Bổ sung 7 test catalog/UI để kiểm tra snapshot, so sánh đúng dataset/model và cách ly hội thoại giữa các version; suite tại bước UI đạt 158 pass, 0 fail/skip.
 
 **Bằng chứng:**
@@ -170,14 +143,13 @@ Lỗi còn lại và gợi ý vòng sau:
 - [Telegram delivery](starter_v0/telegram_delivery.py), [test](starter_v0/tests/test_telegram_delivery.py), [receipt live](starter_v0/transcripts/evidence/telegram_sync_demo.transcript.json).
 - [GitHub live](starter_v0/transcripts/evidence/github_search_demo.transcript.json), [local smoke](starter_v0/analysis/local_clarify_smoke.json).
 - [Tổng hợp run](starter_v0/analysis/report_run_summary.csv), [kết quả group](starter_v0/analysis/group_eval_results.csv), [pytest 160 pass](starter_v0/analysis/pytest_report.txt).
-- [Full local eval](starter_v0/analysis/local_eval_comparison.csv), [case failures](starter_v0/analysis/local_eval_failures.csv), [v4/v5 artifacts](starter_v0/artifacts/local_versions/README.md). Hai test kiểm tra kiểm soát artifact nâng suite lên 160 pass.
+- [Full local eval](starter_v0/analysis/local_eval_comparison.csv), [case failures](starter_v0/analysis/local_eval_failures.csv), [v4/v5 artifacts](starter_v0/artifacts/local_versions/README.md). Hai test kiểm tra phạm vi thay đổi artifact; tổng 160 pass.
 
 **Điều mình học được từ phần nhóm:**
 
 - Điểm routing không nói rằng tool API đã trả dữ liệu thành công; phải đọc tool_results và kiểm tra key/dataset.
 - Lượt trước đã có tài khoản thì giữ ngữ cảnh là hợp lệ, nhưng phiên trống tự chọn tài khoản là lỗi. Kết quả model cloud không đại diện cho model local.
 - Snapshot và hash giúp thử đúng version; nhãn suite không tự chọn dataset. Log lỗi và regression cần giữ trong report để xác định vòng cải tiến tiếp theo.
-
 
 ## Checklist trước khi nộp
 

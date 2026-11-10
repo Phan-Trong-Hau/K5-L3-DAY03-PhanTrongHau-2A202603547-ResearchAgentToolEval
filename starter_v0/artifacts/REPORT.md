@@ -10,9 +10,9 @@
 | Lưu Văn Việt Đức | 2A202603445 | v3, đối chiếu v2–v3, 14 unit test và live chat v3 |
 | Phan Trọng Hậu | 2A202603547 | UI, report, Telegram, kiểm chứng eval và local model |
 
-Báo cáo cập nhật theo main `d3f1282` đã merge v3. Model cloud để so sánh: **OpenRouter / `openai/gpt-4o-mini`**. Có bằng chứng v0–v3.
+Model cloud đối chiếu: **OpenRouter / `openai/gpt-4o-mini`**. Báo cáo gồm v0–v3 cloud và hai vòng v4-local/v5-local trên Ollama.
 
-**Nguồn và người thực hiện:** kết quả chính lấy từ run JSON và phần báo cáo do Hoàng (v0), Thịnh (v1), Huy (v2), Đức (cặp đối chiếu v2 → v3 và live v3) push lên repo. Hậu tổng hợp report và chạy thêm hai run `v2-verified` để kiểm chứng môi trường/dataset; các run bổ sung được ghi riêng.
+**Nguồn và người thực hiện:** kết quả chính lấy từ run JSON và phần báo cáo do Hoàng (v0), Thịnh (v1), Huy (v2), Đức (cặp đối chiếu v2 → v3 và live v3) push lên repo. Hậu tổng hợp report, chạy hai run `v2-verified` và 7 run cho local challenge (B7).
 
 # PHẦN A — Giới thiệu agent
 
@@ -87,7 +87,7 @@ v0 → v1 sửa 5 case, phát sinh regression M06, tăng ròng 4 case. v1 → v2
 
 Nguồn group: [v2 của Đức](../runs/v2-openrouter-vietduc_B_group_openrouter_20261110T192907186473.json), [v3 của Đức](../runs/v3_B_group_openrouter_20261110T195341770535.json). G07 được sửa ở v3; G08 vẫn fail. Đây là kết quả trên các case đã dùng để phân tích lỗi, chưa phải bộ đánh giá độc lập; 100% base không có nghĩa mọi câu hỏi thực tế đều đúng.
 
-### Giả thuyết và thay đổi v3 — Đức
+### Thay đổi v3 — Đức
 
 Agent v2 chưa xác định rõ nguồn đang còn hiệu lực. Đức thay rule gọi song song bằng mục **Active Request and Source Selection** trong `system_prompt.md`:
 
@@ -100,9 +100,9 @@ Trong vòng tối ưu này, thay đổi hành vi nằm ở prompt; giữ nguyên
 
 ### Các lần kiểm chứng bổ sung — Hậu
 
-Hậu chạy thêm `v2-verified` bằng đúng hash v2, sau khi phát hiện run gốc thiếu key và nhãn group dùng sai file. Kết quả: [base 18/20](../runs/v2-verified_B_base_openrouter_20261110T205612123670.json), [group 8/10](../runs/v2-verified_B_group_openrouter_20261110T205425024238.json), đều có 0 tool error. Kết quả khớp baseline v2 mà Đức đã push. Hai run của Hậu chỉ là kiểm chứng bổ sung; kết luận v2 → v3 ở trên dựa vào cặp run của Đức.
+Hậu chạy thêm `v2-verified` bằng đúng hash v2, sau khi phát hiện run gốc thiếu key và nhãn group dùng sai file. Kết quả: [base 18/20](../runs/v2-verified_B_base_openrouter_20261110T205612123670.json), [group 8/10](../runs/v2-verified_B_group_openrouter_20261110T205425024238.json), đều có 0 tool error. Kết quả khớp baseline v2 mà Đức đã push. So sánh v2 → v3 dùng cặp run của Đức.
 
-Hai run v1 trước đó cùng 17/20, cùng ba case fail. Các lần chạy lặp hiện có hữu ích để đối chiếu, chưa phải đánh giá thống kê nhiều lần.
+Hai run v1 cùng đạt 17/20 và cùng ba case fail.
 
 ### Phạm vi thay đổi và hash
 
@@ -159,7 +159,7 @@ Bộ [eval_group.json](../data/eval_group.json) do nhóm viết/tổng hợp có
 | G09_multiturn_clarify_then_url | Multi | Nhận URL bổ sung rồi fetch | PASS | PASS |
 | G10_multiturn_cancel_request | Multi | Hủy yêu cầu, trả lời meta không tool | PASS | PASS |
 
-Kết quả 8/10 → 9/10; G07 được sửa, G08 còn fail. [CSV chi tiết cặp run](../analysis/group_eval_results.csv). G01 tìm repo trực tiếp pass ở cả hai bản, nhưng điều đó không bảo đảm G08 đổi nguồn qua nhiều lượt sẽ pass. Không so trực tiếp 90% group với 100% base như cùng một bộ dữ liệu.
+Kết quả 8/10 → 9/10; G07 được sửa, G08 còn fail. G01 tìm repo trực tiếp pass ở cả hai bản. [CSV chi tiết](../analysis/group_eval_results.csv).
 
 ## B4. Live Chat Evidence
 
@@ -183,7 +183,7 @@ Các file evidence là bản chụp/trích đoạn có ghi phạm vi; thông tin
 | 2 | Bỏ web, chuyển sang 3 repo AI/Python | github_repos: AI, python, limit=3; không gọi thêm web |
 | 3 | Hủy tìm kiếm, hỏi năng lực agent | Trả lời trực tiếp, không tool |
 
-Ba lượt này do Đức chạy. Việc chuyển nguồn trong phiên live thành công không thay thế kết quả G08 vẫn fail trong group eval.
+Đức thực hiện ba lượt live trên; G08 vẫn fail trong group eval.
 
 ## B5. Tool mới, UI và bonus
 
@@ -203,11 +203,11 @@ Ba lượt này do Đức chạy. Việc chuyển nguồn trong phiên live thà
 - Lựa chọn đủ snapshot v0–v3 theo hash. Mỗi version/model có hội thoại riêng; đổi version tự mở lại phiên tương ứng hoặc tạo phiên trống. Màn so sánh có tổng quan 4 bản, chọn cặp version, chọn Base/Group khi có đủ dữ liệu, xem metric/case/prompt/tool diff và tải run. Màn so sánh đọc log của thành viên, không cần API key. Implementation tool dùng code hiện tại.
 - Công tắc Telegram mặc định tắt. Khi user bật, mỗi lượt mới tự đồng bộ câu hỏi, câu trả lời, model, thời gian và tool names. Tắt thì ngừng; refresh/mở lại lịch sử không tự gửi lại. Model không thể tự bật sync; nội dung dài chia nhỏ; lỗi/partial được ghi nhận.
 - [Bằng chứng gửi thật](../transcripts/evidence/telegram_sync_demo.transcript.json) có receipt `sent` và message ID cho hai lượt. Việc user bật sync là sự cho phép gửi các lượt mới; UI hiện không xác nhận riêng từng tin. Bản CLI/tool `send` vẫn kiểm tra `confirmed`.
-- Script khởi động Linux/macOS [run_ui.sh](../../run_ui.sh), Windows [run_ui.bat](../../run_ui.bat). Script Windows chưa được chạy thực tế trên máy Windows trong phiên kiểm chứng này.
+- Script khởi động Linux/macOS [run_ui.sh](../../run_ui.sh), Windows [run_ui.bat](../../run_ui.bat). Script Windows chưa được chạy thực tế trên máy Windows.
 
 ### Unit test
 
-Kết quả kiểm tra sau khi hoàn thiện UI v0–v3: **160 passed, 0 failed, 0 skipped**. [Bản ghi lệnh và kết quả](../analysis/pytest_report.txt). Unit test chạy offline, gồm contract, mock HTTP và tool mới; không phải điểm model.
+Kết quả kiểm thử hiện tại: **160 passed, 0 failed, 0 skipped**. [Bản ghi lệnh và kết quả](../analysis/pytest_report.txt). Unit test chạy offline, gồm contract, mock HTTP và tool mới; không phải điểm model.
 
 Đức bổ sung 14 test offline cho clarify, format, send, lookup, fetch, timeline, social_search và policy tại [test_vietduc_existing_tools.py](../tests/test_vietduc_existing_tools.py). Đây là phần kiểm thử của Đức. Báo cáo thành viên ghi 131 pass ở thời điểm tích hợp riêng; sau merge v3, suite chung đạt 151. Hậu bổ sung 7 test cho catalog/so sánh và điều hướng hội thoại v0–v3, nâng tổng lên 158. Các test UI chạy offline, không gọi model thật. Hai test mới cho local artifacts giữ đúng phạm vi thay đổi v4/v5 và schema, nâng tổng hiện tại lên 160.
 
@@ -227,11 +227,11 @@ Ví dụ unit test bắt được lỗi mà routing eval có thể bỏ sót: `s
 
 ## B7. Small Local Model Challenge — v4-local và v5-local
 
-Hậu chạy mới toàn bộ 7 run (140 lượt case): baseline v3 trên hai model local, hai vòng v4/v5 trên từng model và kiểm tra ngược v5 trên cloud. Cloud v3 là bằng chứng gốc của Đức; không chạy lại hoặc đổi số liệu của thành viên. Mỗi run dùng nguyên 20 case Base (14 single-turn, 6 multi-turn), cùng grader và tool-choice. Không sửa bộ đề để tăng điểm.
+Hậu thực hiện 7 run (140 lượt case): baseline v3 trên hai model local, v4/v5 trên từng model và v5 trên cloud. Mỗi run dùng 20 case Base cố định (14 single-turn, 6 multi-turn), cùng grader và tool-choice. Mốc v3 cloud lấy từ run của Đức.
 
 **Môi trường:** Ollama 0.34.1; `qwen3:4b-instruct` 4.0B và `qwen2.5:7b` 7.6B, đều ≤8B, Q4_K_M. Context quan sát 4096 token; temperature gửi từ adapter là 0. Chạy hai model lần lượt trên cùng máy. [Metadata môi trường](../analysis/local_eval_environment.json). Inference chạy local; tool research vẫn gọi API ngoài. Telegram publishing bị tắt riêng trong process eval.
 
-**Thiết kế hai vòng:** v4 chỉ đổi system prompt thành checklist ngắn (latest correction, nguồn đang được yêu cầu, native clarify); tools giữ nguyên byte của v3. v5 giữ nguyên byte prompt v4, chỉ sửa declaration/description, bắt buộc `clarify.response_type`, làm rõ query/topic/timeframe và ranh giới đổi nguồn. Giữ đủ 11 tool của v3. Hai test kiểm tra cách ly thay đổi và schema. [Artifact, giả thuyết và lệnh chạy lại](local_versions/README.md).
+**Thiết kế hai vòng:** v4 chỉ đổi system prompt thành checklist ngắn (latest correction, nguồn đang được yêu cầu, native clarify); tools giữ nguyên byte của v3. v5 giữ nguyên byte prompt v4, chỉ sửa declaration/description, bắt buộc `clarify.response_type`, làm rõ query/topic/timeframe và ranh giới đổi nguồn. Giữ đủ 11 tool của v3. Hai test kiểm tra cách ly thay đổi và schema. [Artifact và lệnh chạy lại](local_versions/README.md).
 
 | Version | Model | Pass | Routing | Args | Multi-turn | Thời gian | Run JSON |
 |---|---|---:|---:|---:|---:|---:|---|
@@ -268,21 +268,19 @@ Các nhóm lỗi có thể trùng nhau: gọi sai tool có thể đồng thời 
 - **qwen2.5:7b, v4-local (16/20):** `R03_web_news_routing`: query: expected 'AI', got 'AI hôm nay'; `R06_timeframe_arg`: topic: expected 'news', got 'general'; `R12_confirm_before_send`: response_type: expected 'yes_no', got 'text'; `M06_switch_tool`: missing tool call lookup, extra tool call social_search. Sửa được: M02_carryover_timeframe, R11_missing_url; regression: M06_switch_tool, R03_web_news_routing, R06_timeframe_arg.
 - **qwen2.5:7b, v5-local (15/20):** `R03_web_news_routing`: query: expected 'AI', got 'AI hôm nay'; `R10_missing_handle`: missing tool call clarify, extra tool call social_search; `R11_missing_url`: missing tool call clarify; `R12_confirm_before_send`: response_type: expected 'yes_no', got 'text'; `R13_parallel_web_and_tweets`: query: expected 'AI', got 'AI hôm nay', missing tool call social_search, extra tool call timeline. Sửa được: M06_switch_tool, R06_timeframe_arg; regression: R10_missing_handle, R11_missing_url, R13_parallel_web_and_tweets.
 
-**Kết luận có bằng chứng:** checklist prompt ở v4 giúp 4B sửa `M03_correction_handle`, tăng 18/20 → 19/20 và multi-turn đạt 6/6. Cùng thay đổi lại làm 7B giảm 17/20 → 16/20; không thể suy rộng rằng prompt ngắn luôn tốt hơn. V5 trên 4B giảm về 17/20, regression tại thiếu tài khoản và xác nhận gửi; mô tả tiếng Anh/ràng buộc schema rõ hơn chưa bảo đảm model tuân thủ native tool calling. Câu hỏi bằng text thường có thể đúng ý nhưng vẫn fail yêu cầu structured `clarify`. Không gán riêng tác động cho ngôn ngữ hay trường required vì vòng v5 thay đổi cả hai.
+**Kết quả:** v4 giúp 4B sửa `M03_correction_handle`, tăng 18/20 → 19/20; cùng thay đổi làm 7B giảm 17/20 → 16/20. V5 trên 4B giảm về 17/20 do regression ở case thiếu tài khoản và xác nhận gửi. Model vẫn có thể hỏi bằng text thay vì gọi `clarify`. V5 đổi cả ngôn ngữ mô tả và schema nên chưa tách được tác động từng yếu tố.
 
-Kiểm tra ngược v5 cloud đạt **20/20**, chênh **+0 điểm phần trăm** so với v3 cloud. Vì vậy cần chọn artifact theo kết quả từng model, không mặc định v5 là bản tốt nhất.
+V5 cloud đạt **20/20**, bằng v3 cloud.
 
 - Bản local tốt nhất trong phép đo cho `qwen3:4b-instruct`: **v4-local**, 19/20.
 - Bản local tốt nhất trong phép đo cho `qwen2.5:7b`: **v3-local-qwen7b**, 17/20.
 
-Giới hạn: mỗi cấu hình chạy một lần trên 20 case đã biết; chưa có kiểm định thống kê hay tập local holdout. Điểm đo lựa chọn tool/arguments, không đo tính đúng thực tế của câu trả lời cuối. Giữ toàn bộ run kể cả regression, không chọn bỏ case. Các run/hypothesis nằm riêng, không thay snapshot hoặc catalog UI v0–v3.
+Giới hạn: mỗi cấu hình chạy một lần trên 20 case đã biết, chưa có tập kiểm tra độc lập. Điểm chấm lựa chọn tool/arguments, chưa chấm nội dung trả lời cuối. Artifact local được lưu riêng với catalog UI v0–v3.
 
-**Local UI và Telegram đã hoàn thành trước đó:** [transcript](../transcripts/evidence/telegram_sync_demo.transcript.json) có hai lượt sync user/agent thành công. [Smoke log cũ](../analysis/local_clarify_smoke.json) chỉ là hai case thăm dò, không tính vào bảng full eval trên.
+**Local UI và Telegram:** [transcript](../transcripts/evidence/telegram_sync_demo.transcript.json) có hai lượt sync user/agent thành công. [Smoke log cũ](../analysis/local_clarify_smoke.json) chỉ là hai case thăm dò, không tính vào bảng full eval trên.
 
 ## B8. Triển khai và chia sẻ demo
 
 **Đã có:** UI local, Ollama, provider cloud, Telegram sync, snapshot/so sánh v0–v3, report và bằng chứng kiểm thử.
 
 **Cần bổ sung để chia sẻ demo:** link UI public cho nhóm khác dùng thử. Hiện chạy trên máy bằng `./run_ui.sh` hoặc `.\run_ui.bat`.
-
-Đã có v0–v3, version log, 10 case group và run đúng dataset, transcript v3 3 lượt; test suite đạt 0 failed/0 skipped. Report giữ các lỗi chưa sửa và giới hạn đo để tránh coi routing pass là sản phẩm hoàn toàn đúng.
