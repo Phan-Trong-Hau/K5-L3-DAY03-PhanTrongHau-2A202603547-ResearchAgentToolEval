@@ -7,6 +7,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import streamlit as st
+import requests
 
 from chat import now_iso, run_model_tool_loop, safe_slug, trim_history, write_transcript
 from env_loader import load_lab_env
@@ -21,6 +22,57 @@ TOOLS = ROOT / "artifacts/tools.yaml"
 load_lab_env(ROOT)
 
 st.set_page_config(page_title="Research Desk", page_icon="🔎", layout="wide")
+st.html("""
+<style>
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+    flex-direction: row-reverse;
+    margin-left: auto;
+    width: fit-content;
+    max-width: 85%;
+    background-color: #1e3a5f;
+    color: #f8fafc;
+    border-radius: 1rem;
+}
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])
+    [data-testid="stChatMessageContent"] {
+    text-align: right;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: #f8fafc;
+}
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])
+    [data-testid="stMarkdownContainer"] {
+    color: #f8fafc;
+}
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) a {
+    color: #bfdbfe;
+}
+@media (max-width: 640px) {
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+        max-width: 95%;
+    }
+}
+</style>
+""")
+
+
+@st.cache_data(ttl=15, show_spinner=False)
+def local_model_available(base_url):
+    try:
+        response = requests.get(f"{base_url.rstrip('/')}/models", timeout=2)
+        response.raise_for_status()
+        return bool(response.json().get("data"))
+    except (requests.RequestException, ValueError, AttributeError):
+        return False
+
+
+def provider_availability():
+    available = {
+        "ollama": local_model_available(os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")),
+    }
+    for name in ("openrouter", "openai", "anthropic", "gemini"):
+        available[name] = bool(os.getenv(f"{name.upper()}_API_KEY", "").strip())
+    return available
 
 
 def redact(value):
@@ -37,6 +89,7 @@ def redact(value):
 
 
 def start_session(provider, model, version, rounds, history_window):
+    st.session_state.view_only = False
     artifact = build_artifact_version(version, PROMPT, TOOLS)
     stamp = datetime.now().strftime("%Y%m%dT%H%M%S%f")
     session_id = f"ui_{safe_slug(version)}_{provider}_{stamp}_{uuid4().hex[:8]}"
@@ -55,6 +108,50 @@ def start_session(provider, model, version, rounds, history_window):
     }
     st.session_state.prompt_snapshot = PROMPT.read_text(encoding="utf-8")
     st.session_state.tools_snapshot = to_openai_tools(load_tool_declarations(TOOLS))
+    st.session_state.research["prompt_snapshot"] = st.session_state.prompt_snapshot
+    st.session_state.research["tools_snapshot"] = st.session_state.tools_snapshot
+
+
+def saved_sessions(search):
+    sessions = []
+    for path in (ROOT / "transcripts").glob("*.transcript.json"):
+        if "setup-smoke" in path.name:
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            turns = data.get("turns", [])
+            if not turns:
+                continue
+            title = turns[0].get("user", "Hội thoại")
+            haystack = " ".join(str(t.get("user", "")) + " " + str(t.get("assistant_text", "")) for t in turns)
+            if search.casefold() not in haystack.casefold():
+                continue
+            label = f"{data.get('updated_at', '')} · {title[:65]} · {data.get('model', '')}"
+            sessions.append((path, label, data))
+        except (OSError, ValueError, TypeError, AttributeError):
+            continue
+    return sorted(sessions, key=lambda item: item[2].get("updated_at", ""), reverse=True)
+
+
+def restore_session(data):
+    if "prompt_snapshot" not in data or "tools_snapshot" not in data:
+        current = build_artifact_version(data.get("version", "ui-demo"), PROMPT, TOOLS)
+        if data.get("prompt_hash") != current.prompt_hash or data.get("tools_hash") != current.tools_hash:
+            return False
+        data["prompt_snapshot"] = PROMPT.read_text(encoding="utf-8")
+        data["tools_snapshot"] = to_openai_tools(load_tool_declarations(TOOLS))
+    st.session_state.research = data
+    st.session_state.prompt_snapshot = data["prompt_snapshot"]
+    st.session_state.tools_snapshot = data["tools_snapshot"]
+    st.session_state.view_only = False
+    return True
+
+
+def select_saved_session(data):
+    if not restore_session(data):
+        st.session_state.research = data
+        st.session_state.tools_snapshot = to_openai_tools(load_tool_declarations(TOOLS))
+        st.session_state.view_only = True
 
 
 def render_turn(turn):
@@ -80,14 +177,42 @@ def render_turn(turn):
 with st.sidebar:
     st.title("🔎 Research Desk")
     st.caption("Tra cứu, đọc nguồn và tổng hợp thông tin.")
+    st.subheader("🕘 Lịch sử hội thoại")
+    search = st.text_input("Tìm trong hội thoại", placeholder="Nhập từ khóa…")
+    saved = saved_sessions(search.strip())
+    if saved:
+        active_id = st.session_state.get("research", {}).get("transcript_id")
+        for path, label, data in saved:
+            title = data["turns"][0].get("user", "Hội thoại")
+            st.button(
+                title[:80], key=f"history_{path.name}", help=label,
+                type="primary" if data.get("transcript_id") == active_id else "secondary",
+                use_container_width=True, on_click=select_saved_session, args=(data,),
+            )
+            st.caption(f"{data.get('updated_at', '')} · {data.get('model', '')}")
+    else:
+        st.caption("Không tìm thấy hội thoại." if search else "Chưa có hội thoại đã lưu.")
+    st.divider()
+    availability = provider_availability()
+    enabled_providers = [name for name, ready in availability.items() if ready]
+    for name, ready in availability.items():
+        if not ready:
+            reason = "Chưa kết nối hoặc chưa có model" if name == "ollama" else "Chưa cấu hình API key"
+            st.button(f"{name} · {reason}", key=f"unavailable_{name}", disabled=True, use_container_width=True)
+    provider = st.selectbox("Nhà cung cấp", enabled_providers, disabled=not enabled_providers)
+    default_model = make_provider(provider).default_model if provider else ""
     with st.form("settings"):
-        provider = st.selectbox("Nhà cung cấp", ["ollama", "openrouter", "openai", "anthropic", "gemini"])
-        model = st.text_input("Model", placeholder="Để trống để dùng model mặc định")
+        model = st.text_input("Model", value=default_model, key=f"model_{provider}")
         version = st.text_input("Phiên bản", value="ui-demo")
         with st.expander("Tùy chỉnh"):
             rounds = st.slider("Số vòng tool tối đa", 1, 8, 4)
             history_window = st.slider("Số lượt hội thoại ghi nhớ", 1, 10, 5)
-        new_session = st.form_submit_button("Bắt đầu phiên mới", use_container_width=True)
+        new_session = st.form_submit_button("Bắt đầu phiên mới", disabled=not enabled_providers, use_container_width=True)
+
+    if not enabled_providers:
+        st.warning("Chạy Ollama với model đã cài hoặc cấu hình API key trong .env để bắt đầu.")
+        if "research" not in st.session_state:
+            st.stop()
 
     if new_session or "research" not in st.session_state:
         selected_model = model.strip() or make_provider(provider).default_model
@@ -114,9 +239,12 @@ with st.sidebar:
 
 st.title("Bạn muốn tìm hiểu điều gì?")
 st.caption("Tìm trên web, theo dõi bài đăng, đọc tài liệu và tổng hợp từ nguồn thực tế.")
+st.markdown(f"**Đang dùng:** `{session['model']}` · {session['provider']}")
+if provider != session["provider"] or (model.strip() or default_model) != session["model"]:
+    st.caption("Bấm “Bắt đầu phiên mới” để áp dụng model đã chọn ở thanh bên.")
 
 if not session["turns"]:
-    st.info("Chọn model ở thanh bên, hoặc bắt đầu ngay với Ollama đang chạy trên máy.")
+    st.info("Chọn nhà cung cấp và model ở thanh bên, hoặc nhập câu hỏi để bắt đầu ngay.")
     examples = [
         ("🌐 Tra cứu web", "Tìm 3 tin mới nhất về AI trong tuần này, kèm nguồn."),
         ("📄 Đọc một trang", "Đọc nội dung https://example.com và tóm tắt bằng tiếng Việt."),
@@ -133,9 +261,16 @@ if not session["turns"]:
 for turn in session["turns"]:
     render_turn(turn)
 
-query = st.chat_input("Nhập câu hỏi hoặc bổ sung thông tin…")
+session_available = availability.get(session["provider"], False)
+if st.session_state.get("view_only"):
+    st.info("Đang xem phiên cũ. Tạo phiên mới để dùng prompt/tools hiện tại.")
+    session_available = False
+if not session_available:
+    if not st.session_state.get("view_only"):
+        st.warning("Nhà cung cấp của phiên này chưa sẵn sàng. Chọn nhà cung cấp khác và bắt đầu phiên mới.")
+query = st.chat_input("Nhập câu hỏi hoặc bổ sung thông tin…", disabled=not session_available)
 query = query or st.session_state.pop("pending_query", None)
-if query:
+if query and session_available:
     history = []
     for previous in session["turns"]:
         if previous["status"] != "provider_error":
