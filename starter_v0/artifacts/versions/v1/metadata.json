@@ -1,8 +1,9 @@
 {
   "version": "v1",
   "description": "Hỏi lại, ranh giới và routing; thêm GitHub",
-  "source_commit": "45756e3",
+  "source_commit": "df3016db76d3ac944fdc43f91e9f6b26514d7def",
   "run_file": "runs/v1_B_base_openrouter_20261110T105632499545.json",
   "prompt_hash": "0f969bd7fd2e2b5bde740b18cea2a193fe088c88921cd61acbf113b4dd096790",
-  "tools_hash": "707c6c5df8ecc20e620dd20799a99230a2470a48291098641f77147a2f5df442"
+  "tools_hash": "707c6c5df8ecc20e620dd20799a99230a2470a48291098641f77147a2f5df442",
+  "run_author": "Ngô Đức Thịnh"
 }

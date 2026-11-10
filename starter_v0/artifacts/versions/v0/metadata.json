@@ -1,8 +1,9 @@
 {
   "version": "v0",
   "description": "Baseline — trước tối ưu",
-  "source_commit": "45756e3^",
+  "source_commit": "97c12f695286a20fb2b05e9232bad06ebd8346c0",
   "run_file": "runs/v0_B_base_openrouter_20261110T104306962524.json",
   "prompt_hash": "eb1c8179815bd79d34de7d326420bb99b3072e6e8ae96464c02d4411f905fc68",
-  "tools_hash": "5b22a2476d41b989d5dc1e54f24ce7890e781909deb2f7afafb856ab53a6d7c0"
+  "tools_hash": "5b22a2476d41b989d5dc1e54f24ce7890e781909deb2f7afafb856ab53a6d7c0",
+  "run_author": "Vũ Lê Hoàng"
 }

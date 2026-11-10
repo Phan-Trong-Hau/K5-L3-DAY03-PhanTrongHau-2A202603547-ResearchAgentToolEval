@@ -1,0 +1,11 @@
+{
+  "version": "v2",
+  "source_commit": "c1781ace2bf516a0c82fa394244d48b157423216",
+  "prompt_hash": "98e7fa380d3fcdf643150fb69a6d14c83f83bd3ed7b6fa069ca5514a53548583",
+  "tools_hash": "a94472a7458106eb3fb0f071c38096513780b4b50140efed2d2afd626b1ff119",
+  "verification_runs": [
+    "runs/v2-verified_B_base_openrouter_20261110T205612123670.json",
+    "runs/v2-verified_B_group_openrouter_20261110T205425024238.json"
+  ],
+  "note": "Exact-byte snapshot of the original v2 artifacts; verification is not a new optimization version."
+}

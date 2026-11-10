@@ -14,7 +14,7 @@ Chạy từ `starter_v0/`:
 .venv/bin/python -m streamlit run app.py
 ```
 
-Mở http://localhost:8501. Chọn Ollama hoặc provider cloud ở thanh bên; xem [hướng dẫn UI](starter_v0/UI.md) để cấu hình phiên chat và tải transcript.
+Mở http://localhost:8501. Chọn Ollama hoặc provider cloud ở thanh bên; xem [hướng dẫn UI](starter_v0/UI.md) để cấu hình phiên chat và tải transcript. Chọn v0–v3 để chat trong các phiên riêng hoặc mở **So sánh phiên bản** để xem metric và từng case từ log của nhóm.
 
 ## Brief
 

@@ -1,0 +1,8 @@
+Command: .venv/bin/python -m pytest -q
+Working directory: starter_v0/
+Source: main d3f1282 plus v0-v3 UI/catalog completion
+Result: 158 passed in 1.92s
+Failed: 0
+Skipped: 0
+Includes 7 new catalog/UI tests for version isolation and evidence comparison.
+Offline tests; model routing/factuality measured separately by saved runs.

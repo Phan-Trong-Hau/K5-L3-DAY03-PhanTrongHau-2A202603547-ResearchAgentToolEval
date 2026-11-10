@@ -1,0 +1,834 @@
+{
+  "transcript_id": "ui_ui-demo_ollama_20261110T120116811673_f8d19ca0",
+  "version": "ui-demo",
+  "artifact_version": "ui-demo+p0f969bd7fd2e+t1ec2249f38a6",
+  "prompt_hash": "0f969bd7fd2e2b5bde740b18cea2a193fe088c88921cd61acbf113b4dd096790",
+  "tools_hash": "1ec2249f38a64f883615e84ee8ecbd203c0be8bac77a292a25ed97de470dd657",
+  "provider": "ollama",
+  "model": "qwen2.5:7b",
+  "system_prompt": "/home/ryanphan/Workspaces/ai_action/labs/K5-L3-DAY03-PhanTrongHau-2A202603547-ResearchAgentToolEval/starter_v0/artifacts/system_prompt.md",
+  "tools": "/home/ryanphan/Workspaces/ai_action/labs/K5-L3-DAY03-PhanTrongHau-2A202603547-ResearchAgentToolEval/starter_v0/artifacts/tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "created_at": "2026-11-10T12:01:16",
+  "updated_at": "2026-11-10T12:05:26",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T12:01:18",
+      "user": "Lấy 3 bài đăng gần đây của tài khoản sama.",
+      "status": "answered",
+      "assistant_text": "Here are the 3 most recent tweets from @sama:\n\n1. **\"RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment.\"**\n   - [Link to tweet](https://x.com/sama/status/2118471941002842341)\n\n2. **\"RT @thsottiaux: Day 25/\"**\n   - [Link to tweet](https://x.com/sama/status/2117797818756952416)\n\n3. **\"People should always be in control of the future.\"**\n   - OpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”. People should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.\n   - [Link to tweet](https://x.com/sama/status/2117794005165748448)",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "",
+          "tool_calls": [
+            {
+              "name": "timeline",
+              "args": {
+                "screenname": "sama",
+                "limit": 3
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "timeline",
+              "args": {
+                "screenname": "sama",
+                "limit": 3
+              },
+              "result": {
+                "tool": "get_user_tweets",
+                "screenname": "sama",
+                "items": [
+                  {
+                    "title": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and bett",
+                    "summary": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…",
+                    "url": "https://x.com/sama/status/2118471941002842341",
+                    "source": "@sama",
+                    "date": "Thu Nov 05 22:34:04 +0000 2026",
+                    "metrics": {
+                      "favorites": 0,
+                      "retweets": 53,
+                      "views": "47389"
+                    }
+                  },
+                  {
+                    "title": "RT @thsottiaux: Day 25/",
+                    "summary": "RT @thsottiaux: Day 25/\n\nWe are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today.\n\nWe heard yo…",
+                    "url": "https://x.com/sama/status/2117797818756952416",
+                    "source": "@sama",
+                    "date": "Wed Nov 04 01:55:21 +0000 2026",
+                    "metrics": {
+                      "favorites": 0,
+                      "retweets": 2703,
+                      "views": "41964"
+                    }
+                  },
+                  {
+                    "title": "People should always be in control of the future.",
+                    "summary": "People should always be in control of the future.\n\nOpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”.\n\nPeople should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.",
+                    "url": "https://x.com/sama/status/2117794005165748448",
+                    "source": "@sama",
+                    "date": "Wed Nov 04 01:40:12 +0000 2026",
+                    "metrics": {
+                      "favorites": 20659,
+                      "retweets": 1019,
+                      "views": "10643015"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "assistant_text": "Here are the 3 most recent tweets from @sama:\n\n1. **\"RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment.\"**\n   - [Link to tweet](https://x.com/sama/status/2118471941002842341)\n\n2. **\"RT @thsottiaux: Day 25/\"**\n   - [Link to tweet](https://x.com/sama/status/2117797818756952416)\n\n3. **\"People should always be in control of the future.\"**\n   - OpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”. People should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.\n   - [Link to tweet](https://x.com/sama/status/2117794005165748448)",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 3
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "sama",
+            "items": [
+              {
+                "title": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and bett",
+                "summary": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…",
+                "url": "https://x.com/sama/status/2118471941002842341",
+                "source": "@sama",
+                "date": "Thu Nov 05 22:34:04 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 53,
+                  "views": "47389"
+                }
+              },
+              {
+                "title": "RT @thsottiaux: Day 25/",
+                "summary": "RT @thsottiaux: Day 25/\n\nWe are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today.\n\nWe heard yo…",
+                "url": "https://x.com/sama/status/2117797818756952416",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:55:21 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 2703,
+                  "views": "41964"
+                }
+              },
+              {
+                "title": "People should always be in control of the future.",
+                "summary": "People should always be in control of the future.\n\nOpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”.\n\nPeople should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.",
+                "url": "https://x.com/sama/status/2117794005165748448",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:40:12 +0000 2026",
+                "metrics": {
+                  "favorites": 20659,
+                  "retweets": 1019,
+                  "views": "10643015"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "duration_seconds": 71.63,
+      "progress": [
+        {
+          "stage": "model_started",
+          "elapsed_seconds": 0.0,
+          "round": 1
+        },
+        {
+          "stage": "model_completed",
+          "elapsed_seconds": 6.64,
+          "round": 1,
+          "tools": [
+            "timeline"
+          ]
+        },
+        {
+          "stage": "tool_started",
+          "elapsed_seconds": 6.64,
+          "round": 1,
+          "tool": "timeline"
+        },
+        {
+          "stage": "tool_completed",
+          "elapsed_seconds": 8.49,
+          "round": 1,
+          "tool": "timeline",
+          "duration_seconds": 1.85,
+          "error": false
+        },
+        {
+          "stage": "model_started",
+          "elapsed_seconds": 8.49,
+          "round": 2
+        },
+        {
+          "stage": "model_completed",
+          "elapsed_seconds": 71.58,
+          "round": 2,
+          "tools": []
+        }
+      ],
+      "ended_at": "2026-11-10T12:02:29",
+      "telegram_sync": {
+        "status": "sent",
+        "deliveries": [
+          {
+            "tool": "send_telegram",
+            "status": "sent",
+            "message_id": 3,
+            "chat_id": "[CONFIGURED_CHAT]",
+            "part": 1,
+            "confirmed_by": "ui_sync_toggle"
+          }
+        ],
+        "chat_id": "[CONFIGURED_CHAT]",
+        "total_parts": 1
+      }
+    },
+    {
+      "turn_index": 2,
+      "started_at": "2026-11-10T12:04:23",
+      "user": "Tóm tắt 5 tweet mới nhất giúp tôi.",
+      "status": "answered",
+      "assistant_text": "Here are the summaries of the 5 most recent tweets from @sama:\n\n1. **\"RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment.\"**\n   - [Link to tweet](https://x.com/sama/status/2118471941002842341)\n\n2. **\"RT @thsottiaux: Day 25/\"**\n   - [Link to tweet](https://x.com/sama/status/2117797818756952416)\n\n3. **\"People should always be in control of the future.\"**\n   - OpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”. People should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.\n   - [Link to tweet](https://x.com/sama/status/2117794005165748448)\n\n4. **\"RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic analysis, complexity, and more.\"**\n   - [Link to tweet](https://x.com/sama/status/2114864981934329996)\n\n5. **\"6.1 Terra is here! It is good at a lot of things, but we are especially excited for this new era of computer use.\"**\n   - [Link to tweet](https://x.com/sama/status/2114818620782248024)",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "",
+          "tool_calls": [
+            {
+              "name": "timeline",
+              "args": {
+                "limit": 5,
+                "screenname": "sama"
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "timeline",
+              "args": {
+                "limit": 5,
+                "screenname": "sama"
+              },
+              "result": {
+                "tool": "get_user_tweets",
+                "screenname": "sama",
+                "items": [
+                  {
+                    "title": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and bett",
+                    "summary": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…",
+                    "url": "https://x.com/sama/status/2118471941002842341",
+                    "source": "@sama",
+                    "date": "Thu Nov 05 22:34:04 +0000 2026",
+                    "metrics": {
+                      "favorites": 0,
+                      "retweets": 53,
+                      "views": "47390"
+                    }
+                  },
+                  {
+                    "title": "RT @thsottiaux: Day 25/",
+                    "summary": "RT @thsottiaux: Day 25/\n\nWe are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today.\n\nWe heard yo…",
+                    "url": "https://x.com/sama/status/2117797818756952416",
+                    "source": "@sama",
+                    "date": "Wed Nov 04 01:55:21 +0000 2026",
+                    "metrics": {
+                      "favorites": 0,
+                      "retweets": 2703,
+                      "views": "41965"
+                    }
+                  },
+                  {
+                    "title": "People should always be in control of the future.",
+                    "summary": "People should always be in control of the future.\n\nOpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”.\n\nPeople should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.",
+                    "url": "https://x.com/sama/status/2117794005165748448",
+                    "source": "@sama",
+                    "date": "Wed Nov 04 01:40:12 +0000 2026",
+                    "metrics": {
+                      "favorites": 20659,
+                      "retweets": 1019,
+                      "views": "10643094"
+                    }
+                  },
+                  {
+                    "title": "RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic an",
+                    "summary": "RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic analysis, complexity…",
+                    "url": "https://x.com/sama/status/2114864981934329996",
+                    "source": "@sama",
+                    "date": "Mon Oct 26 23:41:18 +0000 2026",
+                    "metrics": {
+                      "favorites": 0,
+                      "retweets": 1117,
+                      "views": "48208"
+                    }
+                  },
+                  {
+                    "title": "6.1 Terra is here! It is good at a lot of things, but we are especially excited for this new era of computer use.",
+                    "summary": "6.1 Terra is here! It is good at a lot of things, but we are especially excited for this new era of computer use.",
+                    "url": "https://x.com/sama/status/2114818620782248024",
+                    "source": "@sama",
+                    "date": "Mon Oct 26 20:37:05 +0000 2026",
+                    "metrics": {
+                      "favorites": 10109,
+                      "retweets": 493,
+                      "views": "1653113"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "assistant_text": "Here are the summaries of the 5 most recent tweets from @sama:\n\n1. **\"RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment.\"**\n   - [Link to tweet](https://x.com/sama/status/2118471941002842341)\n\n2. **\"RT @thsottiaux: Day 25/\"**\n   - [Link to tweet](https://x.com/sama/status/2117797818756952416)\n\n3. **\"People should always be in control of the future.\"**\n   - OpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”. People should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.\n   - [Link to tweet](https://x.com/sama/status/2117794005165748448)\n\n4. **\"RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic analysis, complexity, and more.\"**\n   - [Link to tweet](https://x.com/sama/status/2114864981934329996)\n\n5. **\"6.1 Terra is here! It is good at a lot of things, but we are especially excited for this new era of computer use.\"**\n   - [Link to tweet](https://x.com/sama/status/2114818620782248024)",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [
+        {
+          "tool": "timeline",
+          "args": {
+            "limit": 5,
+            "screenname": "sama"
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "sama",
+            "items": [
+              {
+                "title": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and bett",
+                "summary": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…",
+                "url": "https://x.com/sama/status/2118471941002842341",
+                "source": "@sama",
+                "date": "Thu Nov 05 22:34:04 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 53,
+                  "views": "47390"
+                }
+              },
+              {
+                "title": "RT @thsottiaux: Day 25/",
+                "summary": "RT @thsottiaux: Day 25/\n\nWe are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today.\n\nWe heard yo…",
+                "url": "https://x.com/sama/status/2117797818756952416",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:55:21 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 2703,
+                  "views": "41965"
+                }
+              },
+              {
+                "title": "People should always be in control of the future.",
+                "summary": "People should always be in control of the future.\n\nOpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”.\n\nPeople should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.",
+                "url": "https://x.com/sama/status/2117794005165748448",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:40:12 +0000 2026",
+                "metrics": {
+                  "favorites": 20659,
+                  "retweets": 1019,
+                  "views": "10643094"
+                }
+              },
+              {
+                "title": "RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic an",
+                "summary": "RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic analysis, complexity…",
+                "url": "https://x.com/sama/status/2114864981934329996",
+                "source": "@sama",
+                "date": "Mon Oct 26 23:41:18 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 1117,
+                  "views": "48208"
+                }
+              },
+              {
+                "title": "6.1 Terra is here! It is good at a lot of things, but we are especially excited for this new era of computer use.",
+                "summary": "6.1 Terra is here! It is good at a lot of things, but we are especially excited for this new era of computer use.",
+                "url": "https://x.com/sama/status/2114818620782248024",
+                "source": "@sama",
+                "date": "Mon Oct 26 20:37:05 +0000 2026",
+                "metrics": {
+                  "favorites": 10109,
+                  "retweets": 493,
+                  "views": "1653113"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "duration_seconds": 62.03,
+      "progress": [
+        {
+          "stage": "model_started",
+          "elapsed_seconds": 0.0,
+          "round": 1
+        },
+        {
+          "stage": "model_completed",
+          "elapsed_seconds": 6.35,
+          "round": 1,
+          "tools": [
+            "timeline"
+          ]
+        },
+        {
+          "stage": "tool_started",
+          "elapsed_seconds": 6.35,
+          "round": 1,
+          "tool": "timeline"
+        },
+        {
+          "stage": "tool_completed",
+          "elapsed_seconds": 10.63,
+          "round": 1,
+          "tool": "timeline",
+          "duration_seconds": 4.29,
+          "error": false
+        },
+        {
+          "stage": "model_started",
+          "elapsed_seconds": 10.63,
+          "round": 2
+        },
+        {
+          "stage": "model_completed",
+          "elapsed_seconds": 61.98,
+          "round": 2,
+          "tools": []
+        }
+      ],
+      "ended_at": "2026-11-10T12:05:25",
+      "telegram_sync": {
+        "status": "sent",
+        "deliveries": [
+          {
+            "tool": "send_telegram",
+            "status": "sent",
+            "message_id": 5,
+            "chat_id": "[CONFIGURED_CHAT]",
+            "part": 1,
+            "confirmed_by": "ui_sync_toggle"
+          }
+        ],
+        "chat_id": "[CONFIGURED_CHAT]",
+        "total_parts": 1
+      }
+    }
+  ],
+  "prompt_snapshot": "You are an evidence-driven AI & technology research assistant with access to specialized tools.\n\n## 1. Scope & When NOT to Call Any Tool (`no_tool`)\n- **Capability / Meta questions:** If the user asks who you are or what you can do (e.g., \"Bạn là gì và làm được những gì?\"), answer directly in plain text without calling any tool.\n- **Out-of-scope requests:** You only handle research, news, social media posts, URL reading, academic papers, GitHub repository discovery, internal company policy lookup, digest formatting, and Telegram publishing. If the user asks you to solve math/calculus problems (e.g., integrals), write general-purpose code/algorithms (e.g., Fibonacci function), or other unrelated tasks, politely refuse in plain text and **DO NOT call any tool** (never use `send` or `clarify` to reply to normal chat).\n\n## 2. Missing Information & Confirmation Guardrails (`clarify`)\n- **Missing account/handle:** If the user asks for recent tweets/posts (e.g., \"Tóm tắt 5 tweet mới nhất giúp mình\") without specifying whose account/handle to check, **DO NOT guess** a famous person. Call `clarify` with `response_type=\"text\"` to ask whose account they want.\n- **Missing URL:** If the user asks to read or summarize \"this article\" / \"bài viết này\" / \"link này\" without providing a URL in the conversation, **DO NOT guess or search** a random URL. Call `clarify` with `response_type=\"text\"` to ask for the URL.\n- **Confirmation before sending to Telegram:** `send` is an external publishing action to a Telegram channel, NOT a way to reply to the user in chat. If the user asks to post/send something to Telegram (e.g., \"Đăng bản tin này lên Telegram giúp mình\") and has not yet confirmed in a subsequent turn, **DO NOT call `send`**. Instead, call `clarify` with `response_type=\"yes_no\"` to ask for explicit confirmation first.\n\n## 3. Tool Routing Rules\n- `timeline`: Get recent tweets/posts from a specific X/Twitter user (`screenname` without `@`, e.g., Sam Altman -> `sama`, Elon Musk -> `elonmusk`, Andrej Karpathy -> `karpathy`).\n- `social_search`: Search X/Twitter discussions by topic or keyword (`search_type=\"Top\"` for popular/top tweets, `\"Latest\"` for newest).\n- `lookup`: Search the web for news or general information.\n- `fetch`: Read and extract content from a specific URL provided by the user.\n- `github_repos`: Search open-source GitHub repositories when the user asks for GitHub projects/repos.\n- `papers` / `paper_text`: Search arXiv papers by topic (`papers`) or extract text from a specific arXiv ID/URL (`paper_text`).\n- `policy`: Search internal company policies (`source_citation`, `data_privacy`, `external_publishing`, `ai_research`, `tool_usage`).\n- **Parallel tool calls:** When a single user request asks for multiple distinct sources (e.g., both web news and Twitter posts, or two URLs), call all required tools in the same turn.\n",
+  "tools_snapshot": [
+    {
+      "type": "function",
+      "function": {
+        "name": "clarify",
+        "description": "Gửi một câu hỏi cho người dùng.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string",
+              "default": "",
+              "description": "Câu hỏi"
+            },
+            "response_type": {
+              "type": "string",
+              "enum": [
+                "text",
+                "yes_no",
+                "choice"
+              ],
+              "default": "text",
+              "description": "Kiểu trả lời"
+            },
+            "options": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "description": "Các lựa chọn"
+            }
+          },
+          "required": [
+            "question"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "timeline",
+        "description": "Lấy các bài đăng gần đây.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "screenname": {
+              "type": "string",
+              "default": "",
+              "description": "Tên tài khoản"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng"
+            }
+          },
+          "required": [
+            "screenname"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "social_search",
+        "description": "Tìm trên mạng xã hội.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Từ khóa"
+            },
+            "search_type": {
+              "type": "string",
+              "enum": [
+                "Latest",
+                "Top"
+              ],
+              "default": "Latest",
+              "description": "Cách sắp xếp"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lookup",
+        "description": "Tra cứu thông tin trên internet.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Truy vấn"
+            },
+            "topic": {
+              "type": "string",
+              "enum": [
+                "general",
+                "news"
+              ],
+              "default": "general",
+              "description": "Phân loại"
+            },
+            "timeframe": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week",
+                "month",
+                "year"
+              ],
+              "default": "week",
+              "description": "Khoảng thời gian"
+            },
+            "max_results": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số kết quả"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "fetch",
+        "description": "Lấy nội dung từ một địa chỉ.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "default": "",
+              "description": "Địa chỉ"
+            }
+          },
+          "required": [
+            "url"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "format",
+        "description": "Trình bày dữ liệu đã có thành văn bản.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "default": [],
+              "description": "Danh sách item",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "section": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "template": {
+              "type": "string",
+              "enum": [
+                "brief",
+                "sections",
+                "bullets",
+                "thread",
+                "daily_ai_vn"
+              ],
+              "default": "sections",
+              "description": "Khuôn"
+            },
+            "headline": {
+              "type": "string",
+              "default": "",
+              "description": "Tiêu đề"
+            }
+          },
+          "required": [
+            "items",
+            "template"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "send",
+        "description": "Gửi một đoạn văn bản đi.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "default": "",
+              "description": "Nội dung"
+            },
+            "confirmed": {
+              "type": "boolean",
+              "default": false,
+              "description": "Cờ xác nhận"
+            }
+          },
+          "required": [
+            "text"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "policy",
+        "description": "Tìm trong tài liệu nội bộ.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Truy vấn"
+            },
+            "policy_area": {
+              "type": "string",
+              "enum": [
+                "all",
+                "ai_research",
+                "source_citation",
+                "data_privacy",
+                "external_publishing",
+                "tool_usage"
+              ],
+              "default": "all",
+              "description": "Nhóm"
+            },
+            "top_k": {
+              "type": "integer",
+              "default": 3,
+              "description": "Số mục"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "papers",
+        "description": "Tìm bài báo khoa học.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Từ khóa"
+            },
+            "max_results": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng"
+            },
+            "sort_by": {
+              "type": "string",
+              "enum": [
+                "relevance",
+                "lastUpdatedDate",
+                "submittedDate"
+              ],
+              "default": "relevance",
+              "description": "Sắp xếp"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "paper_text",
+        "description": "Lấy nội dung text của một bài báo.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "arxiv_url": {
+              "type": "string",
+              "default": "",
+              "description": "ID hoặc địa chỉ"
+            },
+            "max_pages": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số trang"
+            },
+            "max_chars": {
+              "type": "integer",
+              "default": 8000,
+              "description": "Số ký tự"
+            }
+          },
+          "required": [
+            "arxiv_url"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "github_repos",
+        "description": "Tìm kiếm kho mã nguồn mở (repositories) trên GitHub theo từ khóa, ngôn ngữ lập trình và tiêu chí sắp xếp (stars, forks, updated). Chỉ dùng khi người dùng yêu cầu tìm repo/project trên GitHub.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Từ khóa chủ đề cần tìm trên GitHub (ví dụ: 'AI agent', 'RAG')."
+            },
+            "language": {
+              "type": "string",
+              "default": "",
+              "description": "Ngôn ngữ lập trình lọc theo (ví dụ: 'python', 'typescript'). Để trống nếu không lọc."
+            },
+            "sort": {
+              "type": "string",
+              "enum": [
+                "stars",
+                "forks",
+                "updated"
+              ],
+              "default": "stars",
+              "description": "Tiêu chí sắp xếp: 'stars' (nhiều sao nhất), 'forks', hoặc 'updated' (mới cập nhật)."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng repository trả về (1-20)."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    }
+  ],
+  "evidence_source": "ui_ui-demo_ollama_20261110T120116811673_f8d19ca0.transcript.json",
+  "redactions": [
+    "Configured credentials and Telegram destination identifiers"
+  ]
+}

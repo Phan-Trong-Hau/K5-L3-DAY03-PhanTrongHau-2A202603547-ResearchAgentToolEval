@@ -1,0 +1,11 @@
+{
+  "version": "v3",
+  "description": "Chọn nguồn đang còn hiệu lực trong hội thoại",
+  "source_commit": "680563d6b8b9ea302060ee64741fafc2c11478a5",
+  "run_version": "v3",
+  "run_file": "runs/v3_B_base_openrouter_20261110T195239893928.json",
+  "group_run_file": "runs/v3_B_group_openrouter_20261110T195341770535.json",
+  "run_author": "Lưu Văn Việt Đức",
+  "prompt_hash": "8f1016718bf47f621c5c0e28535ead5cf036a6c9e64a9742f8326e55db31610b",
+  "tools_hash": "a94472a7458106eb3fb0f071c38096513780b4b50140efed2d2afd626b1ff119"
+}
