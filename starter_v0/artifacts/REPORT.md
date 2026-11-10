@@ -35,6 +35,7 @@ Research agent hỗ trợ tìm tin trên web và X/Twitter, đọc URL, tìm pap
 | `papers` | Tìm paper arXiv | Không |
 | `paper_text` | Tải PDF arXiv và trích xuất văn bản | Không |
 | `github_repos` | Tìm repository GitHub theo chủ đề, ngôn ngữ và stars/forks/updated | Có, thêm ở v1 |
+| `extract_links` | Trích URL HTTP/HTTPS từ văn bản/Markdown có sẵn, giữ thứ tự, khử trùng và giới hạn kết quả; chạy offline | Có, Việt Đức bổ sung sau khi nộp v3 (`v3-extract-links`) |
 
 ## A3. Câu hỏi mẫu để thử
 
@@ -43,6 +44,11 @@ Research agent hỗ trợ tìm tin trên web và X/Twitter, đọc URL, tìm pap
 3. “Đọc https://example.com và tóm tắt bằng tiếng Việt.”
 4. “Tìm 5 repository GitHub về RAG viết bằng Python, sắp xếp theo số sao.”
 5. “Tóm tắt bài viết này giúp mình.” — khi chưa có URL, agent cần hỏi lại.
+
+Câu thử cho phần bổ sung sau khi nộp v3 (`v3-extract-links`):
+
+6. “Chỉ trích URL trong đoạn sau, không tìm web hoặc đọc trang: Sources: [https://example.com/a](https://example.com/a) and [https://example.org/b](https://example.org/b)”
+7. “Liệt kê tối đa 1 URL duy nhất từ ghi chú này: https://example.com/a, <https://example.org/b>, https://example.com/a.” — trả 1 item, tổng 2 URL duy nhất, `truncated=true`.
 
 # PHẦN B — Chi tiết / Bằng chứng
 
@@ -231,6 +237,124 @@ Sau tích hợp, toàn bộ bộ test của dự án đạt 131 passed, 0 failed
 Kiểm tra thành công kết nối model, Tavily, Firecrawl và các tool Twitter qua RapidAPI. Tool send đã gửi được tin thử vào channel Telegram cá nhân.
 Lần gửi thử Telegram được thực hiện trực tiếp với confirmed=True. Luồng agent hỏi xác nhận rồi gửi tin chưa có transcript kiểm chứng.
 
+### Bổ sung sau khi nộp v3: `extract_links` — Việt Đức
+
+Người phụ trách: **Lưu Văn Việt Đức — 2A202603445**. Đây là phần bổ sung sau khi
+nhóm đã nộp bài, trên nhánh `vietduc-tool-extract-links`, từ `origin/main` tại
+`d3f128207e40a726e55f0ab205fb412a9e6c6678`; không phải thay đổi của release v3 đã nộp.
+Giữ nguyên bằng chứng v3: 131 passed ở thời điểm tích hợp trước đây, base 20/20,
+group 9/10, G08 FAIL và artifact `v3+p8f1016718bf4+ta94472a74581`.
+
+- [Implementation](../tools/extract_links/tool.py), [TOOL.md](../tools/extract_links/TOOL.md),
+  registry `TOOL_FUNCTIONS["extract_links"]` và declaration được thêm cuối `tools.yaml`.
+  Không sửa `system_prompt.md`, harness, provider, UI hoặc tool khác.
+- Nhận `text` nguyên văn và `max_results` mặc định 10 (1–50, không nhận boolean).
+  Trích bare URL, Markdown link và autolink HTTP/HTTPS; kiểm tra cú pháp hostname,
+  giữ thứ tự đầu tiên, so trùng bằng chuỗi, giữ query/fragment và casing của URL.
+  Trả `items` gồm `title=url`, `url`, `source=hostname`, `summary=""`, cùng
+  `item_count`, `total_unique` trước giới hạn và `truncated`.
+- Chạy offline bằng thư viện chuẩn, không cần key/dependency mới, không tìm web,
+  tải trang, xác minh URL hay xuất file. Không thay chức năng `lookup`, `fetch`,
+  `github_repos`, `export_chat`; Việt Đức không nhận hai tool sau là tool mình viết.
+- Hạn chế: không phải Markdown parser đầy đủ; không giải reference link, HTML entity
+  hoặc escape phức tạp. Dấu đóng ngoặc thừa và dấu câu cuối bare URL được xem là
+  delimiter; dùng `<URL>`, `[nhãn](URL)` hoặc percent-encode nếu bare URL thực sự
+  kết thúc bằng `. , ; : ! ? *`. Trong autolink/Markdown link có delimiter đầy đủ,
+  dấu câu thuộc URL được giữ nguyên. Có hỗ trợ ngoặc cân bằng bên trong URL;
+  không kiểm tra khả năng truy cập.
+
+**Kiểm thử offline — ngày 10/11/2026, ghi nhận lúc 21:16 (Asia/Saigon):**
+
+| Phép kiểm tra | Kết quả thực đo |
+|---|---|
+| Baseline trên `d3f1282`, trước khi thêm tool | 151 passed, 0 failed, 0 skipped |
+| `pytest -q tests/test_tools_todo.py -k extract_links` | 54 passed, 17 deselected |
+| `pytest -q tests/test_tool_contract.py` | 70 passed |
+| Toàn bộ suite sau tích hợp | 210 passed, 0 failed, 0 skipped |
+| `git diff --check` | Đạt |
+
+54 trường hợp mới (có parametrization) được nối vào cuối
+[test_tools_todo.py](../tests/test_tools_todo.py); 5 trường hợp contract tự tăng
+theo declaration mới. Test kiểm tra schema, thứ tự, trùng lặp, giới hạn/counts,
+input sai, scheme/hostname không hợp lệ, query/fragment và dấu câu. Không dùng HTTP
+thật và không sửa test/fixture có sẵn. Lượt baseline đầu trong sandbox có 133 pass,
+18 lỗi setup do không truy cập được Windows Temp; chạy lại ngoài sandbox đạt 151 pass.
+Lượt test tool trong sandbox có một cảnh báo quyền ghi pytest cache; contract và
+full suite chạy ngoài sandbox đều xanh, không có cảnh báo.
+
+**Eval riêng:** nối `G11_extract_links_from_text` (single-turn, phase B) vào cuối
+[eval_group.json](../data/eval_group.json), giữ nguyên G01–G10. Trên nhánh bổ sung,
+bộ nhóm có **11 case: 6 single-turn + 5 multi-turn**. G11 yêu cầu đúng một lần gọi
+`extract_links`, `text` đúng đoạn `Sources: [https://example.com/a](https://example.com/a) and [https://example.org/b](https://example.org/b)`,
+`max_results=10`; output object được kiểm tra bằng unit test. Harness hiện tại so
+chuỗi sau strip/lowercase nên cần đọc `actual_tool_calls` để xác nhận nguyên văn;
+không chỉnh harness để tăng độ chặt. Không dùng list object trong expected args.
+
+Thêm declaration làm đổi tools hash; mọi run mới dùng tag `v3-extract-links`.
+Không dùng điểm v3 cũ để chứng minh bản này và không so trực tiếp accuracy trên
+11 case với group 9/10 lịch sử để tuyên bố cải thiện.
+
+**Live eval mới — OpenRouter / `openai/gpt-4o-mini`, ngày 10/11/2026 (Asia/Saigon):**
+
+Preflight thành công: `timeline(screenname="sama", limit=1)`. Lượt preflight
+trong sandbox bị chặn socket (`WinError 10013`, `APIConnectionError`); chạy lại
+ngoài sandbox thành công. Sau đó chỉ chạy **một lượt base và một lượt group**,
+không lặp eval để chọn điểm. Hai run không có provider error hoặc tool error.
+
+| Bộ / thời điểm tạo run | Pass / đo được / tổng | Case / routing / argument accuracy | Multi-turn | Provider errors | Run JSON |
+|---|---|---|---|---|---|
+| Base — 21:20:04 | 20 / 20 / 20 | 1.0 / 1.0 / 1.0 | 1.0 | 0 | [Base mới](../runs/v3-extract-links_B_base_openrouter_20261110T212004147485.json) |
+| Group — 21:20:49 | 10 / 11 / 11 | 0.9091 / 0.9091 / 0.9091 | 0.8 | 0 | [Group mới](../runs/v3-extract-links_B_group_openrouter_20261110T212049831977.json) |
+
+Artifact của cả hai run: `v3-extract-links+p8f1016718bf4+t6164a8575cc6`.
+Prompt SHA-256: `8f1016718bf47f621c5c0e28535ead5cf036a6c9e64a9742f8326e55db31610b`;
+tools SHA-256: `6164a8575cc615cab2465452261d0c7ab53926821d56e2fa35d33c88a274ff04`.
+Đã đối chiếu cả hai hash với file đang dùng; chỉ nối hai dòng `v3-extract-links`
+vào [version_log.csv](version_log.csv), lấy hash/metric/timestamp trực tiếp từ run.
+Để trống `metric_before` vì đây là bản bổ sung cần đo riêng.
+
+G11 **PASS**; kiểm tra trực tiếp `actual_tool_calls` bằng so sánh nguyên chuỗi
+(ngoài phép strip/lowercase của harness) xác nhận đúng một call, `text` nguyên văn,
+`max_results=10`. Tool trả đúng hai item lần lượt `https://example.com/a`,
+`https://example.org/b`, `item_count=total_unique=2`, `truncated=false`, summary rỗng.
+G01–G10 vẫn có 9 case PASS, **G08 vẫn FAIL**: thiếu `github_repos`, gọi thừa
+`social_search(query="RAG", search_type="Top")`. Không sửa prompt, expected hay
+harness để xử lý lỗi lịch sử này trong phạm vi bổ sung tool.
+
+Lệnh đã dùng, chạy từ `starter_v0/` bằng PowerShell:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/preflight_provider.py --provider openrouter --model openai/gpt-4o-mini
+.\.venv\Scripts\python.exe run_eval.py --provider openrouter --model openai/gpt-4o-mini --version v3-extract-links --suite base --eval-cases data/eval_base.json
+.\.venv\Scripts\python.exe run_eval.py --provider openrouter --model openai/gpt-4o-mini --version v3-extract-links --suite group --eval-cases data/eval_group.json
+```
+
+#### Review cuối trước bàn giao — 10/11/2026, 21:46 (Asia/Saigon)
+
+Phát hiện và sửa lỗi cắt dấu câu cuối ngay cả khi URL nằm trong `<...>` hoặc
+`[nhãn](...)`: `<https://example.com/?q=wow!>` từng bị đổi thành `...?q=wow`.
+Bản sửa giữ nguyên dấu câu của query/fragment khi có delimiter đầy đủ; bare URL
+vẫn áp dụng quy tắc dấu câu đã ghi trong TOOL.md. Thêm 6 regression cases
+(autolink và Markdown link, query kết thúc `!`/`;`, fragment kết thúc `?`).
+
+Kiểm tra lại sau sửa: **60 passed** cho extract_links (17 deselected),
+**70 passed** contract, **216 passed** toàn bộ suite, 0 failed, 0 skipped.
+G01–G10 và AST của mọi test cũ không đổi. Registry/declaration dùng chung cho
+OpenAI/OpenRouter/Ollama và qua converter Anthropic/Gemini; kiểm tra chạy tool
+khi chặn socket/DNS cũng đạt, không gọi provider thật trong lượt review này.
+
+Không đổi declaration hoặc prompt, nên hash `6164a8575cc6`/`8f1016718bf4` và
+hai dòng version log vẫn khớp hai run JSON ở trên. **Hai live run lúc 21:20 được
+tạo trước bản sửa review này**; harness chỉ hash prompt/declaration, không hash
+implementation. Không dùng chúng làm bằng chứng cho bản sửa dấu câu mới; phần đó
+được xác minh bằng regression tests offline, không chạy lại live eval để chọn điểm.
+
+Các run/transcript/hash/snapshot v3 cũ, ba run Gemini untracked, `export_chat`
+(implementation/declaration/tests), `github_repos` và prompt/tools local của Hậu
+được giữ nguyên. Nhánh để review, chưa commit/push/merge; bước tiếp theo là xem diff,
+chỉ stage file thuộc phần bổ sung (không stage ba run Gemini), commit trên nhánh này
+và mở PR về main để trưởng nhóm duyệt.
+
 ## B6. Reflection
 
 ### Giai đoạn v0–v1
@@ -241,7 +365,7 @@ Lần gửi thử Telegram được thực hiện trực tiếp với confirmed=
 
 **Lỗi nào cần xem thủ công?** Query “AI news” có thể vẫn tìm được tin phù hợp nhưng không khớp expected “AI”; evaluator chỉ so giá trị sau strip/lowercase, không chấm tương đương ngữ nghĩa. Cần ghi nhận fail theo bộ đo và xem thêm chất lượng kết quả, không sửa expected để làm tăng điểm. Với case `no_tool`, harness kiểm tra không có tool call, chưa tự đánh giá đầy đủ chất lượng lời từ chối; đã đọc câu trả lời R08/R14 để xác nhận hành vi. Tương tự, routing pass không bảo đảm nguồn và bản tóm tắt đúng.
 
-**Ưu tiên vòng tiếp theo:** chuẩn hóa arguments ở R03/R13; sửa carry-over nguồn của M06 khi user nói bỏ Twitter; thêm group case cho tool mới và giữ các case đã sửa khỏi regression. Mỗi vòng tiếp theo nên kiểm chứng một thay đổi có phạm vi rõ ràng.
+**Hướng cải tiến được xác định sau v1:** chuẩn hóa arguments ở R03/R13; sửa carry-over nguồn của M06 khi user nói bỏ Twitter; thêm group case cho tool mới và giữ các case đã sửa khỏi regression. Mỗi vòng tiếp theo nên kiểm chứng một thay đổi có phạm vi rõ ràng.
 
 ### Giai đoạn v2–v3
 

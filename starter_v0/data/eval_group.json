@@ -287,6 +287,28 @@
         "difficulty": "medium",
         "what_it_tests": "3 turns: hủy yêu cầu trước đó và hỏi câu meta -> không gọi tool."
       }
+    },
+    {
+      "id": "G11_extract_links_from_text",
+      "phase": "B",
+      "query": "Chỉ trích xuất các URL từ nguyên văn đoạn dữ liệu sau, tối đa 10 URL. Không tìm kiếm web, không tải hoặc đọc trang, không xuất file. Chỉ thực hiện một lần gọi extract_links, truyền nguyên văn đoạn dữ liệu vào text và max_results=10:\nSources: [https://example.com/a](https://example.com/a) and [https://example.org/b](https://example.org/b)",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_links",
+            "args": {
+              "text": "Sources: [https://example.com/a](https://example.com/a) and [https://example.org/b](https://example.org/b)",
+              "max_results": 10
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "routing_extract_links_from_existing_text",
+        "difficulty": "easy",
+        "what_it_tests": "Post-submission addition: exactly one extract_links call with verbatim text and max_results=10, without search, fetch, or export. Unit tests verify the output items and deduplication."
+      }
     }
   ]
 }

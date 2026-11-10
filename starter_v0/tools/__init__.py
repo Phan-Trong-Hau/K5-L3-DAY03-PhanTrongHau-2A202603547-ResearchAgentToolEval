@@ -19,6 +19,7 @@ from .send.tool import send_telegram
 from .lookup.tool import web_search
 from .github_repos.tool import search_github_repos
 from .export_chat.tool import export_chat_history
+from .extract_links.tool import extract_links
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -39,6 +40,7 @@ TOOL_FUNCTIONS = {
     "paper_text": get_arxiv_paper_text,
     "github_repos": search_github_repos,
     "export_chat": export_chat_history,
+    "extract_links": extract_links,
 }
 
 

@@ -1,0 +1,1037 @@
+{
+  "run_id": "v3-extract-links_B_group_openrouter_20261110T212049831977",
+  "version": "v3-extract-links",
+  "artifact_version": "v3-extract-links+p8f1016718bf4+t6164a8575cc6",
+  "prompt_hash": "8f1016718bf47f621c5c0e28535ead5cf036a6c9e64a9742f8326e55db31610b",
+  "tools_hash": "6164a8575cc615cab2465452261d0c7ab53926821d56e2fa35d33c88a274ff04",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\VINAI20K\\S_10112026\\K5-L3-DAY03-PhanTrongHau-2A202603547-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\VINAI20K\\S_10112026\\K5-L3-DAY03-PhanTrongHau-2A202603547-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "generated_at": "2026-11-10T21:20:49",
+  "summary": {
+    "total_cases": 11,
+    "measured_cases": 11,
+    "provider_error_cases": 0,
+    "passed_cases": 10,
+    "case_accuracy": 0.9091,
+    "tool_routing_accuracy": 0.9091,
+    "argument_accuracy": 0.9091,
+    "multiturn_accuracy": 0.8,
+    "failure_counts": {
+      "wrong_tool": 1
+    },
+    "observed_mismatch_counts": {
+      "missing_tool_call": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_github_repos_python",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_github_repos",
+        "difficulty": "easy",
+        "what_it_tests": "Tìm repo trên GitHub -> gọi github_repos với language=python, sort=stars, limit=5."
+      },
+      "input": "Tìm 5 repo GitHub nhiều sao nhất viết bằng Python về AI agent",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "github_repos",
+            "args": {
+              "language": "python",
+              "sort": "stars",
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "github_repos",
+            "args": {
+              "query": "AI agent",
+              "language": "python",
+              "sort": "stars",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "github_repos",
+          "args": {
+            "query": "AI agent",
+            "language": "python",
+            "sort": "stars",
+            "limit": 5
+          },
+          "result": {
+            "tool": "search_github_repos",
+            "query": "AI agent",
+            "language": "python",
+            "sort": "stars",
+            "items": [
+              {
+                "title": "NousResearch/hermes-agent",
+                "url": "https://github.com/NousResearch/hermes-agent",
+                "source": "github.com",
+                "summary": "The agent that grows with you",
+                "stars": 262290,
+                "language": "Python"
+              },
+              {
+                "title": "langgenius/dify",
+                "url": "https://github.com/langgenius/dify",
+                "source": "github.com",
+                "summary": "Build Agentic workflows, RAG pipelines, with rich AI model and tool support on one collaborative workspace. Deploy on cloud, VPC, or self-hosted, so teams move from prototype to production without rebuilding the stack.",
+                "stars": 160838,
+                "language": "Python"
+              },
+              {
+                "title": "langflow-ai/langflow",
+                "url": "https://github.com/langflow-ai/langflow",
+                "source": "github.com",
+                "summary": "Langflow is a powerful tool for building and deploying AI-powered agents and workflows.",
+                "stars": 156505,
+                "language": "Python"
+              },
+              {
+                "title": "langchain-ai/langchain",
+                "url": "https://github.com/langchain-ai/langchain",
+                "source": "github.com",
+                "summary": "The agent engineering platform.",
+                "stars": 149304,
+                "language": "Python"
+              },
+              {
+                "title": "Shubhamsaboo/awesome-llm-apps",
+                "url": "https://github.com/Shubhamsaboo/awesome-llm-apps",
+                "source": "github.com",
+                "summary": "100+ AI Agents, Agent Skills and RAG Apps - Free and Open Source.",
+                "stars": 144346,
+                "language": "Python"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_user_tweets_ylecun",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_user_tweets_name_to_handle",
+        "difficulty": "medium",
+        "what_it_tests": "Map tên Yann LeCun sang handle ylecun và limit=5."
+      },
+      "input": "Lấy 5 tweet mới nhất của Yann LeCun",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "ylecun",
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "ylecun",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "ylecun",
+            "limit": 5
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "ylecun",
+            "items": [
+              {
+                "title": "RT @HarryStebbings: Will we end up with a model landscape that has just two to three providers?",
+                "summary": "RT @HarryStebbings: Will we end up with a model landscape that has just two to three providers?\n\n“If we end up in a world where all compani…",
+                "url": "https://x.com/ylecun/status/2120144057607315784",
+                "source": "@ylecun",
+                "date": "Tue Nov 10 13:18:28 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 6,
+                  "views": "2978"
+                }
+              },
+              {
+                "title": "RT @simplifyinAI: Yann LeCun was right the entire time. And generative AI might be a dead end.",
+                "summary": "RT @simplifyinAI: Yann LeCun was right the entire time. And generative AI might be a dead end.\n\nLeCun has argued that generating every pixe…",
+                "url": "https://x.com/ylecun/status/2120132325782503899",
+                "source": "@ylecun",
+                "date": "Tue Nov 10 12:31:51 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 34,
+                  "views": "3350"
+                }
+              },
+              {
+                "title": "RT @KenRoth: Elon Musk’s $500 million couldn’t swing the midterms for Republicans in Congress when all they did was sit ",
+                "summary": "RT @KenRoth: Elon Musk’s $500 million couldn’t swing the midterms for Republicans in Congress when all they did was sit in their hands as T…",
+                "url": "https://x.com/ylecun/status/2120128207659618368",
+                "source": "@ylecun",
+                "date": "Tue Nov 10 12:15:29 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 21,
+                  "views": "3377"
+                }
+              },
+              {
+                "title": "RT @randall_balestr: Our first major update on https://t.co/v8KSoNBKqM",
+                "summary": "RT @randall_balestr: Our first major update on https://t.co/v8KSoNBKqM\n- venue confirmed in the heart of Manhattan\n- paper deadline is Dece…",
+                "url": "https://x.com/ylecun/status/2119929780057375160",
+                "source": "@ylecun",
+                "date": "Mon Nov 09 23:07:00 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 22,
+                  "views": "4223"
+                }
+              },
+              {
+                "title": "RT @ylecun: @TimDarcet @gabriberton The P in JEPA stands for predictive.",
+                "summary": "RT @ylecun: @TimDarcet @gabriberton The P in JEPA stands for predictive.\nThe main distinction is not between JEA and JEPA, but between Join…",
+                "url": "https://x.com/ylecun/status/2119522897555595583",
+                "source": "@ylecun",
+                "date": "Sun Nov 08 20:10:12 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 68,
+                  "views": null
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_web_news_week",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "arg_timeframe",
+        "difficulty": "medium",
+        "what_it_tests": "Tin trong tuần này -> lookup với topic=news, timeframe=week."
+      },
+      "input": "Tin tức về bán dẫn trong tuần này có gì mới?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "bán dẫn",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "bán dẫn",
+            "topic": "news",
+            "timeframe": "week"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "bán dẫn",
+            "topic": "news",
+            "timeframe": "week",
+            "items": [
+              {
+                "title": "Công nghệ bán dẫn và năng lực tự chủ",
+                "url": "https://www.qdnd.vn/cung-ban-luan/cong-nghe-ban-dan-va-nang-luc-tu-chu-1063448",
+                "source": "qdnd.vn",
+                "summary": "Để ngành công nghiệp bán dẫn phát triển bền vững, việc nghiên cứu, mở rộng ứng dụng sản phẩm theo hướng lưỡng dụng là yêu cầu của thực tiễn. Chip bán dẫn phải trở thành nền tảng cho công cuộc chuyển đổi số quốc gia, vừa phục vụ nhiệm vụ quốc phòng, an ninh, vừa thúc đẩy phát triển kinh tế-xã hội. Bên cạnh đó, quá trình thương mại hóa và ứng dụng rộng rãi sản phẩm vẫn phải bảo đảm tuân thủ quy định pháp luật, bảo vệ tuyệt đối an toàn thông tin và an ninh quốc gia. [...] Tuy nhiên, trong bối cảnh sản xuất chip bán dẫn là ngành công nghiệp phức tạp và đắt đỏ bậc nhất thế giới, việc ra mắt chip chỉ được coi là bước khởi đầu. Hành trình từ con chip nhỏ bé đến hệ sinh thái sản phẩm công nghệ rộng lớn, từ phòng thí nghiệm bước ra thực tiễn đòi hỏi sự nỗ lực, cố gắng hơn nữa của các lực lượng liên quan.\n\n|  | [...] Sự kiện Ban Cơ yếu Chính phủ và Tập đoàn Công nghiệp-Viễn thông Quân đội (Viettel) ra mắt chip bảo mật VGC phiên bản 1.0 và nền tảng bán dẫn bảo mật đầu tiên do Việt Nam làm chủ thiết kế đánh dấu bước tiến lịch sử của ngành vi mạch bán dẫn và an ninh mật mã quốc gia.",
+                "score": 0.5473921
+              },
+              {
+                "title": "Cơ hội để Việt Nam vươn lên trong chuỗi giá trị bán dẫn toàn cầu",
+                "url": "https://tapchikinhtetaichinh.vn/co-hoi-de-viet-nam-vuon-len-trong-chuoi-gia-tri-ban-dan-toan-cau-171889.html",
+                "source": "tapchikinhtetaichinh.vn",
+                "summary": "Triển vọng ngành bán dẫn tiếp tục được thúc đẩy bởi làn sóng AI và chuyển đổi số toàn cầu. Theo FedEx và Frost & Sullivan, thế giới dự kiến xy dựng hơn 2.000 trung tm dữ liệu mới trong giai đoạn 2026-2035. Sự phát triển của điện toán hiệu năng cao, mạng 5G và xe điện đang mở rộng nhu cầu đối với chip xử lý, chip nhớ cùng các giải pháp bán dẫn chuyên dụng. [...] Cùng với đó, hạ tầng nghiên cứu, nguồn điện ổn định và hệ thống logistics cần được phát triển đồng bộ. Đặc thù sản phẩm bán dẫn đòi hỏi độ chính xác cao, quy trình kiểm soát chất lượng nghiêm ngặt và thời gian giao hàng đáng tin cậy. Việc hoàn thiện các điều kiện nền tảng sẽ góp phần nng sức hấp dẫn đầu tư, đồng thời hỗ trợ doanh nghiệp trong nước tham gia su hơn vào chuỗi cung ứng. [...] Thành quả này cho thấy Việt Nam đã có những bước tiến cụ thể trong chuyển hóa năng lực nghiên cứu thành sản phẩm vi mạch. Dù chưa đồng nghĩa với việc làm chủ toàn bộ quy trình chế tạo bán dẫn, khả năng tự thiết kế chip chuyên dụng có ý nghĩa quan trọng, mở ra triển vọng phát triển các sản phẩm phục vụ an ninh, quốc phòng, công nghiệp và những lĩnh vực có nhu cầu bảo mật cao.",
+                "score": 0.43755972
+              },
+              {
+                "title": "Doanh thu bán dẫn toàn cầu đạt kỷ lục 517,7 tỷ USD trong quý 3 - VnEconomy",
+                "url": "https://vneconomy.vn/doanh-thu-ban-dan-toan-cau-lap-ky-luc-5177-ty-usd.htm",
+                "source": "vneconomy.vn",
+                "summary": "Theo báo cáo mới đy của Hiệp hội Công nghiệp Bán dẫn Mỹ (SIA), doanh thu bán dẫn toàn cầu trong quý 3 ước đạt 517,7 tỷ USD, tăng gấp 2,5 lần so với cùng kỳ năm ngoái và tăng 24,1% so với quý trước.\n\nĐy là lần đầu tiên doanh thu bán dẫn toàn cầu trong một quý vượt mốc 500 tỷ USD. Đáng chú ý, thị trường này đã ghi nhận mức tăng trưởng doanh thu khoảng 20% trong từng quý kể từ đầu năm. [...] Đà tăng trưởng này chủ yếu đến từ nhu cầu mua sắm đồng loạt các bộ tăng tốc AI và chip nhớ băng thông cao (HBM) của những doanh nghiệp vận hành các trung tm dữ liệu quy mô lớn.\n\nTính chung 9 tháng đầu năm, từ tháng 1 đến tháng 9, doanh thu bán dẫn toàn cầu đã vượt 1.219,5 tỷ USD, cao hơn 54% so với mức doanh thu kỷ lục 791,7 tỷ USD của cả năm ngoái.\n\nVới tốc độ tăng trưởng hiện tại, doanh thu toàn ngành được dự báo sẽ vượt 1.600 tỷ USD vào cuối năm nay. [...] Trong các phn khúc bán dẫn, chip nhớ đang ghi nhận tốc độ tăng trưởng doanh thu nổi bật nhất.\n\nTheo số liệu do Hiệp hội Công nghiệp Bán dẫn chu u phn tích, doanh thu chip nhớ toàn cầu trong quý 3 tăng 405,7% so với cùng kỳ năm ngoái. Trong khi đó, doanh thu chip logic, dòng chip đảm nhiệm các chức năng tính toán và điều khiển, chỉ tăng 61,9%.\n\nĐà tăng trưởng vượt trội của chip nhớ chủ yếu xuất phát từ nhu cầu DRAM gia tăng, trong khi giá bán các sản phẩm cũng liên tục leo thang.",
+                "score": 0.42391166
+              },
+              {
+                "title": "Việt Nam – Hàn Quốc thúc đẩy hợp tác AI và bán dẫn",
+                "url": "https://nhandan.vn/viet-nam-han-quoc-to-chuc-hoi-nghi-thuc-day-hop-tac-tri-tue-nhan-tao-va-ban-dan-post1000477.html",
+                "source": "nhandan.vn",
+                "summary": "Trong bối cảnh ngành bán dẫn toàn cầu đang tái cấu trúc dưới tác động của AI và các công nghệ mới, hai nước có nhiều điều kiện bổ trợ thế mạnh cho nhau. Hàn Quốc là một trong những quốc gia hàng đầu thế giới về sản xuất chip nhớ, trong khi Việt Nam đang từng bước tham gia su hơn vào chuỗi giá trị bán dẫn, hướng tới mục tiêu doanh thu toàn ngành vượt 100 tỷ USD mỗi năm trong giai đoạn 2040–2050 theo Chiến lược phát triển công nghiệp bán dẫn Việt Nam tại Quyết định số 1018/QĐ-TTg. [...] Tại phiên toàn thể, các đại biểu tập trung thảo luận định hướng hợp tác AI-bán dẫn, chính sách phát triển ngành, thu hút đầu tư và chuyển giao công nghệ. Những nội dung đáng chú ý gồm tác động của AI đối với ngành bán dẫn, cơ hội liên kết doanh nghiệp, phát triển chuỗi cung ứng và xy dựng các cụm công nghiệp bán dẫn song phương. Trong khuôn khổ hội nghị, các doanh nghiệp, viện nghiên cứu và trường đại học hai nước dự kiến ký kết, trao đổi các biên bản ghi nhớ hợp tác. [...] Hội nghị AI-Bán dẫn Việt Nam-Hàn Quốc 2026 (VKAISS 2026) nhằm kết nối hệ sinh thái bán dẫn 2 nước, thúc đẩy đầu tư, đào tạo nguồn lực và chuyển giao công nghệ. (Ảnh: Ban tổ chức) \n\nHội nghị AI-Bán dẫn Việt Nam-Hàn Quốc 2026 (VKAISS 2026) nhằm kết nối hệ sinh thái bán dẫn 2 nước, thúc đẩy đầu tư, đào tạo nguồn lực và chuyển giao công nghệ. (Ảnh: Ban tổ chức)",
+                "score": 0.3535403
+              },
+              {
+                "title": "Chỉ số Bán dẫn Philadelphia tăng vọt 6%, lấy lại mốc 10.000: Morgan Stanley cho biết logic đầu tư AI dài hạn về cơ bản không thay đổi, ưu tiên Nvidia và Broadcom",
+                "url": "https://www.tradingkey.com/vn/analysis/stocks/chung-khoan-my/262296977-philadelphia-semiconductor-index-reclaims-10000-morgan-stanley-ai-stock-opportunities-nvidia-broadcom-tradingkey",
+                "source": "tradingkey.com",
+                "summary": "Đối với các công ty bán dẫn, kỳ vọng chi tiêu vốn vẫn ổn định, hỗ trợ nhu cầu cho các đơn hàng trong tương lai. Tuy nhiên, trong thời gian các dự án bị trì hoãn, một số nhà cung cấp vẫn có thể phải đối mặt với tình trạng giao hàng chậm lại, tồn kho gia tăng và biên lợi nhuận bị thu hẹp; do đó, các cơ hội phục hồi cần được đánh giá dựa trên tình hình cụ thể của từng công ty. [...] Ngày 9/11, chỉ số Bán dẫn Philadelphia tăng hơn 6% lên trên 10.000 điểm khi thị trường đánh giá lại tác động của việc chậm tiến độ trung tm dữ liệu đối với chuỗi cung ứng AI. Morgan Stanley nhận định thị trường đã phản ứng thái quá, cho rằng nhu cầu đầu tư dài hạn vẫn ổn định và duy trì dự báo chi tiêu vốn cho AI ở mức 1,6 nghìn tỷ USD vào năm 2027 và 1,8 nghìn tỷ USD vào năm 2028. Morgan Stanley ưu tiên các doanh nghiệp đầu ngành như Nvidia, Broadcom và TSMC, đồng thời đánh giá cao khả năng",
+                "score": 0.32456765
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_missing_url_clarify",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_url",
+        "difficulty": "medium",
+        "what_it_tests": "Thiếu URL -> gọi clarify với response_type=text."
+      },
+      "input": "Đọc và tóm tắt nội dung trang web này giúp mình",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn vui lòng cung cấp URL của trang web mà bạn muốn tôi đọc và tóm tắt không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn vui lòng cung cấp URL của trang web mà bạn muốn tôi đọc và tóm tắt không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn vui lòng cung cấp URL của trang web mà bạn muốn tôi đọc và tóm tắt không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_confirm_before_telegram",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "confirm_before_write",
+        "difficulty": "medium",
+        "what_it_tests": "Gửi tin lên Telegram chưa xác nhận -> gọi clarify với response_type=yes_no."
+      },
+      "input": "Gửi bản tin AI này lên kênh Telegram giúp mình",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có chắc chắn muốn gửi bản tin AI này lên kênh Telegram không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có chắc chắn muốn gửi bản tin AI này lên kênh Telegram không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có chắc chắn muốn gửi bản tin AI này lên kênh Telegram không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multiturn_clarify_then_handle",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_clarify_fill",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: giữ limit=5 từ lượt 1 và map Sam Altman -> sama ở lượt 2."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt 5 tweet mới nhất giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "Của Sam Altman nhé"
+        },
+        {
+          "role": "user",
+          "content": "Giữ đúng 5 tweet, đừng đổi số lượng"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 5
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "sama",
+            "items": [
+              {
+                "title": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and bett",
+                "summary": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…",
+                "url": "https://x.com/sama/status/2118471941002842341",
+                "source": "@sama",
+                "date": "Thu Nov 05 22:34:04 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 53,
+                  "views": "47539"
+                }
+              },
+              {
+                "title": "RT @thsottiaux: Day 25/",
+                "summary": "RT @thsottiaux: Day 25/\n\nWe are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today.\n\nWe heard yo…",
+                "url": "https://x.com/sama/status/2117797818756952416",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:55:21 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 2702,
+                  "views": "42041"
+                }
+              },
+              {
+                "title": "People should always be in control of the future.",
+                "summary": "People should always be in control of the future.\n\nOpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”.\n\nPeople should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.",
+                "url": "https://x.com/sama/status/2117794005165748448",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:40:12 +0000 2026",
+                "metrics": {
+                  "favorites": 20686,
+                  "retweets": 1021,
+                  "views": "10656284"
+                }
+              },
+              {
+                "title": "RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic an",
+                "summary": "RT @danintheory: We are announcing three new discoveries in mathematics, computer science, and physics about harmonic analysis, complexity…",
+                "url": "https://x.com/sama/status/2114864981934329996",
+                "source": "@sama",
+                "date": "Mon Oct 26 23:41:18 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 1117,
+                  "views": "48208"
+                }
+              },
+              {
+                "title": "6.1 Terra is here! It is good at a lot of things, but we are especially excited for this new era of computer use.",
+                "summary": "6.1 Terra is here! It is good at a lot of things, but we are especially excited for this new era of computer use.",
+                "url": "https://x.com/sama/status/2114818620782248024",
+                "source": "@sama",
+                "date": "Mon Oct 26 20:37:05 +0000 2026",
+                "metrics": {
+                  "favorites": 10121,
+                  "retweets": 494,
+                  "views": "1659292"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multiturn_carryover_timeframe",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_carryover",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: giữ topic=news và timeframe=day từ lượt 1, đổi query sang OpenAI."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tin AI hôm nay có gì?"
+        },
+        {
+          "role": "user",
+          "content": "Còn về OpenAI thì sao?"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ tìm OpenAI thôi, vẫn là tin hôm nay"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "OpenAI",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "OpenAI",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "OpenAI",
+            "topic": "news",
+            "timeframe": "day"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "OpenAI",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "OpenAI",
+                "url": "https://tavily.com/knowledge/company/p4PyTakV77G9",
+                "source": "tavily.com",
+                "summary": "# OpenAI\nID: p4PyTakV77G9\nWebsite: www.openai.com\nHeadquarters: San Francisco, CA, United States\nLinkedIn: www.linkedin.com/company/openai · 11,529,792 followers\nIndustry: Research Services\nIndustry codes: SIC 87, 873, NAICS 54, 541\nCompany type: Partnership\nSocial profiles: www.facebook.com/openai, www.twitter.com/openai, www.crunchbase.com/organization/openai, www.instagram.com/openai.gpt, www.instagram.com/openai, www.youtube.com/@openai, www.youtube.com/openai, github.com/openai [...] Description: OpenAI is a company that believes in research and development to lead to artificial general intelligence, a system that can solve human-level problems. [...] ## Products and services\nKeywords: research & development, emerging ai software, openai, artificial intelligence machine learning, artificial general intelligence, development, research, human-level problems, technology, application-software, artificial-intelligence, platform",
+                "score": 0.15428506386642532
+              },
+              {
+                "title": "OpenAI wants to be Google - Fast Company",
+                "url": "https://www.fastcompany.com/91638223/openai-wants-to-be-google",
+                "source": "fastcompany.com",
+                "summary": "|\n\nThat comparison is where every sweater brand wants to be standing, and OpenAI has started selling the spot. Advertisers can buy on a CPM or CPC basis through OpenAI’s beta self-service Ads Manager, measure conversions with a pixel and Conversions API, and access campaign-level performance reporting. OpenAI is also testing Sponsored Agents, which let a user start a separate conversation with an advertiser after clicking an ad.\n\nSo the plumbing exists.\n\n## A SEARCH-CALIBER AD PLATFORM [...] ## MAKE INTENT MEASURABLE\n\nMarketers have a say in which pile OpenAI gets to chase. If you want ChatGPT to become a search-caliber channel, buy it like one. Run it against paid search as well as paid social and see which it behaves like. Ask your rep what intent reporting exists today and keep asking. A click on a ChatGPT ad tells you somebody was curious. Until OpenAI shows you the intent behind it, don’t pay search prices for it. [...] OpenAI already has the hard part down, the thing Google spent years teaching people to do. People are telling ChatGPT their goals, problems, preferences, objections, and purchase criteria in their own words. What it hasn’t built is the advertiser’s map of all that intent.",
+                "score": 0.1315236169967029
+              },
+              {
+                "title": "Anthropic and OpenAI are coming for the development workflow | InfoWorld",
+                "url": "https://www.infoworld.com/article/4246055/anthropic-and-openai-are-coming-for-the-development-workflow.html",
+                "source": "infoworld.com",
+                "summary": "This pressure to maximize profitability helps explain why frontier labs like Anthropic and OpenAI are aggressively adding functionality to own more of the developer’s workflow. On November 4, OpenAI announced an agreement to buy Pierre, the company behind Code Storage and the open source libraries Codex already uses to browse files and review changes. OpenAI wants Codex to be where developers work, from the first branch an agent creates through deployment of the application. There’s money in [...] Git gave OpenAI room to build a better back end while its engineers kept working. The next company with a better way to review or test code ought to be able to sell that idea to OpenAI’s customers while their projects stay where they are. That’s the future I’d like to see in AI: The frontier labs do well, but they’re not the only ones.\n\nDevelopment ToolsSoftware DevelopmentArtificial IntelligenceGenerative AITechnology Industry\n\nMatt Asay\n\nby  Matt Asay\n\nContributing Writer [...] This is clearly where the frontier labs are moving, even though they’ve all benefited from an industry that provided neutral spaces to build. For example, OpenAI developed Pando, a Git back end for its own monorepo, to handle more engineers and agents reading and writing code concurrently. Its engineers kept using Git. OpenAI retained compatibility with the protocol and client and contributed improvements upstream. That compatibility let it rebuild the back end around the way its engineers",
+                "score": 0.1315236169967029
+              },
+              {
+                "title": "Australia to mandate AI breach reporting, create regulator after OpenAI breach | Reuters",
+                "url": "https://www.reuters.com/world/australia-tightens-ai-oversight-rules-after-openai-agent-breached-government-2026-11-10",
+                "source": "reuters.com",
+                "summary": "OpenAI has said it learned of the breach only in August ​and that the incident was unintentional. Its review found no evidence that patient records were accessed by ‌the ⁠agent.\n\nThe breach has added to friction between Australia and US technology companies, after Canberra refused ChatGPT maker OpenAI and rival Anthropic exemptions from copyright laws for model training, instead requiring them to negotiate licensing agreements with Australian rights holders. [...] SYDNEY, Nov 10 (Reuters) - Australia will require artificial intelligence companies to report breaches ‌and consider changes to criminal law to address \"serious misconduct\", Prime Minister Anthony Albanese said on Tuesday, after an OpenAI agent broke into a government website. [...] The OpenAI agent gained unauthorised access to the medical statistics portal ​of Medicare, Australia's universal health insurance programme, while conducting research on public medical ​spending, the government said in September. The breach triggered a rapid ⁠government review into the incident.\n\nThe Misinformation Monitor newsletter rounds up international misinformation narratives, with a \"Real or Fake?\" quiz in every edition. Sign up here.",
+                "score": 0.12227372607387328
+              },
+              {
+                "title": "Helping caregivers use AI in everyday life",
+                "url": "https://openai.com/index/helping-caregivers-use-ai-in-everyday-life",
+                "source": "openai.com",
+                "summary": "On November 10, OpenAI Academy, in collaboration with Caregiver Action Network, Alzheimer’s Association, and American Diabetes Association®, is hosting the AI Skills Jam for Caregivers & Community Health: a free, in-person learning experience designed to help caregivers use ChatGPT confidently, safely, and practically. These nationwide events will bring together participants across five U.S. cities, including individual and family caregivers, caregiver support organizations, and people living [...] The AI Skills Jam is part of OpenAI Academy’s broader work to make AI practical and accessible to everyone. It builds on previous events we’ve hosted with nonprofits, small businesses, K–12 educators, and older adults. [...] Business\n   Overview\n   Solutions\n   Resources\n   Plugins\n   Customer Stories\n   Partner Network\n   Contact Sales\n\nDevelopers\n   Plugins(opens in a new window)\n   Models(opens in a new window)\n   Docs(opens in a new window)\n   Resources(opens in a new window)\n   Developer Forum(opens in a new window)\n\nCompany\n   About Us\n   Our Charter\n   Careers\n   News\n\nSupport\n   Help Center(opens in a new window)\n   OpenAI Status(opens in a new window)",
+                "score": 0.62495816
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multiturn_switch_to_github",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_switch_tool",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: bỏ Twitter chuyển sang tìm repo GitHub -> chỉ gọi github_repos."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Mọi người nói gì về RAG trên Twitter?"
+        },
+        {
+          "role": "user",
+          "content": "Bỏ Twitter, chuyển sang tìm repo trên GitHub viết bằng python đi"
+        },
+        {
+          "role": "user",
+          "content": "Giữ chủ đề RAG"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "github_repos",
+            "args": {
+              "query": "RAG",
+              "language": "python"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "RAG",
+              "search_type": "Top"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "missing_tool_call",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "missing tool call github_repos",
+          "extra tool call social_search"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "RAG",
+            "search_type": "Top"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "RAG",
+            "search_type": "Top",
+            "items": [
+              {
+                "title": "andrej karpathy: “the future belongs to people who turn ideas about LLMs, RAG, and AI agents into running systems”",
+                "summary": "andrej karpathy: “the future belongs to people who turn ideas about LLMs, RAG, and AI agents into running systems”\n\nthis free AI Engineering Hub does exactly that — 93+ production-ready projects on LLMs, RAG, MCP and AI agents\n\nthis is the clean path i wish i had earlier\n\n01 AI Engineering Roadmap  \nhttps://t.co/qBgswUAmcC\n\n02 LaTeX OCR with Llama  \nhttps://t.co/MZmV65pQwg\n\n03 Local ChatGPT with DeepSeek  \nhttps://t.co/5zoDTuZcTo\n\n04 Fastest RAG Stack  \nhttps://t.co/pEJeV5Vswv\n\n05 Agentic RAG with DeepSeek  \nhttps://t.co/9pKvziaV12\n\n06 Multi-Agent Deep Researcher  \nhttps://t.co/a159nnTiNf\n\n07 DeepSeek Fine-tuning  \nhttps://t.co/UZK0wxWpj4\n\n08 Real-time Voice Bot  \nhttps://t.co/ixvewtaa9W\n\n09 Deploy Agentic RAG  \nhttps://t.co/MPHDaB8UVA\n\n10 Evaluation and Observability  \nhttps://t.co/KcIlJ2IA1f\n\n11 Qwen3 vs DeepSeek-R1  \nhttps://t.co/Xi4dPsjabb\n\n12 MCP Agentic RAG with FireCrawl  \nhttps://t.co/Fplai5RQUq\n\n13 NotebookLM Clone  \nhttps://t.co/tHeO2T6JRf\n\n14 Financial Analyst with DeepSeek  \nhttps://t.co/jwwPI6iKfo\n\n15 The full hub. Free.  \nhttps://t.co/WI5qWCRD7z\n\nyou either open this now or keep collecting random playlists for another year\n\nsave this ↓",
+                "url": "https://x.com/mentalium_/status/2118369993016422887",
+                "source": "@mentalium_",
+                "date": "Thu Nov 05 15:48:58 +0000 2026",
+                "metrics": {
+                  "favorites": 305,
+                  "retweets": 55,
+                  "views": "13137"
+                }
+              },
+              {
+                "title": "RAG vs. Vectorless RAG, clearly explained!",
+                "summary": "RAG vs. Vectorless RAG, clearly explained!\n\nIn a standard RAG setup, documents are split into chunks, embedded, and stored in a vector DB. The query gets embedded too, and the top-k closest chunks go to the LLM.\n\nThe problem is that similarity and relevance answer different questions.\n\nFor instance, five annual reports from one company can likely follow the same template every year, and only the numbers can change.\n\nSo a FY2022 question can lie just as close to an FY2025 chunk, and the LLM might answer from the wrong year.\n\nCross-references introduce another problem. If a chunk mentions \"see Appendix G\" but looks nothing like the table in Appendix G, that table will never make it to the top-k.\n\nVectorless RAG drops the embedding model and the vector DB, and replaces similarity search with LLM reasoning instead.\n\nThe preprocessing step parses each document's layout into a ToC tree index. Every node holds a section title, its page range, and a short summary, and the whole tree fits in the LLM's context.\n\nAt query time, the LLM gets the query along with the tree. It reads the section titles and summaries and picks the few sections most likely to hold the answer.\n\nFor example, for a question about debt, it might pick the \"Financial Summary\" section and also \"Appendix G\", because its summary says the debt details are there.\n\nThe system then pulls those full sections and checks whether the evidence is enough.\n\n↳ If it is, the LLM answers from the full sections, with page citations.\n↳ If not, it goes back to the tree and opens more nodes.\n\nThe LLM also sees the chat history. So if you ask about assets and then follow up with \"what about liabilities?\", it goes back to the same report.\n\nThe trade-off is that every query now runs LLM calls over the tree.\n\nTop-k vector search will be cheaper in that same run (although not guaranteed to be as accurate), and the tree only helps when documents have real structure.\n\nSo the two suit different data:\n\n↳ Use a tree for long, structured documents like filings, contracts, and manuals.\n↳ Stick with a vector DB for lots of short, unrelated text.\n\nThe diagram below depicts both flows.\n\nIf you want to dive deeper, I have also written a full breakdown of MIT's Recursive Language Models.\n\nIt covers why LLMs get worse as context grows and how RLMs let the model split a long document and work through it piece by piece.\n\nRead it below.",
+                "url": "https://x.com/_avichawla/status/2116069319205663159",
+                "source": "@_avichawla",
+                "date": "Fri Oct 30 07:26:55 +0000 2026",
+                "metrics": {
+                  "favorites": 644,
+                  "retweets": 83,
+                  "views": "46393"
+                }
+              },
+              {
+                "title": "RAG vs. Graph RAG vs. Agentic RAG, clearly explained!",
+                "summary": "RAG vs. Graph RAG vs. Agentic RAG, clearly explained!\n\nStandard RAG embeds documents into vectors and retrieves the most similar chunks via similarity search. For direct factual lookups, this works well.\n\nBut it breaks down when a query needs to connect facts spread across multiple documents. Similarity search retrieves individual chunks, not the relationships between them.\n\nGraph RAG adds a knowledge graph layer on top.\n\n→ During indexing, an LLM extracts entities and relationships from the documents.\n\n→ During retrieval, the system traverses these connections instead of relying on embedding similarity alone.\n\nThis is what enables multi-hop queries.\n\nSay a vector DB stores three facts about internal services:\n\n↳ \"The checkout service uses payments API.\"\n↳ \"The payments API runs on cluster-3.\"\n↳ \"Cluster-3 is scheduled for maintenance on Friday.\"\n\nSomeone asks: \"Will the checkout service be affected by Friday's maintenance?\"\n\nVector search can likely retrieve facts 1 and 3 because the query mentions \"checkout service\" and \"Friday maintenance.\"\n\nBut it will miss fact 2, which connects the payments API to cluster-3.\n\nThat middle fact sits too far from the query in embedding space. It mentions neither \"checkout\" nor \"maintenance,\" so it never makes it into the retrieved context.\n\nA knowledge graph connects these as linked entities, and graph traversal finds the full path in one query.\n\nAgentic RAG takes a different approach entirely.\n\nInstead of a fixed retrieval pipeline, an LLM agent decides at query time which tools to invoke, which sources to query, and in what order.\n\nCheck the visual below to understand the three architectures thoroughly.\n\nOne thing to note here is that these three aren't levels of sophistication that you need to graduate through.\n\nInstead, they solve different query types.\n\n↳ Single-hop factual lookups → standard RAG\n↳ Multi-hop relationship queries → Graph RAG\n↳ Dynamic multi-source tasks with tool use → Agentic RAG\n\nOnce the right architecture is in place, the next leverage point is efficiency.\n\nMost RAG architectures rely heavily on vector search, and that layer can be made 32x more memory-efficient using binary quantization.\n\nI covered the full implementation in the article below.\n\n👉 Over to you: Which RAG architecture are you running in production?",
+                "url": "https://x.com/_avichawla/status/2120098143606100024",
+                "source": "@_avichawla",
+                "date": "Tue Nov 10 10:16:01 +0000 2026",
+                "metrics": {
+                  "favorites": 64,
+                  "retweets": 7,
+                  "views": "3800"
+                }
+              },
+              {
+                "title": "𝗠𝗖𝗣 𝘃𝘀 𝗥𝗔𝗚 𝘃𝘀 𝗔𝗜 𝗔𝗴𝗲𝗻𝘁𝘀.",
+                "summary": "𝗠𝗖𝗣 𝘃𝘀 𝗥𝗔𝗚 𝘃𝘀 𝗔𝗜 𝗔𝗴𝗲𝗻𝘁𝘀.\n\n𝗠𝗖𝗣 is the connection layer. It gives AI systems a standard way to connect to external systems and capabilities. MCP servers expose tools for querying databases, calling APIs, or taking actions, without requiring custom integrations for every client. But it handles connectivity, not retrieval.\n\nThat's where 𝗥𝗔𝗚 comes in. It searches your docs at query time, pulling relevant chunks into the prompt so answers can draw from your data. Keeping it current means updating an index, not retraining the model. In a basic RAG pipeline, the flow is straightforward: retrieve, then answer.\n\nNow with 𝗔𝗜 𝗔𝗴𝗲𝗻𝘁𝘀, the model runs in a loop: plan a step, call a tool, read the result, repeat until the goal is met. That handles multi-step tasks, at the cost of more latency, tokens, and failure points.\n\nSo the choice comes down to the gap you're closing: access to systems, knowledge from your data, or action over many steps.\n\nBut executing a task successfully doesn't necessarily mean it's still the right task.\n\nPriorities shift, budgets change, and teams move between projects. Both humans and AI agents can keep executing work that no longer aligns with the bigger plan.\n\nThe problem is that strategy, capacity, spend, and execution data often live in different systems. By the time a quarterly review reveals the gap between plan and reality, time and budget have already been spent.\n\nCatching that drift early means continuously connecting what was planned with the work actually happening, across both human teams and AI agents.\n\nTempo Loop brings together time, capacity, spend, and execution data in one unified view across human and AI-agent work.\n\nIt answers a simple question without chasing status updates: Are we still working on the right things?\n\nWhen something drifts, Loop identifies the gap, recommends corrective actions with tradeoff context, and orchestrates approved changes back into the systems teams already use, like Jira.\n\n𝗔𝗴𝗲𝗻𝘁𝘀 𝗹𝗼𝗼𝗽 𝗼𝗻 𝘁𝗮𝘀𝗸𝘀. 𝗧𝗵𝗶𝘀 𝗼𝗻𝗲 𝗹𝗼𝗼𝗽𝘀 𝗼𝗻 𝗽𝗿𝗶𝗼𝗿𝗶𝘁𝗶𝗲𝘀.\n\n𝗦𝗲𝗲 𝗵𝗼𝘄 𝗧𝗲𝗺𝗽𝗼 𝗟𝗼𝗼𝗽 𝘄𝗼𝗿𝗸𝘀 → https://t.co/gG53bFKIYa\n\nWhat else would you add?\n\n——\n\n♻️ Repost to help others learn AI.\n🙏 Thanks to @TempoHQ for sponsoring this post.\n➕ Follow me ( Nikki Siapno ) to improve at AI and system design.",
+                "url": "https://x.com/NikkiSiapno/status/2118329342824702331",
+                "source": "@NikkiSiapno",
+                "date": "Thu Nov 05 13:07:26 +0000 2026",
+                "metrics": {
+                  "favorites": 266,
+                  "retweets": 44,
+                  "views": "17079"
+                }
+              },
+              {
+                "title": "BYE-BYE TO TRADITIONAL WEB SCRAPING!!",
+                "summary": "BYE-BYE TO TRADITIONAL WEB SCRAPING!!\n\nSomeone just built PixelRAG.\n\nInstead of turning websites into plain text, it takes screenshots and uses a vision-language model to read information directly from the pixels.\n\nThat’s a big deal.\n\nTraditional scraping often loses important information like:\n\n→ PDFs\n→ Tables\n→ Layouts\n→ Buttons\n→ Columns\n\nAll of that can disappear when a webpage is converted into plain text.\n\nPixelRAG takes a different approach:\n\nIt indexes pages exactly as they appear to the human eye.\n\nThe team has already built a visual index of Wikipedia with over 30 million screenshots.\n\nAnd it reportedly beats the best text-based RAG by 18.1% on QA.\n\nIt also comes with a plugin for Claude Code.\n\nBasically, it gives Claude eyes.\n\nPass it a URL, an arXiv paper, or a local website, and Claude doesn’t need to scrape the DOM.\n\nIt can actually look at the page.\n\nHere’s how it works:\n\n→ Builds a FAISS index\n→ Searches visually across pixels\n→ Embeds content with Qwen3-VL-Embedding\n→ Converts websites, PDFs, and images into tiles\n\nFully open source under Apache-2.0.\n\nLink to the repo in the comments 👇🏻",
+                "url": "https://x.com/dyfwsammy/status/2120128054915731961",
+                "source": "@dyfwsammy",
+                "date": "Tue Nov 10 12:14:53 +0000 2026",
+                "metrics": {
+                  "favorites": 39,
+                  "retweets": 5,
+                  "views": "1531"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multiturn_clarify_then_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_clarify_url",
+        "difficulty": "medium",
+        "what_it_tests": "3 turns: nhận URL ở lượt 2 và gọi fetch đúng URL ở lượt 3."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài này hộ mình"
+        },
+        {
+          "role": "user",
+          "content": "https://openai.com/news"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc đúng link đó thôi"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://openai.com/news"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://openai.com/news"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://openai.com/news"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://openai.com/news",
+            "items": [
+              {
+                "title": "OpenAI News | OpenAI",
+                "url": "https://openai.com/news",
+                "source": "openai.com",
+                "summary": "OpenAI News \\| OpenAI\n\n## All\n\n* * *\n\nFilter\nSort\n\nSwitch cards to show Media\n\nSwitch cards to hide Media\n\n![Helping caregivers use AI in everyday life — Cover](https://images.ctfassets.net/kftzwdyauwt9/2wwJf21F4rMJ6FffmYbEa5/0e9a21de969e280e77ae8ae66eaa03f6/helping-caregivers-use-ai-in-everyday-life-cover.png?w=3840&q=90&fm=webp)\n\n[Helping caregivers use AI in everyday life\\\\\n\\\\\nCompanyNov 10, 2026](https://openai.com/index/helping-caregivers-use-ai-in-everyday-life/)\n\n![Closing the AI guidance gap in education — Cover](https://images.ctfassets.net/kftzwdyauwt9/3xRIBv3ZzYUCkX0v0ssRAD/b97d79a3107502fca0ba388910a9aa5c/closing-the-ai-guidance-gap-in-education-cover.png?w=3840&q=90&fm=webp)\n\n[Closing the AI guidance gap in education\\\\\n\\\\\nCompanyNov 10, 2026](https://openai.com/index/closing-ai-guidance-gap-education/)\n\n![ChatGPT Enterprise now available in AWS Marketplace — Cover](https://images.ctfassets.net/kftzwdyauwt9/2ReOJcrRGjSgkG3HOVYAf8/7793b38e6bf5c2f68cc3899874d5a832/chatgpt-enterprise-now-available-in-aws-marketplace-cover.png?w=3840&q=90&fm=webp)\n\n[ChatGPT Enterprise now available in AWS Marketplace\\\\\n\\\\\nProductNov 9, 2026](https://openai.com/index/chatgpt-enterprise-aws-marketplace/)\n\n![Introducing Control Room — Cover](https://images.ctfassets.net/kftzwdyauwt9/XFHiXwklxhUiqEYuo22MD/0767c09bbe4c850f05339215f444f097/introducing-control-room-cover.png?w=3840&q=90&fm=webp)\n\n[Control Room: A new way to track and stop AI workloads\\\\\n\\\\\nSafetyNov 9, 2026](https://openai.com/index/control-room/)\n\n![Partnering with Hacktron to find vulnerabilities in OpenAI’s systems — Cover](https://images.ctfassets.net/kftzwdyauwt9/3fdDXi3KINgse06btdaYYq/b14a269201ec921b530470d9a3326b1e/partnering-with-hacktron-cover.png?w=3840&q=90&fm=webp)\n\n[Partnering with Hacktron to strengthen OpenAI’s security\\\\\n\\\\\nSecurityNov 6, 2026](https://openai.com/index/partnering-with-hacktron/)\n\n![Australian universities are creating AI-native graduates — Cover](https://images.ctfassets.net/kftzwdyauwt9/64omN1JbSha5tAU2Kd5Ish/0877ae035483f77e501a0bc7fef261ca/australian-universities-ai-native-graduates-cover.png?w=3840&q=90&fm=webp)\n\n[Australian universities are creating AI-native graduates\\\\\n\\\\\nCompanyNov 5, 2026](https://openai.com/index/australian-universities-ai-native-graduates/)\n\n![GPT-6 Cyber — Cover](https://images.ctfassets.net/kftzwdyauwt9/1AiFc9sQFyo6YguQtfjHHN/3ac0a37435e1dfd2b532eaefe26b18bb/gpt-6-cyber-cover.png?w=3840&q=90&fm=webp)\n\n[GPT‑6 Cyber: Advancing the frontier of aligned cybersecurity agents\\\\\n\\\\\nProductNov 5, 2026](https://openai.com/index/introducing-gpt-6-cyber/)\n\n![OpenAI to acquire Pierre Computer Company, Inc. — Cover](https://images.ctfassets.net/kftzwdyauwt9/3nPsXcvxPd0yN3YwkNf6k2/52b49d1ce5f362c8427036ee8b66da9a/openai-to-acquire-pierre-computer-company-inc-cover.png?w=3840&q=90&fm=webp)\n\n[OpenAI to acquire Pierre Computer Company, Inc.\\\\\n\\\\\nCompanyNov 4, 2026](https://openai.com/index/openai-to-acquire-pierre/)\n\n![Daybreak Red is now available in AWS GovCloud (US-East) — Cover](https://images.ctfassets.net/kftzwdyauwt9/3NOPzjiEJ3CYIUuWfexkd5/c16ef9c6350003e5f2f161245be1f78c/daybreak-red-aws-govcloud-cover.png?w=3840&q=90&fm=webp)\n\n[Daybreak Red is now available in AWS GovCloud (US-East)\\\\\n\\\\\nProductNov 4, 2026](https://openai.com/index/daybreak-red-aws-govcloud/)\n\nLoad more"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multiturn_cancel_request",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "no_tool_meta",
+        "difficulty": "medium",
+        "what_it_tests": "3 turns: hủy yêu cầu trước đó và hỏi câu meta -> không gọi tool."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin tức AI hôm nay giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "Thôi hủy yêu cầu đó đi, không cần tìm nữa"
+        },
+        {
+          "role": "user",
+          "content": "Bạn là gì và làm được những gì?"
+        }
+      ],
+      "expect": {
+        "no_tool": true,
+        "behavior": "answer_without_tool"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi là một trợ lý nghiên cứu AI và công nghệ, có khả năng tìm kiếm thông tin, tin tức, bài viết trên mạng, các bài báo khoa học, và các kho mã nguồn mở trên GitHub. Tôi cũng có thể giúp bạn tóm tắt nội dung từ các bài viết hoặc bài đăng trên mạng xã hội. Nếu bạn cần thông tin cụ thể, hãy cho tôi biết!",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G11_extract_links_from_text",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_extract_links_from_existing_text",
+        "difficulty": "easy",
+        "what_it_tests": "Post-submission addition: exactly one extract_links call with verbatim text and max_results=10, without search, fetch, or export. Unit tests verify the output items and deduplication."
+      },
+      "input": "Chỉ trích xuất các URL từ nguyên văn đoạn dữ liệu sau, tối đa 10 URL. Không tìm kiếm web, không tải hoặc đọc trang, không xuất file. Chỉ thực hiện một lần gọi extract_links, truyền nguyên văn đoạn dữ liệu vào text và max_results=10:\nSources: [https://example.com/a](https://example.com/a) and [https://example.org/b](https://example.org/b)",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_links",
+            "args": {
+              "text": "Sources: [https://example.com/a](https://example.com/a) and [https://example.org/b](https://example.org/b)",
+              "max_results": 10
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "extract_links",
+            "args": {
+              "text": "Sources: [https://example.com/a](https://example.com/a) and [https://example.org/b](https://example.org/b)",
+              "max_results": 10
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "extract_links",
+          "args": {
+            "text": "Sources: [https://example.com/a](https://example.com/a) and [https://example.org/b](https://example.org/b)",
+            "max_results": 10
+          },
+          "result": {
+            "tool": "extract_links",
+            "items": [
+              {
+                "title": "https://example.com/a",
+                "url": "https://example.com/a",
+                "source": "example.com",
+                "summary": ""
+              },
+              {
+                "title": "https://example.org/b",
+                "url": "https://example.org/b",
+                "source": "example.org",
+                "summary": ""
+              }
+            ],
+            "item_count": 2,
+            "total_unique": 2,
+            "truncated": false
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -149,6 +149,67 @@ Lỗi còn lại và gợi ý vòng sau:
 - Khi mở rộng mô tả tool để hỗ trợ gọi kết hợp nhiều nguồn, model có thể phát sinh xu hướng `extra_tool_call` ở câu đơn hoặc câu chuyển đổi công cụ (`M06_switch_tool`); do đó cần kết hợp chặt chẽ giữa quy tắc điều hướng trong `system_prompt.md` và ranh giới phủ định (*WHEN NOT TO USE*) trong `tools.yaml` ở vòng `v3`.
 - Thiết kế eval case multi-turn tốt cần thử thách đồng thời hai chiều: chiều **giữ ngữ cảnh** (carry-over `limit`, `timeframe`, `topic` từ lượt 1 sang lượt 3) và chiều **phá bỏ ngữ cảnh cũ** (đổi công cụ từ Twitter sang `github_repos` hoặc hủy lệnh), đồng thời luôn kiểm chứng qua `pytest` (`test_tool_contract.py`, `test_version_catalog.py`) để bảo đảm tính toàn vẹn của toàn bộ dữ liệu nhóm.
 
+### LuuVanVietDuc-2A202603445
+
+**Phần việc phụ trách:** v3, unit test và kiểm thử tích hợp; tool `extract_links`
+là phần bổ sung sau khi nhóm đã nộp release v3, trên nhánh riêng để trưởng nhóm duyệt.
+
+**Đóng góp cụ thể:**
+
+- Tối ưu v3 theo giả thuyết chọn nguồn/yêu cầu đang còn hiệu lực trong hội thoại;
+  kết quả lịch sử OpenRouter `openai/gpt-4o-mini`: base 20/20, group 9/10; G08 vẫn FAIL.
+- Tự viết 14 unit test offline cho clarify, format, send, lookup, fetch, timeline,
+  social_search, policy trong `test_vietduc_existing_tools.py`; tích hợp trên v2
+  tại commit `8e9265b`, giữ nguyên test chung của nhóm. Mốc 131 passed là số liệu
+  ở thời điểm đó, không phải tổng hiện tại sau khi main tích hợp thêm tool khác.
+- Bổ sung `extract_links(text, max_results=10)` sau khi nộp: trích và khử trùng
+  URL HTTP/HTTPS có sẵn trong text/Markdown, giữ thứ tự, query/fragment; validation
+  trả error dict, không dùng mạng/API key hoặc ghi file. Viết TOOL.md, đăng ký
+  registry/declaration, thêm 54 trường hợp test và case routing G11.
+- Tạo nhánh `vietduc-tool-extract-links` từ `origin/main` tại `d3f1282`, giữ nguyên
+  prompt v3, dữ liệu/bằng chứng cũ, bonus local của thành viên khác và các tool nhóm.
+  `github_repos` và `export_chat` không phải tool do Việt Đức viết.
+
+**Bằng chứng** (commit, code, test, run JSON, version log, transcript):
+
+- Commit v3 `680563d`, merge vào main `d3f1282`;
+  artifact lịch sử `v3+p8f1016718bf4+ta94472a74581`.
+- [14 test cá nhân](starter_v0/tests/test_vietduc_existing_tools.py), commit `8e9265b`.
+- Run v3: [base](starter_v0/runs/v3_B_base_openrouter_20261110T195239893928.json),
+  [group](starter_v0/runs/v3_B_group_openrouter_20261110T195341770535.json);
+  các dòng v3 trong [version log](starter_v0/artifacts/version_log.csv).
+- [Transcript v3 ba lượt](starter_v0/transcripts/v3_openrouter_20261110T202721680910.transcript.json).
+- Phần sau khi nộp: [code extract_links](starter_v0/tools/extract_links/tool.py),
+  [TOOL.md](starter_v0/tools/extract_links/TOOL.md), phần `extract_links` cuối
+  [test_tools_todo.py](starter_v0/tests/test_tools_todo.py),
+  `G11_extract_links_from_text` trong [eval_group.json](starter_v0/data/eval_group.json).
+- Kiểm thử ngày 10/11/2026: baseline main **151 passed**; test tool **54 passed**;
+  contract **70 passed**; full suite sau tích hợp **210 passed**, 0 failed, 0 skipped.
+  Kết quả live `v3-extract-links` và giới hạn bộ chấm được ghi riêng tại
+  [REPORT B5](starter_v0/artifacts/REPORT.md#bổ-sung-sau-khi-nộp-v3-extract_links--việt-đức).
+  Bộ nhóm nhánh bổ sung có 11 case; không thay thế group 10 case đã nộp.
+- Run mới `v3-extract-links+p8f1016718bf4+t6164a8575cc6`, ngày 10/11/2026:
+  [base 21:20:04](starter_v0/runs/v3-extract-links_B_base_openrouter_20261110T212004147485.json)
+  **20/20** và
+  [group 21:20:49](starter_v0/runs/v3-extract-links_B_group_openrouter_20261110T212049831977.json)
+  **10/11**, 0 provider errors; G11 PASS với args nguyên văn, G08 vẫn FAIL.
+  Mỗi bộ chỉ chạy một lượt; hai dòng version log lấy dữ liệu từ các run này.
+  Không diễn giải 10/11 là cải thiện so với 9/10 lịch sử vì bộ case đã thay đổi.
+- Review cuối ngày 10/11/2026 lúc 21:46: sửa lỗi cắt dấu câu thuộc query/fragment
+  trong autolink/Markdown link có delimiter đầy đủ; thêm 6 regression cases.
+  Kết quả mới: **60 test tool, 70 contract, 216 full-suite passed**. Giữ số liệu
+  54/210 ở lượt tích hợp đầu làm bằng chứng riêng. Không đổi declaration/prompt;
+  hai live run 21:20 được tạo trước bản sửa review và không xác minh bản sửa này.
+
+**Điều mình học được từ phần nhóm:**
+
+- Tách lỗi routing của model khỏi lỗi implementation bằng eval và unit test;
+  tool offline cần kiểm tra schema/counts/validation mà không tạo HTTP giả không liên quan.
+- Mỗi thay đổi declaration làm đổi tools hash nên phải đo bằng version riêng;
+  không dùng điểm cũ để xác nhận tính đúng của tool mới.
+- Giữ bằng chứng lịch sử và nội dung các thành viên khác giúp đối chiếu rõ phần
+  đã nộp và phần bổ sung, nhất là khi số lượng test/case hiện tại đã khác.
+
 ### PhanTrongHau-2A202603547
 
 **Phần việc phụ trách:** UI và link demo, report A/B, v4 — bonus và local model, live chat và tổng hợp bài nộp.
