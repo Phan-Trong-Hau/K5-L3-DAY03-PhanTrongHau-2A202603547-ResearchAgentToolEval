@@ -1,0 +1,287 @@
+tools:
+- name: clarify
+  description: 'Call this tool to ask for missing required account/URL or publishing
+    confirmation. A plain text question is NOT a substitute for a tool call. Missing
+    information: response_type=text. Telegram publishing without prior explicit confirmation:
+    response_type=yes_no. Stop after clarification.'
+  parameters:
+    type: object
+    properties:
+      question:
+        type: string
+        default: ''
+        description: Câu hỏi ngắn gọn gửi cho người dùng.
+      response_type:
+        type: string
+        enum:
+        - text
+        - yes_no
+        - choice
+        default: text
+        description: 'REQUIRED: text for missing URL/account; yes_no for confirmation
+          before publishing; choice only with options.'
+      options:
+        type: array
+        default: []
+        items:
+          type: string
+        description: Các lựa chọn khi response_type='choice'; để [] nếu là 'text'
+          hoặc 'yes_no'.
+    required:
+    - question
+    - response_type
+- name: timeline
+  description: Recent tweets from ONE known account. Use the latest corrected account
+    in conversation; discard the superseded account. Never guess an account; missing
+    account requires clarify. Not topic search.
+  parameters:
+    type: object
+    properties:
+      screenname:
+        type: string
+        default: ''
+        description: Latest user-specified account, without @. Latest correction overrides
+          old account. Sam Altman=sama; Elon Musk=elonmusk; Andrej Karpathy=karpathy;
+          Yann LeCun=ylecun; OpenAI=OpenAI. No default account.
+      limit:
+        type: integer
+        default: 5
+        description: Số lượng tweet cần lấy (mặc định 5, hoặc theo số lượng người
+          dùng yêu cầu).
+    required:
+    - screenname
+- name: social_search
+  description: Search X/Twitter by topic ONLY when Twitter is an active requested
+    source. Never use for web-only news. If user switches away from Twitter, do not
+    call this tool. Parallel web/social calls only when BOTH are currently requested.
+  parameters:
+    type: object
+    properties:
+      query:
+        type: string
+        default: ''
+        description: 'Từ khóa chủ đề cốt lõi cần tìm trên Twitter (ví dụ: ''AI'',
+          ''GPT-5'', ''OpenAI'').'
+      search_type:
+        type: string
+        enum:
+        - Latest
+        - Top
+        default: Latest
+        description: Chọn 'Top' khi người dùng hỏi tweet phổ biến/nổi bật/top nhất;
+          chọn 'Latest' khi hỏi tweet mới nhất hoặc mặc định.
+      limit:
+        type: integer
+        default: 5
+        description: Số lượng kết quả trả về (mặc định 5).
+    required:
+    - query
+- name: lookup
+  description: Search WEB information/news without a supplied URL. Use this tool when
+    user switches from Twitter to web; do not retain social_search. News requests
+    require topic=news, including inherited news intent. A new subject does not reset
+    timeframe or news intent.
+  parameters:
+    type: object
+    properties:
+      query:
+        type: string
+        default: ''
+        description: Core subject phrase from user, preserving its language. Do not
+          append time expressions such as today/hôm nay or extra news descriptors.
+          Time belongs in timeframe. Use latest corrected subject.
+      topic:
+        type: string
+        enum:
+        - general
+        - news
+        default: general
+        description: news for news/tin/tin tức and current-events requests, including
+          inherited news requests after a subject change. general only for general
+          information.
+      timeframe:
+        type: string
+        enum:
+        - day
+        - week
+        - month
+        - year
+        default: week
+        description: today/hôm nay=day; this week/tuần này=week; this month=month;
+          this year=year. Inherit prior timeframe when user changes only subject or
+          count.
+      max_results:
+        type: integer
+        default: 5
+        description: Số kết quả tối đa (mặc định 5).
+    required:
+    - query
+- name: fetch
+  description: Read a specific URL supplied by user. Missing URL MUST call clarify
+    with response_type=text, not an ordinary text question. Never invent URL.
+  parameters:
+    type: object
+    properties:
+      url:
+        type: string
+        default: ''
+        description: Địa chỉ URL đầy đủ do người dùng cung cấp.
+    required:
+    - url
+- name: format
+  description: Format existing collected items as Markdown. Does not search or retrieve
+    new information.
+  parameters:
+    type: object
+    properties:
+      items:
+        type: array
+        default: []
+        description: Danh sách các item cần định dạng.
+        items:
+          type: object
+          properties:
+            title:
+              type: string
+            url:
+              type: string
+            source:
+              type: string
+            summary:
+              type: string
+            section:
+              type: string
+      template:
+        type: string
+        enum:
+        - brief
+        - sections
+        - bullets
+        - thread
+        - daily_ai_vn
+        default: sections
+        description: 'Khuôn mẫu trình bày: ''brief'', ''sections'', ''bullets'', ''thread'',
+          hoặc ''daily_ai_vn''.'
+      headline:
+        type: string
+        default: ''
+        description: Tiêu đề bản tin.
+    required:
+    - items
+    - template
+- name: send
+  description: Publish text to Telegram ONLY after prior explicit confirmation, with
+    confirmed=true. Initial request to publish requires clarify(response_type=yes_no).
+    Never use for ordinary chat replies.
+  parameters:
+    type: object
+    properties:
+      text:
+        type: string
+        default: ''
+        description: Nội dung văn bản cần gửi.
+      confirmed:
+        type: boolean
+        default: false
+        description: Đặt là true chỉ khi người dùng đã xác nhận đồng ý gửi.
+    required:
+    - text
+- name: policy
+  description: Search internal company policies, not public web news.
+  parameters:
+    type: object
+    properties:
+      query:
+        type: string
+        default: ''
+        description: Từ khóa chính sách nội bộ cần tra cứu.
+      policy_area:
+        type: string
+        enum:
+        - all
+        - ai_research
+        - source_citation
+        - data_privacy
+        - external_publishing
+        - tool_usage
+        default: all
+        description: Nhóm chính sách nội bộ.
+      top_k:
+        type: integer
+        default: 3
+        description: Số mục kết quả trả về.
+    required:
+    - query
+- name: papers
+  description: Search arXiv papers by subject. Not general web news or GitHub repositories.
+  parameters:
+    type: object
+    properties:
+      query:
+        type: string
+        default: ''
+        description: Từ khóa bài báo khoa học cần tìm trên arXiv.
+      max_results:
+        type: integer
+        default: 5
+        description: Số lượng bài báo trả về.
+      sort_by:
+        type: string
+        enum:
+        - relevance
+        - lastUpdatedDate
+        - submittedDate
+        default: relevance
+        description: 'Tiêu chí sắp xếp: ''relevance'', ''lastUpdatedDate'', ''submittedDate''.'
+    required:
+    - query
+- name: paper_text
+  description: Read PDF text for an already supplied arXiv ID or URL. Not paper discovery.
+  parameters:
+    type: object
+    properties:
+      arxiv_url:
+        type: string
+        default: ''
+        description: Mã arXiv ID (ví dụ '1706.03762') hoặc URL arXiv.
+      max_pages:
+        type: integer
+        default: 5
+        description: Số trang tối đa.
+      max_chars:
+        type: integer
+        default: 8000
+        description: Số ký tự tối đa.
+    required:
+    - arxiv_url
+- name: github_repos
+  description: Search GitHub repositories by subject, language and ranking. Only for
+    requests about GitHub projects/repositories.
+  parameters:
+    type: object
+    properties:
+      query:
+        type: string
+        default: ''
+        description: 'Từ khóa chủ đề cốt lõi cần tìm trên GitHub (ví dụ: ''AI agent'',
+          ''RAG'').'
+      language:
+        type: string
+        default: ''
+        description: 'Ngôn ngữ lập trình lọc theo bằng chữ thường (ví dụ: ''python'',
+          ''typescript''). Để trống nếu không lọc.'
+      sort:
+        type: string
+        enum:
+        - stars
+        - forks
+        - updated
+        default: stars
+        description: 'Tiêu chí sắp xếp: ''stars'' (nhiều sao nhất), ''forks'', hoặc
+          ''updated'' (mới cập nhật).'
+      limit:
+        type: integer
+        default: 5
+        description: Số lượng repository trả về (1-20).
+    required:
+    - query
