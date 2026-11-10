@@ -123,3 +123,14 @@ tools:
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
+
+  - name: github_repos
+    description: "Tìm kiếm kho mã nguồn mở (repositories) trên GitHub theo từ khóa, ngôn ngữ lập trình và tiêu chí sắp xếp (stars, forks, updated). Chỉ dùng khi người dùng yêu cầu tìm repo/project trên GitHub."
+    parameters:
+      type: object
+      properties:
+        query: {type: string, default: "", description: "Từ khóa chủ đề cần tìm trên GitHub (ví dụ: 'AI agent', 'RAG')."}
+        language: {type: string, default: "", description: "Ngôn ngữ lập trình lọc theo (ví dụ: 'python', 'typescript'). Để trống nếu không lọc."}
+        sort: {type: string, enum: [stars, forks, updated], default: "stars", description: "Tiêu chí sắp xếp: 'stars' (nhiều sao nhất), 'forks', hoặc 'updated' (mới cập nhật)."}
+        limit: {type: integer, default: 5, description: "Số lượng repository trả về (1-20)."}
+      required: [query]

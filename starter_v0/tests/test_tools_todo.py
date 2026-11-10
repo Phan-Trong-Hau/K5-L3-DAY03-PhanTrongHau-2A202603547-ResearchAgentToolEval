@@ -110,13 +110,57 @@ def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
 #   2. bad / missing input from the model (empty string, wrong type, out-of-enum value)
 #   3. failure path (missing key, HTTP error, timeout) -> returns error dict, does not raise
 
-def test_my_new_tool_happy_path() -> None:
-    pytest.skip(TODO)
+def test_my_new_tool_happy_path(fake_http) -> None:
+    calls = fake_http(FakeResponse({
+        "items": [
+            {
+                "full_name": "langchain-ai/langchain",
+                "html_url": "https://github.com/langchain-ai/langchain",
+                "description": "Build context-aware reasoning applications",
+                "stargazers_count": 98000,
+                "language": "Python",
+            }
+        ]
+    }))
+    github_tool = TOOL_FUNCTIONS["github_repos"]
+    result = github_tool(query="AI agent", language="python", sort="stars", limit=3)
+
+    assert len(calls) == 1
+    assert calls[0]["url"] == "https://api.github.com/search/repositories"
+    assert calls[0]["params"]["q"] == "AI agent language:python"
+    assert calls[0]["params"]["sort"] == "stars"
+    assert calls[0]["params"]["per_page"] == 3
+    assert result["tool"] == "search_github_repos"
+    assert result["items"][0] == {
+        "title": "langchain-ai/langchain",
+        "url": "https://github.com/langchain-ai/langchain",
+        "source": "github.com",
+        "summary": "Build context-aware reasoning applications",
+        "stars": 98000,
+        "language": "Python",
+    }
 
 
-def test_my_new_tool_bad_input_from_model() -> None:
-    pytest.skip(TODO)
+def test_my_new_tool_bad_input_from_model(fake_http) -> None:
+    calls = fake_http(FakeResponse({"items": []}))
+    github_tool = TOOL_FUNCTIONS["github_repos"]
+
+    empty_res = github_tool(query="   ")
+    assert empty_res["error"] == "ValueError"
+    assert "query" in empty_res["message"]
+
+    bad_sort_res = github_tool(query="agent", sort="invalid_sort")
+    assert bad_sort_res["error"] == "ValueError"
+    assert "sort" in bad_sort_res["message"]
+
+    bad_limit_res = github_tool(query="agent", limit=0)
+    assert bad_limit_res["error"] == "ValueError"
+    assert calls == []
 
 
-def test_my_new_tool_failure_returns_error_dict() -> None:
-    pytest.skip(TODO)
+def test_my_new_tool_failure_returns_error_dict(fake_http) -> None:
+    fake_http(FakeResponse(status_code=503))
+    github_tool = TOOL_FUNCTIONS["github_repos"]
+    result = github_tool(query="AI agent")
+    assert result["tool"] == "search_github_repos"
+    assert result["error"] == "HTTPError"
