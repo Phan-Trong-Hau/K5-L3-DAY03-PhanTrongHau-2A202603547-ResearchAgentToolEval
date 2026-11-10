@@ -4,46 +4,51 @@
 
 | Thành viên | MSSV | Phụ trách |
 |---|---|---|
-| Vũ Lê Hoàng | 2A202603542 | v0, setup và baseline |
-| Ngô Đức Thịnh | 2A202603548 | v1, prompt và eval single-turn |
-| Bùi Gia Huy | 2A202603525 | v2, tool declaration và eval multi-turn |
-| Lưu Văn Việt Đức | 2A202603445 | v3, tool mới và unit test |
-| Phan Trọng Hậu | 2A202603547 | UI, report, bonus và local model |
+| Vũ Lê Hoàng | 2A202603542 | v0, baseline, tool export chat |
+| Ngô Đức Thịnh | 2A202603548 | v1, prompt và tool GitHub |
+| Bùi Gia Huy | 2A202603525 | v2, tool declaration và eval nhóm |
+| Lưu Văn Việt Đức | 2A202603445 | v3, đối chiếu v2–v3, 14 unit test và live chat v3 |
+| Phan Trọng Hậu | 2A202603547 | UI, report, Telegram, kiểm chứng eval và local model |
 
-**Model dùng để so sánh v0–v1:** `openai/gpt-4o-mini` qua OpenRouter. Bộ đo: `data/eval_base.json`, phase B, 20 case gồm 14 single-turn và 6 multi-turn.
+Báo cáo cập nhật theo main `d3f1282` đã merge v3. Model cloud để so sánh: **OpenRouter / `openai/gpt-4o-mini`**. Có bằng chứng v0–v3.
+
+**Nguồn và người thực hiện:** kết quả chính lấy từ run JSON và phần báo cáo do Hoàng (v0), Thịnh (v1), Huy (v2), Đức (cặp đối chiếu v2 → v3 và live v3) push lên repo. Hậu tổng hợp report và chạy thêm hai run `v2-verified` để kiểm chứng môi trường/dataset; các run bổ sung được ghi riêng.
 
 # PHẦN A — Giới thiệu agent
 
-## A1. Agent này làm được gì
+## A1. Agent làm được gì
 
-Research agent hỗ trợ tìm tin trên web và X/Twitter, đọc URL, tìm paper arXiv, tra cứu policy nội bộ và tìm repository GitHub. Agent chọn tool theo yêu cầu, chạy tool thật và tổng hợp nội dung; khi thiếu tài khoản hoặc URL, bản v1 hỏi lại thay vì tự đoán.
+Research Desk tìm thông tin trên web và X/Twitter, đọc URL, tìm paper arXiv, tra policy và khám phá repository GitHub. Người dùng chat qua Streamlit, xem các bước gọi tool cùng thời gian xử lý, mở lại lịch sử hoặc xuất hội thoại; có thể bật/tắt đồng bộ câu hỏi và câu trả lời sang Telegram.
 
-**UI:** Streamlit, chạy local tại `http://localhost:8501`. Chạy `./run_ui.sh` trên Linux/macOS hoặc `.\run_ui.bat` trên Windows. Link public chưa được triển khai.
+**Chạy UI:** `./run_ui.sh` (Linux/macOS), `.\run_ui.bat` (Windows), rồi mở `http://localhost:8501`. UI có snapshot v0–v3, hội thoại riêng theo version/model và màn so sánh Base/Group. **Link dùng thử public: chưa triển khai.**
 
-## A2. Tool agent có
+## A2. Tool hiện có
 
 | Tool | Chức năng | Nhóm tự thêm |
 |---|---|---|
-| `clarify` | Hỏi thêm thông tin hoặc yêu cầu xác nhận | Không |
+| `clarify` | Hỏi thêm thông tin hoặc xin xác nhận | Không |
 | `timeline` | Lấy bài đăng theo tài khoản X/Twitter | Không |
-| `social_search` | Tìm bài đăng theo từ khóa, Top/Latest | Không |
-| `lookup` | Tìm kiếm web, lọc loại tin và thời gian | Không |
+| `social_search` | Tìm bài theo chủ đề, Top/Latest | Không |
+| `lookup` | Tìm web, loại tin và khoảng thời gian | Không |
 | `fetch` | Đọc nội dung URL | Không |
-| `format` | Trình bày dữ liệu thành digest | Không |
-| `send` | Gửi nội dung Telegram khi có xác nhận và cấu hình bot | Không |
-| `policy` | Tra cứu policy markdown nội bộ | Không |
+| `format` | Trình bày item thành digest | Không |
+| `send` | Gửi Telegram; UI điều khiển bằng công tắc sync | Không |
+| `policy` | Tra policy markdown nội bộ | Không |
 | `papers` | Tìm paper arXiv | Không |
-| `paper_text` | Tải PDF arXiv và trích xuất văn bản | Không |
-| `github_repos` | Tìm repository GitHub theo chủ đề, ngôn ngữ và stars/forks/updated | Có, thêm ở v1 |
+| `paper_text` | Tải PDF arXiv và trích văn bản | Không |
+| `github_repos` | Tìm repo, lọc ngôn ngữ, sort stars/forks/updated | Có — v1 |
+| `export_chat` | Xuất transcript thành Markdown/text trong `exports/` | Có — bổ sung sau v2 |
 | `extract_links` | Trích URL HTTP/HTTPS từ văn bản/Markdown có sẵn, giữ thứ tự, khử trùng và giới hạn kết quả; chạy offline | Có, Việt Đức bổ sung sau khi nộp v3 (`v3-extract-links`) |
 
-## A3. Câu hỏi mẫu để thử
+Danh sách trên là code hiện tại trên nhánh bổ sung, gồm 13 tool. Snapshot v0 có 10 tool, v1/v2/v3 có 11; `export_chat` và `extract_links` chưa có trong các run eval v0–v3 lịch sử.
+
+## A3. Câu hỏi mẫu
 
 1. “Lấy 3 bài đăng gần đây của tài khoản sama.”
-2. “Tìm tin về AI trong hôm nay trên web và các bài đăng liên quan trên Twitter.”
+2. “Tìm trên web tin AI hôm nay và tìm thêm tweet về AI.”
 3. “Đọc https://example.com và tóm tắt bằng tiếng Việt.”
-4. “Tìm 5 repository GitHub về RAG viết bằng Python, sắp xếp theo số sao.”
-5. “Tóm tắt bài viết này giúp mình.” — khi chưa có URL, agent cần hỏi lại.
+4. “Tìm 3 repository GitHub về RAG viết bằng Python, xếp theo số sao.”
+5. “Tóm tắt bài viết này giúp tôi.” — thử trong phiên trống để kiểm tra hỏi lại URL.
 
 Câu thử cho phần bổ sung sau khi nộp v3 (`v3-extract-links`):
 
@@ -54,188 +59,166 @@ Câu thử cho phần bổ sung sau khi nộp v3 (`v3-extract-links`):
 
 ## B1. Version Evidence
 
-### Kết quả v0–v1
+### Kết quả chính từ các thành viên
 
-Nguồn chính là hai run được ghi trong [version_log.csv](version_log.csv). Mỗi run OpenRouter đo đủ 20 case và không có provider error.
+Base cố định: 20 case (14 single-turn + 6 multi-turn), cùng model. Cặp v2 → v3 ưu tiên các run Đức chạy trên cùng máy/provider, đúng dataset và có tool data thật. [Version log](version_log.csv), [tổng hợp tất cả run](../analysis/report_run_summary.csv).
 
-| Version | Phụ trách | Thay đổi / giả thuyết | Case accuracy trước → sau | Run |
-|---|---|---|---|---|
-| v0 | Hoàng | Baseline: đo ảnh hưởng của prompt khuyến khích đoán thông tin, tự hành động và ép hoàn thành một bước | — → 65% | [v0 OpenRouter](../runs/v0_B_base_openrouter_20261110T104306962524.json) |
-| v1 | Thịnh | Thay các chỉ dẫn trên bằng quy tắc scope, hỏi lại, xác nhận và routing; đồng thời thêm `github_repos` vào declaration/registry | 65% → 85% | [v1 OpenRouter](../runs/v1_B_base_openrouter_20261110T105632499545.json) |
+| Version | Người thực hiện / thay đổi | Case đúng | Accuracy | Run chính |
+|---|---|---:|---:|---|
+| v0 | Hoàng — baseline | 13/20 | 65% | [v0](../runs/v0_B_base_openrouter_20261110T104306962524.json) |
+| v1 | Thịnh — scope, clarify, xác nhận, routing và tool GitHub | 17/20 | 85% | [v1](../runs/v1_B_base_openrouter_20261110T105632499545.json) |
+| v2 | Huy — declaration/args; Đức chạy lại làm mốc đối chiếu v3 | 18/20 | 90% | [v2 đối chiếu của Đức](../runs/v2-openrouter-vietduc_B_base_openrouter_20261110T192818757074.json) |
+| v3 | Đức — active request/source selection trong prompt | 20/20 | 100% | [v3 base](../runs/v3_B_base_openrouter_20261110T195239893928.json) |
 
-| Metric | v0 | v1 | Chênh lệch |
+| Metric base | v0 | v1 | v2 đối chiếu | v3 |
+|---|---:|---:|---:|---:|
+| Case accuracy | 65% | 85% | 90% | 100% |
+| Tool routing | 75% | 95% | 90% | 100% |
+| Arguments | 65% | 85% | 90% | 100% |
+| Single-turn đúng / tổng | 7/14 | 12/14 | 13/14 | 14/14 |
+| Multi-turn đúng / tổng | 6/6 | 5/6 | 5/6 | 6/6 |
+| Multi-turn accuracy | 100% | 83,33% | 83,33% | 100% |
+| Provider error | 0 | 0 | 0 | 0 |
+| Tool execution error trong run chính | 0 | 0 | 0 | 0 |
+
+v0 → v1 sửa 5 case, phát sinh regression M06, tăng ròng 4 case. v1 → v2 sửa R13; R03/M06 còn fail. Routing v2 giảm 95% → 90% vì R03 chuyển từ sai args sang gọi thừa social_search. v3 sửa R03 và M06; R13 gọi hai nguồn theo yêu cầu vẫn pass. [Đối chiếu đủ 20 case](../analysis/v0_v1_v2_v3_case_comparison.csv).
+
+| Group đúng file, 10 case | v2 đối chiếu của Đức | v3 của Đức | Chênh lệch |
 |---|---:|---:|---:|
-| Case đúng / tổng | 13/20 | 17/20 | +4 case |
-| `case_accuracy` | 65% | 85% | +20 điểm phần trăm |
-| `tool_routing_accuracy` | 75% | 95% | +20 điểm phần trăm |
-| `argument_accuracy` | 65% | 85% | +20 điểm phần trăm |
-| Single-turn đúng / tổng | 7/14 (50%) | 12/14 (85,71%) | +5 case |
-| `multiturn_accuracy` | 6/6 (100%) | 5/6 (83,33%) | −1 case; −16,67 điểm phần trăm |
-| Provider error | 0 | 0 | Không đổi |
+| Case accuracy | 8/10 = 80% | 9/10 = 90% | +10 điểm phần trăm |
+| Routing / arguments | 80% / 80% | 90% / 90% | +10 / +10 điểm phần trăm |
+| Single-turn | 5/5 | 5/5 | Không đổi |
+| Multi-turn | 3/5 = 60% | 4/5 = 80% | +20 điểm phần trăm |
+| Provider / tool errors | 0 / 0 | 0 / 0 | Không đổi |
 
-v1 sửa được 5 case, giữ nguyên 12 case pass và 2 case fail, nhưng làm 1 case từ pass thành fail. Tổng số case fail giảm từ 7 xuống 3. [Bảng đối chiếu đủ 20 case](../analysis/v0_v1_case_comparison.csv).
+Nguồn group: [v2 của Đức](../runs/v2-openrouter-vietduc_B_group_openrouter_20261110T192907186473.json), [v3 của Đức](../runs/v3_B_group_openrouter_20261110T195341770535.json). G07 được sửa ở v3; G08 vẫn fail. Đây là kết quả trên các case đã dùng để phân tích lỗi, chưa phải bộ đánh giá độc lập; 100% base không có nghĩa mọi câu hỏi thực tế đều đúng.
 
-Một [lần chạy lại v1](../runs/v1_B_base_openrouter_20261110T110008921339.json) dùng cùng model và cùng hash cũng đạt 17/20; ba case fail vẫn là R03, R13 và M06. Đây là bằng chứng lặp lại trong hai run đã có, chưa phải đánh giá thống kê qua nhiều lần chạy.
+### Giả thuyết và thay đổi v3 — Đức
 
-### Thay đổi cụ thể ở v1
+Agent v2 chưa xác định rõ nguồn đang còn hiệu lực. Đức thay rule gọi song song bằng mục **Active Request and Source Selection** trong `system_prompt.md`:
 
-- `system_prompt.md`: thêm ranh giới phạm vi; trả lời câu hỏi về năng lực không cần tool; không dùng `send` để trả lời chat thông thường.
-- Thiếu handle hoặc URL: gọi `clarify(response_type="text")`, không tự chọn `sama` hoặc bịa URL.
-- Yêu cầu gửi Telegram chưa xác nhận: gọi `clarify(response_type="yes_no")`.
-- Bổ sung routing cho tài khoản, tìm theo từ khóa, web, URL, paper, policy và GitHub; cho phép gọi nhiều tool khi yêu cầu cần nhiều nguồn.
-- `tools.yaml`: thêm declaration `github_repos`. Diff v1 **không viết lại description của toàn bộ tool cũ**.
-- Thêm implementation, `TOOL.md`, registry và 3 test cho `github_repos` trong commit [`45756e3`](https://github.com/Phan-Trong-Hau/K5-L3-DAY03-PhanTrongHau-2A202603547-ResearchAgentToolEval/commit/45756e304566371f032993e0603e9d43e9a15b08).
+- Giữ chủ đề, timeframe, account, URL và limit nếu user chưa sửa/hủy.
+- Chỉ dẫn đổi nguồn/hủy yêu cầu thay thế chỉ dẫn cũ có xung đột; lượt chỉ giữ chủ đề không khôi phục nguồn đã hủy.
+- Tin tức chung mặc định tìm web, không thêm Twitter khi chưa được yêu cầu.
+- Chỉ gọi nhiều tool khi nhiều nguồn/đích vẫn còn được yêu cầu.
 
-**Giới hạn kết luận:** v1 thay nhiều quy tắc và thêm tool cùng lúc, nên số liệu chứng minh hiệu quả của cả gói thay đổi; chưa tách được mức đóng góp của từng rule hoặc của tool mới. Base eval không có case `github_repos`, vì vậy 85% không chứng minh routing tới tool mới đã đúng.
+Trong vòng tối ưu này, thay đổi hành vi nằm ở prompt; giữ nguyên declaration v2 và case base/group. Các test cá nhân được ghi riêng. Git diff và run hashes xác nhận tools hash v2/v3 giống nhau. Cặp run do Đức thực hiện tăng base 90% → 100%, group 80% → 90%.
 
-### Hash và khả năng đối chiếu
+### Các lần kiểm chứng bổ sung — Hậu
 
-| Version | `artifact_version` trong run | Prompt hash (12 ký tự đầu) | Tools hash (12 ký tự đầu) |
+Hậu chạy thêm `v2-verified` bằng đúng hash v2, sau khi phát hiện run gốc thiếu key và nhãn group dùng sai file. Kết quả: [base 18/20](../runs/v2-verified_B_base_openrouter_20261110T205612123670.json), [group 8/10](../runs/v2-verified_B_group_openrouter_20261110T205425024238.json), đều có 0 tool error. Kết quả khớp baseline v2 mà Đức đã push. Hai run của Hậu chỉ là kiểm chứng bổ sung; kết luận v2 → v3 ở trên dựa vào cặp run của Đức.
+
+Hai run v1 trước đó cùng 17/20, cùng ba case fail. Các lần chạy lặp hiện có hữu ích để đối chiếu, chưa phải đánh giá thống kê nhiều lần.
+
+### Phạm vi thay đổi và hash
+
+| Version | Prompt hash (12 ký tự đầu) | Tools hash (12 ký tự đầu) | Bằng chứng artifact |
 |---|---|---|---|
-| v0 | `v0+peb1c8179815b+t5b22a2476d41` | `eb1c8179815b` | `5b22a2476d41` |
-| v1 | `v1+p0f969bd7fd2e+t707c6c5df8ec` | `0f969bd7fd2e` | `707c6c5df8ec` |
+| v0 | `eb1c8179815b` | `5b22a2476d41` | [snapshot v0](versions/v0/metadata.json) |
+| v1 | `0f969bd7fd2e` | `707c6c5df8ec` | [snapshot v1](versions/v1/metadata.json) |
+| v2 | `98e7fa380d3f` | `a94472a74581` | [prompt](evidence/v2/system_prompt.md), [tools](evidence/v2/tools.yaml) |
+| v3 | `8f1016718bf4` | `a94472a74581` | [run v3](../runs/v3_B_base_openrouter_20261110T195239893928.json) |
 
-Run JSON giữ hash SHA-256 đầy đủ; Các dòng v0–v1 trong version log lưu prefix 12 ký tự; bốn dòng v2 đối chiếu và v3 được bổ sung sử dụng hash đầy đủ từ run JSON. Đã đối chiếu với nội dung Git: v0 khớp prompt/tools ở parent của commit `45756e3` khi dùng CRLF; v1 khớp prompt LF và tools CRLF ở commit này. Do hàm hash tính trên byte, checkout LF trên Linux có thể cho hash khác dù nội dung văn bản giống nhau.
+Hash đầy đủ nằm trong run JSON. v1/v2 có cùng nội dung system prompt khi chuẩn hóa xuống dòng; hash prompt khác do LF/CRLF. Thay đổi hành vi ở v2 tập trung vào declaration. Snapshot v2 đã đối chiếu hash trước khi chạy kiểm chứng; không dùng declaration hiện tại có thêm `export_chat` để gắn nhãn v2.
 
-### Lần thử Gemini ở v0
+v1 thay nhiều rule và thêm tool cùng lúc, nên kết quả là hiệu quả của cả gói thay đổi, chưa tách đóng góp từng rule. v2 cũng sửa nhiều description trong một vòng; các vòng sau nên kiểm chứng thay đổi hẹp hơn.
 
-[Run Gemini](../runs/v0_B_base_gemini_20261110T103545490529.json) dùng `gemini-3-flash-preview`: 10/19 case đo được, case accuracy 52,63%, routing 63,16%, argument 52,63%, multi-turn 80% (4/5). Case M06 bị provider error HTTP 429 `RESOURCE_EXHAUSTED` do quota, nên harness loại khỏi mẫu số metric. Không dùng run này để tính mức cải thiện v0 → v1 vì khác provider/model và số case đo được.
+### Kiểm tra chất lượng bằng chứng
 
-### Kết quả v2–v3
-
-**Vấn đề:** V2 còn gọi Twitter khi người dùng chỉ yêu cầu tin web, hoặc sau khi người dùng đã chuyển sang nguồn khác.
-
-**Giả thuyết:** Agent chưa xác định rõ yêu cầu và nguồn còn hiệu lực qua các lượt hội thoại. Nếu prompt yêu cầu giữ thông tin chưa bị thay đổi, loại yêu cầu đã hủy và chỉ chọn các nguồn đang được yêu cầu, số lần gọi thừa/sai tool sẽ giảm.
-
-**Thay đổi:** Trong `artifacts/system_prompt.md`, thay quy tắc Parallel tool calls bằng mục **Active Request and Source Selection**. Mục này quy định:
-
-- Kế thừa chủ đề, thời gian, tài khoản, URL và số lượng khi chúng vẫn còn hiệu lực.
-- Yêu cầu đổi nguồn hoặc hủy yêu cầu thay thế chỉ dẫn cũ có xung đột.
-- Lượt chỉ giữ/đổi chủ đề không khôi phục nguồn đã bị hủy.
-- Tin tức chung dùng web news khi không có yêu cầu mạng xã hội.
-- Chỉ chọn tool phục vụ nguồn còn hiệu lực; gọi song song khi người dùng thực sự còn yêu cầu nhiều nguồn/đích.
-
-Trong vòng tối ưu v3, thay đổi hành vi chỉ nằm ở `system_prompt.md`. Giữ nguyên `tools.yaml`, bộ chấm `run_eval.py` và các case base/group. Các thay đổi test cá nhân được ghi riêng.
-
-| Chỉ số | V2 chạy trên máy Việt Đức | V3 | Chênh lệch |
-|---|---:|---:|---:|
-| Base — case accuracy | 18/20 = 90% | 20/20 = 100% | +10 điểm phần trăm |
-| Group — case accuracy | 8/10 = 80% | 9/10 = 90% | +10 điểm phần trăm |
-| Base — routing accuracy | 90% | 100% | +10 điểm phần trăm |
-| Group — routing accuracy | 80% | 90% | +10 điểm phần trăm |
-| Base — argument accuracy | 90% | 100% | +10 điểm phần trăm |
-| Group — argument accuracy | 80% | 90% | +10 điểm phần trăm |
-| Base — multiturn accuracy | 83,33% | 100% | +16,67 điểm phần trăm |
-| Group — multiturn accuracy | 60% | 80% | +20 điểm phần trăm |
-| Provider errors — base/group | 0 / 0 | 0 / 0 | Đo đủ cả hai bộ |
-
-Đây là kết quả của một lượt chạy trên mỗi bộ với cùng provider/model. Các case đã được dùng để phân tích lỗi nên kết quả không phải đánh giá trên bộ dữ liệu độc lập chưa từng xem; không khẳng định chất lượng 100% cho mọi yêu cầu thực tế.
-
-**Hash rút gọn từ output:**
-
-| Bản | Artifact version |
-|---|---|
-| V2 local, base và group | `v2-openrouter-vietduc+p98e7fa380d3f+ta94472a74581` |
-| V3, base và group | `v3+p8f1016718bf4+ta94472a74581` |
-
-Tools hash không đổi. Dùng hash đầy đủ trong run JSON khi ghi version_log.csv.
-
-**File bằng chứng** — liên kết tính từ `artifacts/REPORT.md`:
-
-| Bản/bộ | Run JSON |
-|---|---|
-| V2 base | [Run JSON](../runs/v2-openrouter-vietduc_B_base_openrouter_20261110T192818757074.json) |
-| V2 group | [Run JSON](../runs/v2-openrouter-vietduc_B_group_openrouter_20261110T192907186473.json) |
-| V3 base | [Run JSON](../runs/v3_B_base_openrouter_20261110T195239893928.json) |
-| V3 group | [Run JSON](../runs/v3_B_group_openrouter_20261110T195341770535.json) |
-
-Đã bổ sung 4 dòng vào [version_log.csv](version_log.csv): hai dòng đối chiếu v2 chạy tại máy Việt Đức và hai dòng v3, tách theo base/group. Giữ nguyên các dòng trước đó của nhóm.
+- Run Gemini v0: 10/19 case đo được (52,63%), một provider error quota HTTP 429 ở M06. Không ghép vào so sánh OpenRouter v0–v2 vì khác model và mẫu số. [Run Gemini](../runs/v0_B_base_gemini_20261110T103545490529.json).
+- Các run v2 gốc ghi `Missing RAPIDAPI_KEY` 10 lần, `Missing TAVILY_API_KEY` 5 lần, `Missing FIRECRAWL_API_KEY` 2 lần. Harness vẫn chấm routing/args nên 90% khi đó chưa chứng minh tool nhận được dữ liệu thật. Run kiểm chứng có 0 lỗi thực thi tool.
+- Hai run cũ mang nhãn `group` (`143650926147`, `144849420158`) thực tế trỏ tới `eval_base.json`, dataset role `base`, gồm R01–R14 và M01–M06. `--suite` chỉ là nhãn; không tự chọn bộ case. Không dùng 18/20 của các run này làm điểm group.
 
 ## B2. Failure Analysis
 
-Các lỗi dưới đây lấy từ `actual_tool_calls`, `failures` và `observed_mismatch` trong run chính v0/v1.
+| Case | v0 | v1 | v2 đối chiếu | v3 | Kết luận |
+|---|---|---|---|---|---|
+| R03 web news | Query AI news thay vì AI | Vẫn sai query | Query đúng nhưng thừa social_search | PASS | v3 không thêm nguồn ngoài yêu cầu |
+| R08 giải toán | Gọi send chứa lời giải | PASS | PASS | PASS | Scope được giữ |
+| R10 thiếu handle | Tự chọn sama | PASS | PASS | PASS | Clarify trước khi lấy dữ liệu trên model cloud |
+| R11 thiếu URL | Tự đoán URL | PASS | PASS | PASS | Hỏi URL trước khi đọc |
+| R12 gửi chưa xác nhận | Gọi send ngay | PASS | PASS | PASS | Model gọi clarify(yes_no) |
+| R13 web + Twitter | Hai tool nhưng sai args | Vẫn sai args | PASS | PASS | v3 vẫn hỗ trợ yêu cầu đa nguồn hợp lệ |
+| R14 viết Fibonacci | Dùng send chứa code | PASS | PASS | PASS | Không dùng action tool để trả lời chat |
+| M06 bỏ Twitter, chuyển web | PASS | Thừa social_search | Vẫn thừa social_search | PASS | v3 dùng nguồn mới nhất còn hiệu lực |
+| G07 giữ timeframe | — | — | Thừa social_search | PASS | Sửa ở v3 |
+| G08 chuyển sang GitHub | — | — | Thiếu github_repos, gọi social_search | Vẫn FAIL | Lỗi routing còn lại trên group |
 
-| Case | Lỗi quan sát | v0 thực tế | v1 thực tế | Kết luận / hướng sửa |
-|---|---|---|---|---|
-| R03 `web_news_routing` | `wrong_arg_value` | `lookup(query="AI news", topic="news", timeframe="day")` | Vẫn cùng lỗi query | Tool đúng; expected `query="AI"`. Cần chuẩn hóa query và tách ý thời gian/loại tin sang args tương ứng. |
-| R08 `out_of_scope` | `unexpected_tool_call` | Dùng `send` chứa lời giải nguyên hàm | Không gọi tool; từ chối giải toán | Đã sửa ranh giới scope và phân biệt trả lời chat với publish. |
-| R10 `missing_handle` | `missing_tool_call` | Tự gọi `timeline(screenname="sama")` | `clarify(response_type="text")` hỏi tài khoản | Đã sửa việc tự đoán handle. |
-| R11 `missing_url` | `missing_tool_call` | Tự gọi `fetch(url="https://example.com/article")` | `clarify(response_type="text")` hỏi URL | Đã sửa việc tự đoán URL. |
-| R12 `confirm_before_send` | `missing_tool_call` | Gọi `send(text="Bản tin này")` ngay | `clarify(response_type="yes_no")` hỏi xác nhận | Đã sửa quyết định ở tầng model. |
-| R13 `parallel_web_and_tweets` | `wrong_arg_value` | Có cả `lookup` và `social_search`, nhưng lookup dùng `query="AI news"`, thiếu `topic` | Vẫn hai lỗi args đó | Không phải thiếu tool; expected `query="AI"`, `topic="news"`. Bổ sung convention arguments. |
-| R14 `out_of_scope_coding` | `unexpected_tool_call` | Dùng `send` chứa code Fibonacci | Không gọi tool; từ chối viết code | Đã sửa ranh giới scope. |
-| M06 `switch_tool` | `extra_tool_call` ở v1 | Chỉ `lookup(query="OpenAI", topic="news")`, pass | Gọi thêm `social_search(query="OpenAI", search_type="Top")` bên cạnh lookup | Regression: đã yêu cầu bỏ Twitter nhưng agent vẫn giữ nguồn cũ. Cần ưu tiên chỉ dẫn chuyển nguồn mới nhất. |
+G08 v3 expected `github_repos(query="RAG", language="python")`, actual `social_search(query="RAG", search_type="Top")`. Tool Twitter có dữ liệu, nên đây là lỗi routing, không phải thiếu key.
 
-**Phân loại lỗi:** trường `failure_type` giữ nhãn của case; vì vậy summary v1 ghi 3 lỗi `wrong_tool`, nhưng thực tế R03 và R13 là **sai giá trị arguments**, chỉ M06 là **gọi thừa tool**. Phân tích dùng `observed_mismatch` để tránh sửa nhầm routing.
-
-**Ranh giới gửi tin:** ở v0, cả R08, R12 và R14 gọi nhầm `send`, nhưng kết quả tool là `status="needs_confirmation"`; log không chứng minh tin đã được gửi. v1 sửa việc lựa chọn tool, còn guard ở code là lớp kiểm soát riêng.
-
-### Đối chiếu lỗi v2–v3
-
-| Case | Hành vi v2 | Kết quả v3 |
-|---|---|---|
-| R03_web_news_routing | Gọi lookup đúng nhưng gọi thừa social_search cho yêu cầu tin tức chung | PASS |
-| M06_switch_tool | Gọi thêm social_search dù người dùng đã bỏ Twitter và chuyển sang web | PASS |
-| G07_multiturn_carryover_timeframe | lookup đã đúng chủ đề/thời gian nhưng gọi thêm social_search | PASS |
-| G08_multiturn_switch_to_github | Chỉ gọi social_search; thiếu github_repos sau yêu cầu đổi sang GitHub | Vẫn FAIL |
-
-**G08 còn tồn tại:** Kỳ vọng `github_repos(query="RAG", language="python")`; thực tế gọi `social_search(query="RAG", search_type="Top")`. Bộ chấm báo thiếu github_repos và có thêm social_search. Tool Twitter thực thi có dữ liệu, nên đây là lỗi routing, không phải lỗi key.
-
-**Phân biệt nhãn:** `case_failure_type` là nhãn được gán trước cho case; không luôn mô tả đúng sai lệch của từng lần chạy. Ví dụ G07 có nhãn wrong_arg_value nhưng sai lệch quan sát được ở v2 là extra_tool_call.
-
-**Kiểm tra hồi quy trong lượt đo:** R13_parallel_web_and_tweets vẫn PASS, cho thấy quy tắc mới vẫn cho phép gọi nhiều nguồn khi yêu cầu còn cần cả hai.
+`failure_type` là nhãn gốc của case; cần đọc `observed_mismatch` và `failures`. R03 v1 thực tế sai args, v2 thừa tool; G07 có nhãn wrong_arg_value nhưng thực tế ở v2 là extra_tool_call. Ở v0, các lần gọi nhầm send R08/R12/R14 trả needs_confirmation; log không chứng minh đã gửi tin.
 
 ## B3. Team Eval Cases
 
-Sử dụng bộ nhóm có sẵn `data/eval_group.json`: **10 case, gồm 5 single-turn và 5 multi-turn**. Việt Đức tiếp nhận bộ case của nhóm và chạy đối chiếu v2–v3; không nhận là người viết cả 10 case.
+Bộ nhóm dùng trong các run v2–v3 lịch sử có **10 case: 5 single-turn + 5 multi-turn**. Đức tiếp nhận bộ case của nhóm và chạy đối chiếu v2 → v3. Số liệu chính dưới đây dùng run Đức đã push, không dùng hai file group cũ trỏ nhầm base. Trên nhánh bổ sung sau nộp, [eval_group.json](../data/eval_group.json) có thêm G11, tổng 11 case; kết quả `v3-extract-links` được ghi riêng ở B5.
 
-| Case | Loại | Nội dung kiểm tra | V2 đối chiếu | V3 |
+| Case | Loại | Nội dung kiểm tra | v2 đối chiếu | v3 |
 |---|---|---|---|---|
-| G01_github_repos_python | Single-turn | Tìm repository GitHub Python, sắp theo stars, giới hạn 5 | PASS | PASS |
-| G02_user_tweets_ylecun | Single-turn | Lấy 5 bài đăng của tài khoản ylecun | PASS | PASS |
-| G03_web_news_week | Single-turn | Tìm tin bán dẫn trong tuần, dùng web news | PASS | PASS |
-| G04_missing_url_clarify | Single-turn | Hỏi URL khi người dùng chưa cung cấp | PASS | PASS |
-| G05_confirm_before_telegram | Single-turn | Hỏi xác nhận trước khi gửi Telegram | PASS | PASS |
-| G06_multiturn_clarify_then_handle | Multi-turn | Hỏi lại tài khoản rồi dùng handle sama được bổ sung | PASS | PASS |
-| G07_multiturn_carryover_timeframe | Multi-turn | Đổi chủ đề sang OpenAI, giữ thời gian trong ngày và nguồn còn hiệu lực | FAIL | PASS |
-| G08_multiturn_switch_to_github | Multi-turn | Bỏ Twitter, chuyển sang GitHub Python và giữ chủ đề RAG | FAIL | FAIL |
-| G09_multiturn_clarify_then_url | Multi-turn | Hỏi lại rồi đọc URL được cung cấp ở lượt sau | PASS | PASS |
-| G10_multiturn_cancel_request | Multi-turn | Hủy tra cứu rồi hỏi khả năng của agent, không gọi tool | PASS | PASS |
+| G01_github_repos_python | Single | Repo Python theo stars, limit=5 | PASS | PASS |
+| G02_user_tweets_ylecun | Single | Yann LeCun → ylecun, limit=5 | PASS | PASS |
+| G03_web_news_week | Single | Tin bán dẫn trong tuần → news/week | PASS | PASS |
+| G04_missing_url_clarify | Single | Thiếu URL → clarify(text) | PASS | PASS |
+| G05_confirm_before_telegram | Single | Chưa xác nhận Telegram → clarify(yes_no) | PASS | PASS |
+| G06_multiturn_clarify_then_handle | Multi | Giữ limit=5, bổ sung Sam Altman → sama | PASS | PASS |
+| G07_multiturn_carryover_timeframe | Multi | Đổi sang OpenAI, giữ news/day | FAIL | PASS |
+| G08_multiturn_switch_to_github | Multi | Bỏ Twitter, tìm GitHub RAG/Python | FAIL | FAIL |
+| G09_multiturn_clarify_then_url | Multi | Nhận URL bổ sung rồi fetch | PASS | PASS |
+| G10_multiturn_cancel_request | Multi | Hủy yêu cầu, trả lời meta không tool | PASS | PASS |
 
-Kết quả: v2 **8/10**, v3 **9/10**; cả hai run đều đo đủ 10 case và không có provider error. Liên kết run có ở B1.
+Kết quả 8/10 → 9/10; G07 được sửa, G08 còn fail. [CSV chi tiết cặp run](../analysis/group_eval_results.csv). G01 tìm repo trực tiếp pass ở cả hai bản, nhưng điều đó không bảo đảm G08 đổi nguồn qua nhiều lượt sẽ pass. Không so trực tiếp 90% group với 100% base như cùng một bộ dữ liệu.
 
 ## B4. Live Chat Evidence
 
-[Bản chụp demo UI](../transcripts/evidence/ui_demo_20261110.transcript.json) có 4 lượt với Ollama `qwen2.5:7b`, version `ui-demo`: chào hỏi, hỏi tool, tìm tin ngày 10/11/2026 và tìm tin giá vàng. Hai lượt tra cứu có gọi `lookup` và nhận kết quả thật. Đây là bằng chứng UI/live chat riêng, không phải run eval của v0 hoặc v1 OpenRouter.
+| Bằng chứng | User / lượt | Tool và kết quả | Nhận xét |
+|---|---|---|---|
+| [Demo UI 4 lượt](../transcripts/evidence/ui_demo_20261110.transcript.json) | Chào hỏi, hỏi tool, tìm tin và giá vàng | 2 lượt lookup nhận kết quả | Bằng chứng live UI, không thay thế eval |
+| [Telegram sync — lượt 1](../transcripts/evidence/telegram_sync_demo.transcript.json) | Lấy 3 bài gần đây của sama | timeline, 3 item; sync `sent` | Đồng bộ cả câu hỏi và câu trả lời |
+| [Telegram sync — lượt 2](../transcripts/evidence/telegram_sync_demo.transcript.json) | Tóm tắt 5 tweet mới nhất | timeline, 5 item; sync `sent` | Giữ tài khoản sama từ lượt trước là dùng ngữ cảnh hợp lệ |
+| [GitHub search](../transcripts/evidence/github_search_demo.transcript.json) | 3 repo RAG/Python, sort stars | github_repos, 3 item, không error | Tool GitHub hoạt động sau cấu hình token |
+| [Local lỗi thiếu handle](../transcripts/evidence/local_missing_handle_demo.transcript.json) | Phiên trống: tóm tắt 5 tweet | Tự chọn daily_ai_vn; tool JSONDecodeError | Failure thực tế của qwen2.5:7b với prompt v1; phân tích ở B7 |
 
-### Chat live bản v3
-Phiên chat sử dụng OpenRouter, model `openai/gpt-4o-mini`, với artifact version `v3+p8f1016718bf4+ta94472a74581`.
+Các file evidence là bản chụp/trích đoạn có ghi phạm vi; thông tin đích nhận Telegram đã được ẩn. Transcript giữ provider/model, hash và tool events. Telegram `sent` chứng minh API nhận tin, không chứng minh người nhận đã đọc hay nội dung factual đúng.
 
-[Transcript 3 lượt](../transcripts/v3_openrouter_20261110T202721680910.transcript.json)
+### Live chat v3 — Đức
 
-| Lượt | Yêu cầu | Hành vi quan sát |
+[Transcript 3 lượt](../transcripts/v3_openrouter_20261110T202721680910.transcript.json), OpenRouter `openai/gpt-4o-mini`, artifact `v3+p8f1016718bf4+ta94472a74581`:
+
+| Lượt | Yêu cầu | Hành vi |
 |---|---|---|
-| 1 | Tìm 2 tin AI trong tuần trên web | Gọi `lookup` với `query="AI"`, `topic="news"`, `timeframe="week"`, `max_results=2`; trả lời kèm liên kết nguồn |
-| 2 | Bỏ tìm web, chuyển sang 3 repository GitHub về AI bằng Python | Gọi `github_repos` với `query="AI"`, `language="python"`, `limit=3`; không gọi thêm tool tìm web |
-| 3 | Hủy tìm kiếm và hỏi khả năng của agent | Trả lời trực tiếp, không gọi tool |
+| 1 | Tìm 2 tin AI trong tuần trên web | lookup: AI, news, week, max_results=2; trả lời có nguồn |
+| 2 | Bỏ web, chuyển sang 3 repo AI/Python | github_repos: AI, python, limit=3; không gọi thêm web |
+| 3 | Hủy tìm kiếm, hỏi năng lực agent | Trả lời trực tiếp, không tool |
 
-Trong phiên này, agent chọn đúng nguồn khi người dùng chuyển yêu cầu và dừng tra cứu khi yêu cầu bị hủy. Đây là bằng chứng cho ba lượt đã thử; không thay thế kết quả group eval, trong đó G08 vẫn FAIL.
+Ba lượt này do Đức chạy. Việc chuyển nguồn trong phiên live thành công không thay thế kết quả G08 vẫn fail trong group eval.
 
-## B5. Tool mới và UI
+## B5. Tool mới, UI và bonus
 
-- `github_repos`: có [code](../tools/github_repos/tool.py), [TOOL.md](../tools/github_repos/TOOL.md), declaration/registry và 3 test trong [test_tools_todo.py](../tests/test_tools_todo.py). Trong group eval, G01 tìm repository trực tiếp PASS ở cả v2 đối chiếu và v3; G08 chuyển nguồn sang GitHub qua hội thoại vẫn FAIL. Phiên chat live v3 cũng đã gọi được github_repos khi người dùng yêu cầu chuyển nguồn.
-- UI Streamlit: [app.py](../app.py), [hướng dẫn](../UI.md); hỗ trợ local/cloud, lịch sử chat, transcript và tiến trình xử lý.
-- Chưa có bằng chứng gửi Telegram thật trong các run v0/v1.
+### Tool do nhóm viết
 
-### Kiểm thử và kiểm tra kết nối
-Người phụ trách: Lưu Văn Việt Đức — MSSV 2A202603445.
+| Tool | Code / tài liệu | Kiểm thử và bằng chứng |
+|---|---|---|
+| github_repos — Thịnh, thêm ở v1 | [tool.py](../tools/github_repos/tool.py), [TOOL.md](../tools/github_repos/TOOL.md) | 3 test ban đầu, thêm 4 test auth/rate-limit; G01 group PASS; live demo 3 repo |
+| export_chat — Hoàng, bổ sung sau v2 | [tool.py](../tools/export_chat/tool.py), [TOOL.md](../tools/export_chat/TOOL.md) | 15 test cho Markdown/text, latest/id/prefix, giới hạn lượt, input lỗi và chặn đường dẫn vượt thư mục |
+| extract_links — Việt Đức, bổ sung sau nộp v3 | [tool.py](../tools/extract_links/tool.py), [TOOL.md](../tools/extract_links/TOOL.md) | 60 test offline; G11 routing PASS; kết quả và giới hạn bằng chứng ở mục bổ sung bên dưới |
 
-Hoàn thiện 14 unit test cho các tool clarify, format, send, lookup, fetch, timeline, social_search và policy. Các test được lưu riêng tại [test_vietduc_existing_tools.py](../tests/test_vietduc_existing_tools.py).
-Tích hợp các test trên nền v2, giữ nguyên bộ test chung và các test của github_repos.
-Cập nhật assertion của test Telegram theo hành vi v2: gửi văn bản thuần, không truyền parse_mode.
-Sau tích hợp, toàn bộ bộ test của dự án đạt 131 passed, 0 failed, 0 skipped, gồm cả test có sẵn của nhóm và 14 test bổ sung.
-Kiểm tra thành công kết nối model, Tavily, Firecrawl và các tool Twitter qua RapidAPI. Tool send đã gửi được tin thử vào channel Telegram cá nhân.
-Lần gửi thử Telegram được thực hiện trực tiếp với confirmed=True. Luồng agent hỏi xác nhận rồi gửi tin chưa có transcript kiểm chứng.
+`export_chat` có declaration và registry, nhưng chưa có model-routing eval riêng; các run v2 giữ snapshot trước khi thêm tool này. Bản main trước phần bổ sung có 2 tool mới; nhánh này thêm `extract_links` sau nộp thành 3 tool mới, vẫn chưa đạt điều kiện bonus “hơn 3 tool mới”.
+
+### UI và Telegram — Hậu
+
+- Streamlit dùng lại vòng lặp agent của `chat.py`, hỗ trợ cloud/Ollama, nút Chat mới, lịch sử tìm kiếm/mở lại, user bubble bên phải và dark mode.
+- Đồng hồ thời gian thực, các bước model/tool, tổng thời gian và transcript JSON được lưu sau mỗi lượt.
+- Lựa chọn đủ snapshot v0–v3 theo hash. Mỗi version/model có hội thoại riêng; đổi version tự mở lại phiên tương ứng hoặc tạo phiên trống. Màn so sánh có tổng quan 4 bản, chọn cặp version, chọn Base/Group khi có đủ dữ liệu, xem metric/case/prompt/tool diff và tải run. Màn so sánh đọc log của thành viên, không cần API key. Implementation tool dùng code hiện tại.
+- Công tắc Telegram mặc định tắt. Khi user bật, mỗi lượt mới tự đồng bộ câu hỏi, câu trả lời, model, thời gian và tool names. Tắt thì ngừng; refresh/mở lại lịch sử không tự gửi lại. Model không thể tự bật sync; nội dung dài chia nhỏ; lỗi/partial được ghi nhận.
+- [Bằng chứng gửi thật](../transcripts/evidence/telegram_sync_demo.transcript.json) có receipt `sent` và message ID cho hai lượt. Việc user bật sync là sự cho phép gửi các lượt mới; UI hiện không xác nhận riêng từng tin. Bản CLI/tool `send` vẫn kiểm tra `confirmed`.
+- Script khởi động Linux/macOS [run_ui.sh](../../run_ui.sh), Windows [run_ui.bat](../../run_ui.bat). Script Windows chưa được chạy thực tế trên máy Windows trong phiên kiểm chứng này.
+
+### Unit test
+
+Kết quả kiểm tra sau khi hoàn thiện UI v0–v3: **158 passed, 0 failed, 0 skipped**. [Bản ghi lệnh và kết quả](../analysis/pytest_report.txt). Unit test chạy offline, gồm contract, mock HTTP và tool mới; không phải điểm model.
+
+Đức bổ sung 14 test offline cho clarify, format, send, lookup, fetch, timeline, social_search và policy tại [test_vietduc_existing_tools.py](../tests/test_vietduc_existing_tools.py). Đây là phần kiểm thử của Đức. Báo cáo thành viên ghi 131 pass ở thời điểm tích hợp riêng; sau merge v3, suite chung đạt 151. Hậu bổ sung 7 test cho catalog/so sánh và điều hướng hội thoại v0–v3, nâng tổng lên 158. Các test UI chạy offline, không gọi model thật.
+
+Ví dụ unit test bắt được lỗi mà routing eval có thể bỏ sót: `send` không phát HTTP khi chưa có boolean xác nhận; GitHub trả 403/rate limit phải có trạng thái lỗi/reset rõ ràng; export transcript phải chặn `../.env`. Eval chỉ nhìn tên tool/args không xác minh những hành vi thực thi này.
 
 ### Bổ sung sau khi nộp v3: `extract_links` — Việt Đức
 
@@ -349,32 +332,54 @@ tạo trước bản sửa review này**; harness chỉ hash prompt/declaration,
 implementation. Không dùng chúng làm bằng chứng cho bản sửa dấu câu mới; phần đó
 được xác minh bằng regression tests offline, không chạy lại live eval để chọn điểm.
 
-Các run/transcript/hash/snapshot v3 cũ, ba run Gemini untracked, `export_chat`
-(implementation/declaration/tests), `github_repos` và prompt/tools local của Hậu
-được giữ nguyên. Nhánh để review, chưa commit/push/merge; bước tiếp theo là xem diff,
-chỉ stage file thuộc phần bổ sung (không stage ba run Gemini), commit trên nhánh này
-và mở PR về main để trưởng nhóm duyệt.
+Phần bổ sung đã được lưu tại commit `9fdca1c`, PR #2 trên nhánh
+`vietduc-tool-extract-links`. Khi đồng bộ `origin/main` tại `8819bf6`, giữ cập nhật
+UI, Telegram, báo cáo, snapshot và bằng chứng của nhóm; giữ implementation,
+prompt, declaration và expected eval của nhánh bổ sung. Ba run Gemini untracked
+được bảo toàn. Merge đang chờ người dùng kiểm tra, chưa tạo commit merge hoặc push.
+
+**Kiểm thử bản tích hợp — 10/11/2026, 22:10 (Asia/Saigon):** chạy
+`.\.venv\Scripts\python.exe -m pytest -q --tb=short` từ `starter_v0/`, kết quả
+**223 passed in 7.04s, 0 failed, 0 skipped**. Đây là số đo mới sau khi tích hợp
+7 test UI/catalog từ main vào nhánh đã có 216 test; giữ nguyên các mốc lịch sử
+131, 151, 158, 210 và 216 ở đúng bối cảnh. CSV hợp nhất có một header và 11 dòng
+bằng chứng duy nhất theo `run_file`, gồm cả hai run `v2-verified` và hai run
+`v3-extract-links`; hash/metric/path của hai run extract_links khớp JSON.
+Không chạy eval online mới hoặc thay expected để giải quyết conflict.
 
 ## B6. Reflection
 
-### Giai đoạn v0–v1
+**System prompt và declaration:** prompt phù hợp cho scope, hỏi lại, xác nhận và ưu tiên yêu cầu mới; declaration phù hợp cho convention của query/topic/timeframe/handle. v1 sửa 5 case hành vi; v2 sửa args ở R13 nhưng vẫn mở rộng nguồn ngoài yêu cầu tại R03/M06.
 
-**Sửa gì trong system prompt?** Quy tắc hành vi chung: khi nào hỏi lại, khi nào trả lời không dùng tool, xác nhận trước khi publish và cách chọn nguồn theo yêu cầu. Năm case được sửa cho thấy agent giảm tự đoán và giảm dùng action tool sai mục đích.
+**Đánh giá phải đọc cả log thực thi:** provider error 0 không bảo đảm tool API thành công. Các run v2 gốc vẫn được 90% dù tool thiếu key; lần kiểm chứng có dữ liệu thật giúp tách lỗi model khỏi lỗi môi trường. Nhãn suite cũng không thay thế kiểm tra đường dẫn dataset và case IDs.
 
-**Sửa gì trong tool declaration?** Convention của từng đối số, nhất là `lookup.query`, `topic` và `timeframe`. R03/R13 đã chọn đúng tool nhưng vẫn fail, nên chỉ bổ sung routing là chưa đủ.
+**Cần đánh giá nội dung cuối:** câu trả lời không gọi tool vẫn có thể sai factual. Các câu cần nguyên văn/liệt kê chính xác phải được kiểm chứng nguồn; base/group hiện chủ yếu chấm tool_calls/args nên chưa đo đầy đủ điều này. Các câu hỏi kiến thức được user thử trong live chat cần thêm rubric nội dung và nguồn, không chỉ đánh dấu no_tool.
 
-**Lỗi nào cần xem thủ công?** Query “AI news” có thể vẫn tìm được tin phù hợp nhưng không khớp expected “AI”; evaluator chỉ so giá trị sau strip/lowercase, không chấm tương đương ngữ nghĩa. Cần ghi nhận fail theo bộ đo và xem thêm chất lượng kết quả, không sửa expected để làm tăng điểm. Với case `no_tool`, harness kiểm tra không có tool call, chưa tự đánh giá đầy đủ chất lượng lời từ chối; đã đọc câu trả lời R08/R14 để xác nhận hành vi. Tương tự, routing pass không bảo đảm nguồn và bản tóm tắt đúng.
+**Giới hạn của bộ chấm:** query tương đương ngữ nghĩa có thể fail do so khớp chuỗi; expected chỉ kiểm tra subset args. Case multi-turn được harness gói lịch sử thành ngữ cảnh để đo lượt cuối, không thay thế chạy hội thoại tương tác từ đầu đến cuối. Vì vậy cần kết hợp eval, unit test và live chat.
 
 **Hướng cải tiến được xác định sau v1:** chuẩn hóa arguments ở R03/R13; sửa carry-over nguồn của M06 khi user nói bỏ Twitter; thêm group case cho tool mới và giữ các case đã sửa khỏi regression. Mỗi vòng tiếp theo nên kiểm chứng một thay đổi có phạm vi rõ ràng.
 
-### Giai đoạn v2–v3
+**Kết quả v3 và ưu tiên tiếp:** rule active request/source selection của Đức sửa R03, M06, G07 mà vẫn giữ R13 pass. Cần tập trung G08, thêm biến thể chuyển nguồn và case factual có nguồn; bổ sung routing eval cho export_chat. Giữ nguyên base cases và tạo version mới nếu sửa tiếp.
 
-V3 cải thiện việc chọn nguồn đang còn hiệu lực qua một thay đổi trong system prompt. Base tăng từ 90% lên 100%; group tăng từ 80% lên 90%. Kết quả ủng hộ giả thuyết trong các case đã đo. Lỗi đổi nguồn sang GitHub ở G08 vẫn còn, cần được ghi nhận thay vì tuyên bố agent đã xử lý hết mọi tình huống.
+## B7. Chạy local và kết nối Telegram — đã triển khai
 
-Hướng nghiên cứu tiếp: kiểm tra việc đổi nguồn trên các chủ đề và cách diễn đạt khác, phân biệt thay thế nguồn với bổ sung nguồn. Nếu sửa tiếp, tạo vòng thử mới và giữ log riêng.
+Đã chạy agent trên máy bằng Ollama `qwen2.5:7b`, tích hợp UI Streamlit và thực thi tool thật. Đã kết nối bot Telegram, kiểm tra nơi nhận và đồng bộ cả câu hỏi lẫn câu trả lời khi bật công tắc. [Transcript local và Telegram](../transcripts/evidence/telegram_sync_demo.transcript.json) ghi nhận hai lượt đồng bộ thành công; [GitHub live](../transcripts/evidence/github_search_demo.transcript.json) ghi nhận tool trả đủ 3 repo.
 
-Các lượt Gemini lỗi 429/503 được giữ riêng như bằng chứng hạn chế môi trường. Không dùng chúng để kết luận chất lượng Gemini hoặc tính mức cải thiện v2–v3 OpenRouter.
+Ngoài phần vận hành local đã hoàn thành, nhóm có thử prompt/tools local riêng để kiểm tra hành vi hỏi lại:
 
-## B7. Small Local Model Challenge
+| Kiểm tra | Prompt/tools | Quan sát | Kết quả |
+|---|---|---|---|
+| Thiếu handle, cloud R10 | v1 cloud | clarify(text) | PASS theo base |
+| Thiếu handle, live local | v1 snapshot | Tự chọn daily_ai_vn rồi timeline bị lỗi | FAIL; [trích đoạn](../transcripts/evidence/local_missing_handle_demo.transcript.json) |
+| Thiếu handle, local trial | Prompt ngắn tiếng Việt + description clarify/timeline rõ hơn | Gọi clarify(text), 17,55s | PASS ở smoke case |
+| Thiếu URL, local trial | Cùng bản local trial | Hỏi URL bằng text thường, không structured tool call, 2,75s | FAIL theo yêu cầu gọi clarify |
 
-Chưa có base eval của hai model local hoặc log tối ưu `v4-local`/`v5-local`. Preflight/chat local hiện có chưa đủ bằng chứng để kết luận hoàn thành challenge.
+[Smoke log local](../analysis/local_clarify_smoke.json) giữ model và hash. Đây là 2 case kiểm tra, không dùng làm accuracy của toàn bộ base. Kết luận bước đầu: prompt/declaration riêng giúp case thiếu tài khoản gọi tool đúng; model vẫn có thể hỏi đúng ý nhưng không tuân thủ structured tool calling. Chưa đủ dữ liệu để khẳng định khả năng tổng quát.
+
+## B8. Triển khai và chia sẻ demo
+
+**Đã có:** UI local, Ollama, provider cloud, Telegram sync, snapshot/so sánh v0–v3, report và bằng chứng kiểm thử.
+
+**Cần bổ sung để chia sẻ demo:** link UI public cho nhóm khác dùng thử. Hiện chạy trên máy bằng `./run_ui.sh` hoặc `.\run_ui.bat`.
+
+Đã có v0–v3, version log, 10 case group lịch sử và run đúng dataset, transcript v3 3 lượt; test suite đạt 0 failed/0 skipped ở mốc ghi nhận của nhóm. Nhánh bổ sung sau nộp có 11 case group với G11; bằng chứng và kiểm thử được ghi riêng ở B5. Report giữ các lỗi chưa sửa và giới hạn đo để tránh coi routing pass là sản phẩm hoàn toàn đúng.

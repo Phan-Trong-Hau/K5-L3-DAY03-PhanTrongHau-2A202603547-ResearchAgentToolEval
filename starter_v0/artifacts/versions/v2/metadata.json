@@ -1,0 +1,11 @@
+{
+  "version": "v2",
+  "description": "Mô tả tool và quy ước arguments",
+  "source_commit": "c1781ace2bf516a0c82fa394244d48b157423216",
+  "run_version": "v2-openrouter-vietduc",
+  "run_file": "runs/v2-openrouter-vietduc_B_base_openrouter_20261110T192818757074.json",
+  "group_run_file": "runs/v2-openrouter-vietduc_B_group_openrouter_20261110T192907186473.json",
+  "run_author": "Lưu Văn Việt Đức",
+  "prompt_hash": "98e7fa380d3fcdf643150fb69a6d14c83f83bd3ed7b6fa069ca5514a53548583",
+  "tools_hash": "a94472a7458106eb3fb0f071c38096513780b4b50140efed2d2afd626b1ff119"
+}

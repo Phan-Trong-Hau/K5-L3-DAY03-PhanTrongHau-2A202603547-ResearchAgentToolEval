@@ -94,7 +94,15 @@ def redact(value):
     return value
 
 
+def remember_session():
+    session = st.session_state.get("research")
+    if session:
+        key = (session["version"], session["provider"], session["model"])
+        st.session_state.setdefault("sessions_by_config", {})[key] = session
+
+
 def start_session(provider, model, version, rounds, history_window):
+    remember_session()
     st.session_state.view_only = False
     saved_version = load_versions().get(version)
     if saved_version:
@@ -147,16 +155,43 @@ def saved_sessions(search):
 
 def restore_session(data):
     if "prompt_snapshot" not in data or "tools_snapshot" not in data:
-        current = build_artifact_version(data.get("version", "ui-demo"), PROMPT, TOOLS)
+        profile = load_versions().get(data.get("version"))
+        prompt_path = profile["prompt_path"] if profile else PROMPT
+        tools_path = profile["tools_path"] if profile else TOOLS
+        current = build_artifact_version(data.get("version", "ui-demo"), prompt_path, tools_path)
         if data.get("prompt_hash") != current.prompt_hash or data.get("tools_hash") != current.tools_hash:
             return False
-        data["prompt_snapshot"] = PROMPT.read_text(encoding="utf-8")
-        data["tools_snapshot"] = to_openai_tools(load_tool_declarations(TOOLS))
+        data["prompt_snapshot"] = prompt_path.read_text(encoding="utf-8")
+        data["tools_snapshot"] = to_openai_tools(load_tool_declarations(tools_path))
+    remember_session()
     st.session_state.research = data
     st.session_state.prompt_snapshot = data["prompt_snapshot"]
     st.session_state.tools_snapshot = data["tools_snapshot"]
     st.session_state.view_only = False
     return True
+
+
+def switch_version():
+    current = st.session_state.get("research")
+    if not current:
+        return
+    chosen = st.session_state.selected_version
+    profile = load_versions()[chosen]
+    remember_session()
+    key = (chosen, current["provider"], current["model"])
+    cached = st.session_state.get("sessions_by_config", {}).get(key)
+    candidates = ([cached] if cached else []) + [data for _, _, data in saved_sessions("")]
+    for data in candidates:
+        if (data.get("version"), data.get("provider"), data.get("model")) != key:
+            continue
+        if data.get("prompt_hash") != profile["prompt_hash"] or data.get("tools_hash") != profile["tools_hash"]:
+            continue
+        if restore_session(data):
+            st.session_state.pop("pending_query", None)
+            return
+    start_session(current["provider"], current["model"], chosen,
+                  current["max_tool_rounds"], current["history_window"])
+    st.session_state.pop("pending_query", None)
 
 
 def select_saved_session(data):
@@ -240,8 +275,9 @@ with st.sidebar:
     st.divider()
     versions = load_versions()
     version = st.selectbox("Phiên bản agent", list(versions), index=len(versions)-1,
-                           key="selected_version", format_func=lambda name: f"{name} · {versions[name]['description']}")
-    st.caption("Chọn phiên bản rồi bấm Chat mới hoặc Áp dụng cấu hình.")
+                           key="selected_version", on_change=switch_version,
+                           format_func=lambda name: f"{name} · {versions[name]['description']}")
+    st.caption("Mỗi phiên bản có hội thoại riêng theo model. Đổi phiên bản để xem lại hoặc bấm Chat mới để thử từ đầu.")
     st.subheader("🕘 Lịch sử hội thoại")
     search = st.text_input("Tìm trong hội thoại", placeholder="Nhập từ khóa…", key="history_search")
     saved = saved_sessions(search.strip())
@@ -271,35 +307,38 @@ with st.sidebar:
 
     if not enabled_providers:
         st.warning("Chạy Ollama với model đã cài hoặc cấu hình API key trong .env để bắt đầu.")
-        if "research" not in st.session_state:
-            st.stop()
 
-    if new_session or "research" not in st.session_state:
+    if enabled_providers and (new_session or "research" not in st.session_state):
         selected_model = model.strip() or make_provider(provider).default_model
         start_session(provider, selected_model, version.strip() or "ui-demo", rounds, history_window)
 
-    session = st.session_state.research
+    session = st.session_state.get("research")
     st.divider()
-    st.markdown("**Phiên hiện tại**")
-    st.caption(f"{session['provider']} · {session['model']}")
-    st.caption(f"Phiên bản: {session['version']}")
-    st.caption(f"{len(session['turns'])} lượt trao đổi")
-    if session["turns"]:
-        st.download_button(
-            "↓ Tải transcript JSON",
-            data=json.dumps(session, ensure_ascii=False, indent=2),
-            file_name=f"{session['transcript_id']}.transcript.json",
-            mime="application/json",
-            use_container_width=True,
-        )
+    if session:
+        st.markdown("**Phiên hiện tại**")
+        st.caption(f"{session['provider']} · {session['model']}")
+        st.caption(f"Phiên bản: {session['version']}")
+        st.caption(f"{len(session['turns'])} lượt trao đổi")
+        if session["turns"]:
+            st.download_button(
+                "↓ Tải transcript JSON",
+                data=json.dumps(session, ensure_ascii=False, indent=2),
+                file_name=f"{session['transcript_id']}.transcript.json",
+                mime="application/json",
+                use_container_width=True,
+            )
     with st.expander("Công cụ có sẵn"):
-        for tool in st.session_state.tools_snapshot:
+        for tool in st.session_state.get("tools_snapshot", []):
             fn = tool["function"]
             st.markdown(f"**{fn['name']}** — {fn['description']}")
 
-view = st.radio("Chế độ", ["Trò chuyện", "So sánh v0–v1"], horizontal=True, label_visibility="collapsed")
-if view == "So sánh v0–v1":
+view = st.radio("Chế độ", ["Trò chuyện", "So sánh phiên bản"], horizontal=True, label_visibility="collapsed")
+if view == "So sánh phiên bản":
     render_comparison(versions)
+    st.stop()
+
+if session is None:
+    st.info("Cấu hình một provider để chat, hoặc chọn So sánh phiên bản để xem kết quả eval đã lưu.")
     st.stop()
 
 st.title("Bạn muốn tìm hiểu điều gì?")
