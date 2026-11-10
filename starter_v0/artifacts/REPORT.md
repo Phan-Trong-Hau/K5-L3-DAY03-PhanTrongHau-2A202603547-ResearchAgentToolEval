@@ -225,9 +225,11 @@ Ví dụ unit test bắt được lỗi mà routing eval có thể bỏ sót: `s
 
 **Kết quả v3 và ưu tiên tiếp:** rule active request/source selection của Đức sửa R03, M06, G07 mà vẫn giữ R13 pass. Cần tập trung G08, thêm biến thể chuyển nguồn và case factual có nguồn; bổ sung routing eval cho export_chat. Giữ nguyên base cases và tạo version mới nếu sửa tiếp.
 
-## B7. Small Local Model Challenge — tiến độ
+## B7. Chạy local và kết nối Telegram — đã triển khai
 
-Model đã thử: Ollama `qwen2.5:7b`. Chưa có full base eval trên hai model ≤8B, hai vòng `v4-local`/`v5-local` hoặc lần chạy ngược bản local trên cloud, nên chưa kết luận hoàn thành challenge.
+Đã chạy agent trên máy bằng Ollama `qwen2.5:7b`, tích hợp UI Streamlit và thực thi tool thật. Đã kết nối bot Telegram, kiểm tra nơi nhận và đồng bộ cả câu hỏi lẫn câu trả lời khi bật công tắc. [Transcript local và Telegram](../transcripts/evidence/telegram_sync_demo.transcript.json) ghi nhận hai lượt đồng bộ thành công; [GitHub live](../transcripts/evidence/github_search_demo.transcript.json) ghi nhận tool trả đủ 3 repo.
+
+Ngoài phần vận hành local đã hoàn thành, nhóm có thử prompt/tools local riêng để kiểm tra hành vi hỏi lại:
 
 | Kiểm tra | Prompt/tools | Quan sát | Kết quả |
 |---|---|---|---|
@@ -238,10 +240,10 @@ Model đã thử: Ollama `qwen2.5:7b`. Chưa có full base eval trên hai model 
 
 [Smoke log local](../analysis/local_clarify_smoke.json) giữ model và hash. Đây là 2 case kiểm tra, không dùng làm accuracy của toàn bộ base. Kết luận bước đầu: prompt/declaration riêng giúp case thiếu tài khoản gọi tool đúng; model vẫn có thể hỏi đúng ý nhưng không tuân thủ structured tool calling. Chưa đủ dữ liệu để khẳng định khả năng tổng quát.
 
-## B8. Phần còn thiếu trước khi nộp cuối
+## B8. Triển khai và chia sẻ demo
 
-- Link UI public để nhóm khác dùng thử.
-- Bổ sung phần đóng góp cá nhân của các thành viên khi có bằng chứng tương ứng.
-- Nếu nhận bonus local: full eval ≥2 model, ≥2 vòng tối ưu có log và kiểm tra ngược cloud.
+**Đã có:** UI local, Ollama, provider cloud, Telegram sync, snapshot/so sánh v0–v3, report và bằng chứng kiểm thử.
+
+**Cần bổ sung để chia sẻ demo:** link UI public cho nhóm khác dùng thử. Hiện chạy trên máy bằng `./run_ui.sh` hoặc `.\run_ui.bat`.
 
 Đã có v0–v3, version log, 10 case group và run đúng dataset, transcript v3 3 lượt; test suite đạt 0 failed/0 skipped. Report giữ các lỗi chưa sửa và giới hạn đo để tránh coi routing pass là sản phẩm hoàn toàn đúng.

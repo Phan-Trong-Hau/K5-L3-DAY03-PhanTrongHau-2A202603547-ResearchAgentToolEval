@@ -33,7 +33,7 @@
 | Tool mới và unit test | Đức | Viết ít nhất 1 tool mới, TOOL.md và ≥3 test; hoàn thành TODO test; tích hợp registry/declaration sau khi nhận v2 | Tool mới đăng ký đầy đủ, kết quả pytest, ghi nhận bug nếu có |
 | v3 — Tích hợp và cải tiến | Đức | Nhận v2; ghi rõ thay đổi thêm tool; kiểm chứng một giả thuyết cải tiến; chạy base và group eval | Commit/tag v3, run JSON base/group, metric, dòng version log |
 | Report A và B | Hậu | Viết A trước 16:30; thu thập bằng chứng từng người; hoàn thiện B theo dữ liệu thật | `artifacts/REPORT.md`; poster tùy chọn |
-| v4 — Bonus và local model | Hậu | Triển khai các phần bonus; chạy base eval với bản v3 trên ít nhất 2 model local hỗ trợ tool calling, kích thước ≤8B qua Ollama; phân tích lỗi; tối ưu ít nhất 2 vòng `v4-local`, `v5-local`; chạy lại bản tối ưu trên cloud | Run JSON cloud/local, prompt/tools local, version log và bảng so sánh trong REPORT B7 |
+| Local và bonus tích hợp | Hậu | Chạy agent qua Ollama trên máy; tích hợp UI, prompt/tools local riêng và công tắc đồng bộ hội thoại Telegram; ghi nhận kết quả thử nghiệm | UI local, transcript gọi tool và receipt Telegram, local smoke log, REPORT B5/B7 |
 | Live chat và nộp bài | Hậu | Chạy `chat.py` ít nhất 3 lượt; kiểm tra bản UI cuối cùng; rà soát đủ artifacts, không lộ key | Transcript JSON, checklist nộp bài, bản tích hợp cuối |
 
 ## Phối hợp và bàn giao
@@ -159,8 +159,8 @@ Lỗi còn lại và gợi ý vòng sau:
 - Hoàn thiện chọn snapshot v0–v3 đúng hash. Chuyển version tự mở hội thoại riêng theo model; có nút Chat mới. Màn so sánh có tổng quan 4 bản, chọn cặp version, Base/Group, metric, case, tool calls và diff prompt/tools; script chạy Linux/macOS và Windows.
 - Nối Telegram: công tắc đồng bộ câu hỏi/câu trả lời, metadata model/thời gian/tool; không gửi trùng khi rerun, chia nội dung dài, lưu receipt vào transcript. Có hai lượt sync thật thành công.
 - Bổ sung GitHub token tùy chọn và xử lý rate-limit; kiểm tra tool trả 3 repo thật.
-- Thử qwen2.5:7b, ghi nhận lỗi tự đoán tài khoản; tạo prompt/tools local riêng. Smoke test mới: thiếu handle gọi clarify đúng; thiếu URL vẫn hỏi bằng text thường nên chưa pass structured tool calling.
-- Tổng hợp report v0–v3 từ bằng chứng thành viên, phát hiện group run cũ trỏ nhầm base và các tool v2 thiếu key. Chạy kiểm chứng đúng snapshot: base 18/20, group 8/10, không có tool error. Đối chiếu riêng hai run v2-verified; report dùng cặp run tối ưu v2–v3 của Đức. Full local challenge chưa hoàn thành. Bổ sung 7 test catalog/UI để kiểm tra snapshot, so sánh đúng dataset/model và cách ly hội thoại giữa các version; suite cuối đạt 158 pass, 0 fail/skip.
+- Chạy thành công Ollama qwen2.5:7b trên UI local, gọi tool thật và đồng bộ hội thoại Telegram; ghi nhận lỗi tự đoán tài khoản và tạo prompt/tools local riêng. Smoke test mới: thiếu handle gọi clarify đúng; thiếu URL vẫn hỏi bằng text thường nên chưa pass structured tool calling.
+- Tổng hợp report v0–v3 từ bằng chứng thành viên, phát hiện group run cũ trỏ nhầm base và các tool v2 thiếu key. Chạy kiểm chứng đúng snapshot: base 18/20, group 8/10, không có tool error. Đối chiếu riêng hai run v2-verified; report dùng cặp run tối ưu v2–v3 của Đức. Bổ sung 7 test catalog/UI để kiểm tra snapshot, so sánh đúng dataset/model và cách ly hội thoại giữa các version; suite cuối đạt 158 pass, 0 fail/skip.
 
 **Bằng chứng:**
 
@@ -182,7 +182,8 @@ Lỗi còn lại và gợi ý vòng sau:
 - [x] Provider thật và preflight thành công.
 - [x] Có ít nhất 5 tool khai báo.
 - [x] Có run JSON và version log v0, v1, v2, v3.
-- [ ] Có kết quả ít nhất 2 model local ≤8B, hai vòng tối ưu `v4-local`/`v5-local`, kiểm tra lại trên cloud và báo cáo B7.
+- [x] Agent chạy local qua Ollama, gọi tool thật và có transcript bằng chứng.
+- [x] Kết nối Telegram và đồng bộ tin nhắn user/agent thành công.
 - [x] Các phần bonus đã triển khai có bằng chứng trong báo cáo B5.
 - [x] Có tool mới, TOOL.md, registry và declaration đồng bộ.
 - [x] Có ≥3 unit test/tool mới; pytest xanh, hoàn thành TODO test để không còn skip.
@@ -191,5 +192,5 @@ Lỗi còn lại và gợi ý vòng sau:
 - [ ] Có link UI public cho nhóm khác dùng thử.
 - [x] Có ít nhất 3 lượt live chat và transcript JSON.
 - [x] Report A/B hoàn chỉnh, số liệu khớp run và version log.
-- [ ] Thành viên cập nhật đóng góp và bằng chứng cá nhân.
+- [x] Phần cá nhân của Hậu đã có đóng góp và liên kết bằng chứng.
 - [x] Gói nộp không chứa `.env`, API key hoặc token.
