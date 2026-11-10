@@ -129,31 +129,25 @@ Lỗi còn lại và gợi ý vòng sau:
 
 **Đóng góp cụ thể:**
 
-- Chưa cập nhật.
+- Nhận bàn giao bản `v1` và phân tích 3 case fail từ Thịnh (`R03_web_news_routing`, `R13_parallel_web_and_tweets`, `M06_switch_tool`), xây dựng giả thuyết `v2`: viết lại toàn bộ `description` của các tool và từng tham số trong `starter_v0/artifacts/tools.yaml` — phân định rõ *WHEN TO USE / WHEN NOT TO USE*, quy ước ánh xạ tên người nổi tiếng sang handle `screenname` (bỏ ký tự `@`), ràng buộc `query` của `lookup` chỉ giữ từ khóa chủ đề cốt lõi (không kèm từ `"news"`/`"tin tức"`), bắt buộc đặt `topic="news"` khi có yếu tố thời sự/thời gian (kể cả khi gọi song song), và làm rõ ranh giới `clarify` (`response_type="yes_no"`) trước khi `send`.
+- Chạy đánh giá `v2` trên OpenRouter (`openai/gpt-4o-mini`): nâng `case_accuracy` từ **0.85 → 0.90** (17/20 → 18/20, `measured_cases=20/20`, `provider_error_cases=0`), giải quyết thành công case khó gọi song song 2 công cụ `R13_parallel_web_and_tweets` (chuẩn hóa `query="AI"` và `topic="news"`), giữ nguyên độ chính xác tuyệt đối ở toàn bộ các câu ranh giới phạm vi và xác nhận gửi tin (`R08`–`R12`, `R14`).
+- Phân tích 2 case còn fail ở `v2` (`R03_web_news_routing` và `M06_switch_tool` do lỗi `extra_tool_call` khi model gọi kèm công cụ thứ hai) để bàn giao giả thuyết phối hợp giữa `system_prompt.md` và `tools.yaml` cho Đức ở vòng `v3`.
+- Thiết kế và viết 5 eval case multi-turn (`G06`–`G10`, mỗi case 3 lượt hội thoại) kiểm tra các hành vi phức tạp: hỏi làm rõ rồi điền handle + giữ `limit` (`G06`), kế thừa `timeframe="day"` và `topic="news"` khi đổi chủ đề (`G07`), đổi ý bỏ Twitter chuyển sang tìm repo bằng tool mới `github_repos` (`G08`), hỏi làm rõ rồi đọc đúng link qua `fetch` (`G09`), và hủy yêu cầu tra cứu chuyển sang câu hỏi meta `no_tool` (`G10`). Ghép với 5 case single-turn (`G01`–`G05`) của Thịnh để hoàn thiện `starter_v0/data/eval_group.json` đủ 10 case (5 + 5) và kiểm tra toàn bộ test hợp đồng/unit test (`pytest tests/ -v` đạt **117 passed, 0 failed, 0 skipped**).
 
 **Bằng chứng** (commit, run JSON, version log, case ID):
 
-- Chưa cập nhật.
+- Artifact version `v2`: `v2+p98e7fa380d3f+ta94472a74581` (prompt hash `98e7fa380d3f`, tools hash `a94472a74581`).
+- File đã sửa: `starter_v0/artifacts/tools.yaml`, `starter_v0/data/eval_group.json`.
+- Run JSON: `starter_v0/runs/v2_B_group_openrouter_20261110T143650926147.json` (và bản base `v2` tương ứng trong `starter_v0/runs/`).
+- Version log: dòng `v2` trong `starter_v0/artifacts/version_log.csv` (`metric_before=0.85`, `metric_after=0.90`).
+- 5 Eval Case IDs (multi-turn trong `starter_v0/data/eval_group.json`): `G06_multiturn_clarify_then_handle`, `G07_multiturn_carryover_timeframe`, `G08_multiturn_switch_to_github`, `G09_multiturn_clarify_then_url`, `G10_multiturn_cancel_request` (tổng hợp cùng 5 case single-turn `G01`–`G05` của Thịnh thành đủ 10 case).
+- Kiểm thử schema & unit test: `pytest tests/ -v` đạt `117 passed in 0.47s` (0 failed, 0 skipped).
 
 **Điều mình học được từ phần nhóm:**
 
-- Chưa cập nhật.
-
-### LuuVanVietDuc-2A202603445
-
-**Phần việc phụ trách:** tool mới, tài liệu tool, unit test, tích hợp v3, base/group eval.
-
-**Đóng góp cụ thể:**
-
-- Chưa cập nhật.
-
-**Bằng chứng** (commit, tool, test, kết quả pytest, run JSON, version log):
-
-- Chưa cập nhật.
-
-**Điều mình học được từ phần nhóm:**
-
-- Chưa cập nhật.
+- Mô tả tham số (`parameter description`) ngay trong `tools.yaml` là nơi trực tiếp và hiệu quả nhất để kiểm soát định dạng giá trị đối số của model (như loại bỏ từ nhiễu `"news"`/`"tin"` khỏi `query` hoặc ép `topic="news"`), giúp xử lý thành công ca gọi song song phức tạp (`R13_parallel_web_and_tweets`) mà chỉ sửa `system_prompt.md` ở `v1` chưa giải quyết hết.
+- Khi mở rộng mô tả tool để hỗ trợ gọi kết hợp nhiều nguồn, model có thể phát sinh xu hướng `extra_tool_call` ở câu đơn hoặc câu chuyển đổi công cụ (`M06_switch_tool`); do đó cần kết hợp chặt chẽ giữa quy tắc điều hướng trong `system_prompt.md` và ranh giới phủ định (*WHEN NOT TO USE*) trong `tools.yaml` ở vòng `v3`.
+- Thiết kế eval case multi-turn tốt cần thử thách đồng thời hai chiều: chiều **giữ ngữ cảnh** (carry-over `limit`, `timeframe`, `topic` từ lượt 1 sang lượt 3) và chiều **phá bỏ ngữ cảnh cũ** (đổi công cụ từ Twitter sang `github_repos` hoặc hủy lệnh), đồng thời luôn kiểm chứng qua `pytest` (`test_tool_contract.py`, `test_version_catalog.py`) để bảo đảm tính toàn vẹn của toàn bộ dữ liệu nhóm.
 
 ### PhanTrongHau-2A202603547
 
