@@ -104,15 +104,24 @@ Lỗi còn lại và gợi ý vòng sau:
 
 **Đóng góp cụ thể:**
 
-- Chưa cập nhật.
+- Nhận bàn giao log baseline `v0` từ Hoàng, xây dựng giả thuyết `v1`: loại bỏ toàn bộ chỉ dẫn độc hại trong `artifacts/system_prompt.md` (ép tự đoán tài khoản `sama`, tự bịa URL, tự gửi không cần xác nhận, ép hoàn thành trong 1 bước) và bổ sung quy tắc ranh giới phạm vi (`no_tool`), quy tắc hỏi lại/xác nhận (`clarify` với `text`/`yes_no`) cùng quy tắc điều hướng tool cơ bản.
+- Chạy base eval `v1` trên OpenRouter (`openai/gpt-4o-mini`): cải thiện mạnh cả 3 chỉ số chính — `case_accuracy` tăng từ **0.65 → 0.85** (13/20 → 17/20), `tool_routing_accuracy` tăng từ **0.75 → 0.95**, `argument_accuracy` tăng từ **0.65 → 0.85**; giải quyết triệt để toàn bộ 5 case mục tiêu (`R08_out_of_scope`, `R10_missing_handle`, `R11_missing_url`, `R12_confirm_before_send`, `R14_out_of_scope_coding`).
+- Phân tích 3 case còn fail ở `v1` (`R03_web_news_routing`, `R13_parallel_web_and_tweets` bị thừa chữ `"news"` trong `query` và thiếu `topic="news"`; `M06_switch_tool` gọi thừa tool cũ) để bàn giao giả thuyết sửa `tools.yaml` cho Huy ở vòng `v2`.
+- Thiết kế và viết 5 eval case single-turn (`G01`–`G05`) trong `starter_v0/data/eval_group.json` bao phủ: điều hướng sang tool mới `github_repos` (`G01`), ranh giới từ chối viết code SQL (`G02`), hỏi lại khi thiếu mã arXiv ID (`G03`), gọi song song `papers` + `github_repos` (`G04`), và chuẩn hóa tham số `timeframe="month"` + `query` sạch (`G05`).
 
 **Bằng chứng** (commit, run JSON, version log, case ID):
 
-- Chưa cập nhật.
+- Artifact version `v1`: `v1+p0f969bd7fd2e+t707c6c5df8ec` (prompt hash `0f969bd7fd2e`, tools hash `707c6c5df8ec`).
+- File đã sửa: `starter_v0/artifacts/system_prompt.md`.
+- Run JSON: `starter_v0/runs/v1_B_base_openrouter_20261110T105632499545.json`.
+- Version log: dòng `v1` trong `starter_v0/artifacts/version_log.csv` (`metric_before=0.65`, `metric_after=0.85`).
+- 5 Eval Case IDs (single-turn trong `starter_v0/data/eval_group.json`): `G01_github_repos_routing`, `G02_github_vs_coding_boundary`, `G03_missing_arxiv_id_clarify`, `G04_parallel_github_and_papers`, `G05_monthly_news_timeframe`.
 
 **Điều mình học được từ phần nhóm:**
 
-- Chưa cập nhật.
+- Sửa `system_prompt.md` theo đúng một giả thuyết giúp cô lập rõ tác động: các lỗi hành vi vĩ mô (`out_of_scope`, `missing_info`, `wrong_boundary`) được xử lý triệt để bằng quy tắc trong system prompt (+20% accuracy), nhưng lỗi chi tiết định dạng tham số (`query="AI news"` thay vì `"AI"`) cần được đặt ngay tại schema `tools.yaml` ở vòng `v2`.
+- Khi bỏ ràng buộc "chỉ gọi 1 tool" để hỗ trợ gọi song song (`R13`), model có xu hướng gọi thừa công cụ của lượt cũ trong hội thoại đổi ý (`M06_switch_tool`) — đây là bằng chứng thực nghiệm quan trọng để tinh chỉnh quy tắc multi-turn ở các vòng sau.
+- Viết eval case single-turn tốt đòi hỏi tách bạch rõ trường hợp gần giống nhau về từ khóa nhưng khác bản chất hành vi (ví dụ tìm repo code trên GitHub `G01` so với nhờ viết code SQL `G02`).
 
 ### BuiGiaHuy-2A202603525
 

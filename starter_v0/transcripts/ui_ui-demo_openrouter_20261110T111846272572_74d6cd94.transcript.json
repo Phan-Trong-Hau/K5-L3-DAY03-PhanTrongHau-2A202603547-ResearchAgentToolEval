@@ -1,0 +1,580 @@
+{
+  "transcript_id": "ui_ui-demo_openrouter_20261110T111846272572_74d6cd94",
+  "version": "ui-demo",
+  "artifact_version": "ui-demo+p0f969bd7fd2e+tceea7a8e0529",
+  "prompt_hash": "0f969bd7fd2e2b5bde740b18cea2a193fe088c88921cd61acbf113b4dd096790",
+  "tools_hash": "ceea7a8e052957712273a66dedc3c323aaec36dd6a3732b201e73b04b60e5c2e",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\hoctap\\AI\\VinAIthucchien\\Lab3\\K5-L3-DAY03-PhanTrongHau-2A202603547-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\hoctap\\AI\\VinAIthucchien\\Lab3\\K5-L3-DAY03-PhanTrongHau-2A202603547-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "created_at": "2026-11-10T11:18:46",
+  "updated_at": "2026-11-10T11:20:27",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T11:20:13",
+      "user": "Lấy 3 bài đăng gần đây của tài khoản sama.",
+      "status": "answered",
+      "assistant_text": "Dưới đây là 3 bài đăng gần đây của tài khoản @sama:\n\n1. **[RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…](https://x.com/sama/status/2118471941002842341)**  \n   Ngày: 05 tháng 11, 2026  \n   - **Retweets:** 53  \n   - **Views:** 47,382  \n\n2. **[RT @thsottiaux: Day 25/ We are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today. We heard yo…](https://x.com/sama/status/2117797818756952416)**  \n   Ngày: 04 tháng 11, 2026  \n   - **Retweets:** 2,703  \n   - **Views:** 41,960  \n\n3. **[People should always be in control of the future. OpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”. People should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.](https://x.com/sama/status/2117794005165748448)**  \n   Ngày: 04 tháng 11, 2026  \n   - **Favorites:** 20,656  \n   - **Retweets:** 1,019  \n   - **Views:** 10,642,055  \n\nNếu bạn cần thêm thông tin nào khác, hãy cho tôi biết!",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": null,
+          "tool_calls": [
+            {
+              "name": "timeline",
+              "args": {
+                "screenname": "sama",
+                "limit": 3
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "timeline",
+              "args": {
+                "screenname": "sama",
+                "limit": 3
+              },
+              "result": {
+                "tool": "get_user_tweets",
+                "screenname": "sama",
+                "items": [
+                  {
+                    "title": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and bett",
+                    "summary": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…",
+                    "url": "https://x.com/sama/status/2118471941002842341",
+                    "source": "@sama",
+                    "date": "Thu Nov 05 22:34:04 +0000 2026",
+                    "metrics": {
+                      "favorites": 0,
+                      "retweets": 53,
+                      "views": "47382"
+                    }
+                  },
+                  {
+                    "title": "RT @thsottiaux: Day 25/",
+                    "summary": "RT @thsottiaux: Day 25/\n\nWe are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today.\n\nWe heard yo…",
+                    "url": "https://x.com/sama/status/2117797818756952416",
+                    "source": "@sama",
+                    "date": "Wed Nov 04 01:55:21 +0000 2026",
+                    "metrics": {
+                      "favorites": 0,
+                      "retweets": 2703,
+                      "views": "41960"
+                    }
+                  },
+                  {
+                    "title": "People should always be in control of the future.",
+                    "summary": "People should always be in control of the future.\n\nOpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”.\n\nPeople should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.",
+                    "url": "https://x.com/sama/status/2117794005165748448",
+                    "source": "@sama",
+                    "date": "Wed Nov 04 01:40:12 +0000 2026",
+                    "metrics": {
+                      "favorites": 20656,
+                      "retweets": 1019,
+                      "views": "10642055"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "assistant_text": "Dưới đây là 3 bài đăng gần đây của tài khoản @sama:\n\n1. **[RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…](https://x.com/sama/status/2118471941002842341)**  \n   Ngày: 05 tháng 11, 2026  \n   - **Retweets:** 53  \n   - **Views:** 47,382  \n\n2. **[RT @thsottiaux: Day 25/ We are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today. We heard yo…](https://x.com/sama/status/2117797818756952416)**  \n   Ngày: 04 tháng 11, 2026  \n   - **Retweets:** 2,703  \n   - **Views:** 41,960  \n\n3. **[People should always be in control of the future. OpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”. People should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.](https://x.com/sama/status/2117794005165748448)**  \n   Ngày: 04 tháng 11, 2026  \n   - **Favorites:** 20,656  \n   - **Retweets:** 1,019  \n   - **Views:** 10,642,055  \n\nNếu bạn cần thêm thông tin nào khác, hãy cho tôi biết!",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 3
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "sama",
+            "items": [
+              {
+                "title": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and bett",
+                "summary": "RT @fouadmatin: Today’s GPT-6 Cyber release is a meaningful step for defenders: stronger vulnerability research and better alignment. We’ve…",
+                "url": "https://x.com/sama/status/2118471941002842341",
+                "source": "@sama",
+                "date": "Thu Nov 05 22:34:04 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 53,
+                  "views": "47382"
+                }
+              },
+              {
+                "title": "RT @thsottiaux: Day 25/",
+                "summary": "RT @thsottiaux: Day 25/\n\nWe are doubling all usage limits for all Pro 100/200/500 tiers and Business Premium, effective today.\n\nWe heard yo…",
+                "url": "https://x.com/sama/status/2117797818756952416",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:55:21 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 2703,
+                  "views": "41960"
+                }
+              },
+              {
+                "title": "People should always be in control of the future.",
+                "summary": "People should always be in control of the future.\n\nOpenAI is against the notion that it would be acceptable for people to be relegated to a role of doing things that “AI systems think makes sense to reward in humans”.\n\nPeople should not cede control of the future to superintelligence, and that requirement should ultimately constrain AI progress.",
+                "url": "https://x.com/sama/status/2117794005165748448",
+                "source": "@sama",
+                "date": "Wed Nov 04 01:40:12 +0000 2026",
+                "metrics": {
+                  "favorites": 20656,
+                  "retweets": 1019,
+                  "views": "10642055"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "duration_seconds": 13.62,
+      "progress": [
+        {
+          "stage": "model_started",
+          "elapsed_seconds": 0.0,
+          "round": 1
+        },
+        {
+          "stage": "model_completed",
+          "elapsed_seconds": 4.86,
+          "round": 1,
+          "tools": [
+            "timeline"
+          ]
+        },
+        {
+          "stage": "tool_started",
+          "elapsed_seconds": 4.86,
+          "round": 1,
+          "tool": "timeline"
+        },
+        {
+          "stage": "tool_completed",
+          "elapsed_seconds": 6.81,
+          "round": 1,
+          "tool": "timeline",
+          "duration_seconds": 1.95,
+          "error": false
+        },
+        {
+          "stage": "model_started",
+          "elapsed_seconds": 6.81,
+          "round": 2
+        },
+        {
+          "stage": "model_completed",
+          "elapsed_seconds": 13.58,
+          "round": 2,
+          "tools": []
+        }
+      ],
+      "ended_at": "2026-11-10T11:20:27"
+    }
+  ],
+  "prompt_snapshot": "You are an evidence-driven AI & technology research assistant with access to specialized tools.\n\n## 1. Scope & When NOT to Call Any Tool (`no_tool`)\n- **Capability / Meta questions:** If the user asks who you are or what you can do (e.g., \"Bạn là gì và làm được những gì?\"), answer directly in plain text without calling any tool.\n- **Out-of-scope requests:** You only handle research, news, social media posts, URL reading, academic papers, GitHub repository discovery, internal company policy lookup, digest formatting, and Telegram publishing. If the user asks you to solve math/calculus problems (e.g., integrals), write general-purpose code/algorithms (e.g., Fibonacci function), or other unrelated tasks, politely refuse in plain text and **DO NOT call any tool** (never use `send` or `clarify` to reply to normal chat).\n\n## 2. Missing Information & Confirmation Guardrails (`clarify`)\n- **Missing account/handle:** If the user asks for recent tweets/posts (e.g., \"Tóm tắt 5 tweet mới nhất giúp mình\") without specifying whose account/handle to check, **DO NOT guess** a famous person. Call `clarify` with `response_type=\"text\"` to ask whose account they want.\n- **Missing URL:** If the user asks to read or summarize \"this article\" / \"bài viết này\" / \"link này\" without providing a URL in the conversation, **DO NOT guess or search** a random URL. Call `clarify` with `response_type=\"text\"` to ask for the URL.\n- **Confirmation before sending to Telegram:** `send` is an external publishing action to a Telegram channel, NOT a way to reply to the user in chat. If the user asks to post/send something to Telegram (e.g., \"Đăng bản tin này lên Telegram giúp mình\") and has not yet confirmed in a subsequent turn, **DO NOT call `send`**. Instead, call `clarify` with `response_type=\"yes_no\"` to ask for explicit confirmation first.\n\n## 3. Tool Routing Rules\n- `timeline`: Get recent tweets/posts from a specific X/Twitter user (`screenname` without `@`, e.g., Sam Altman -> `sama`, Elon Musk -> `elonmusk`, Andrej Karpathy -> `karpathy`).\n- `social_search`: Search X/Twitter discussions by topic or keyword (`search_type=\"Top\"` for popular/top tweets, `\"Latest\"` for newest).\n- `lookup`: Search the web for news or general information.\n- `fetch`: Read and extract content from a specific URL provided by the user.\n- `github_repos`: Search open-source GitHub repositories when the user asks for GitHub projects/repos.\n- `papers` / `paper_text`: Search arXiv papers by topic (`papers`) or extract text from a specific arXiv ID/URL (`paper_text`).\n- `policy`: Search internal company policies (`source_citation`, `data_privacy`, `external_publishing`, `ai_research`, `tool_usage`).\n- **Parallel tool calls:** When a single user request asks for multiple distinct sources (e.g., both web news and Twitter posts, or two URLs), call all required tools in the same turn.\n",
+  "tools_snapshot": [
+    {
+      "type": "function",
+      "function": {
+        "name": "clarify",
+        "description": "Hỏi lại người dùng khi yêu cầu thiếu thông tin bắt buộc (thiếu tên tài khoản/handle Twitter, thiếu URL bài viết khi nói 'bài này'/'link này') HOẶC xin xác nhận trước khi gửi tin lên Telegram. KHÔNG dùng để trả lời câu hỏi thông thường hay câu ngoài phạm vi.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string",
+              "default": "",
+              "description": "Câu hỏi ngắn gọn, rõ ràng gửi cho người dùng để làm rõ thông tin còn thiếu hoặc xin xác nhận."
+            },
+            "response_type": {
+              "type": "string",
+              "enum": [
+                "text",
+                "yes_no",
+                "choice"
+              ],
+              "default": "text",
+              "description": "Kiểu câu trả lời mong đợi: dùng 'text' khi hỏi thông tin còn thiếu (như tên tài khoản/handle hoặc URL); dùng 'yes_no' khi hỏi xác nhận trước khi đăng/gửi lên Telegram; dùng 'choice' khi đưa danh sách lựa chọn."
+            },
+            "options": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "description": "Danh sách các phương án lựa chọn (chỉ dùng khi response_type='choice')."
+            }
+          },
+          "required": [
+            "question"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "timeline",
+        "description": "Lấy các bài đăng (tweet) gần đây CỦA một tài khoản X/Twitter cụ thể. Chỉ dùng khi biết rõ tên người hoặc handle tài khoản (ví dụ: Sam Altman -> 'sama', Elon Musk -> 'elonmusk', Andrej Karpathy -> 'karpathy'). KHÔNG dùng khi tìm tweet theo chủ đề chung (dùng social_search) hoặc khi chưa biết tài khoản nào (dùng clarify).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "screenname": {
+              "type": "string",
+              "default": "",
+              "description": "Handle X/Twitter KHÔNG có ký tự '@' ở đầu. Tự động ánh xạ tên người nổi tiếng sang handle chuẩn: 'Sam Altman' -> 'sama', 'Elon Musk' -> 'elonmusk', 'Andrej Karpathy' -> 'karpathy'."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng tweet cần lấy (mặc định 5; nếu người dùng nêu số lượng cụ thể như '3 tweet', '10 tweet' thì truyền đúng số đó)."
+            }
+          },
+          "required": [
+            "screenname"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "social_search",
+        "description": "Tìm kiếm các bài đăng (tweet) trên X/Twitter theo chủ đề hoặc từ khóa thảo luận chung (ví dụ: 'Mọi người đang bàn gì về GPT-5 trên Twitter?', 'tweet về AI'). KHÔNG dùng để lấy tweet của một cá nhân cụ thể (dùng timeline) và KHÔNG dùng để tìm tin tức báo chí trên web (dùng lookup).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Từ khóa hoặc chủ đề cốt lõi cần tìm trên Twitter/X (ví dụ: 'GPT-5', 'OpenAI', 'AI'). Chỉ truyền tên chủ đề ngắn gọn, không kèm các từ 'tweet', 'Twitter'."
+            },
+            "search_type": {
+              "type": "string",
+              "enum": [
+                "Latest",
+                "Top"
+              ],
+              "default": "Latest",
+              "description": "Cách sắp xếp: đặt 'Top' khi người dùng hỏi tweet phổ biến nhất / nổi bật / nhiều tương tác (top/popular); đặt 'Latest' cho tweet mới nhất hoặc mặc định."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng tweet trả về (mặc định 5)."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lookup",
+        "description": "Tra cứu tin tức thời sự và thông tin trên web (qua Tavily). Dùng khi người dùng tìm tin tức báo chí hoặc thông tin trên web ('Tin tức AI hôm nay', 'Tin công nghệ trong tuần này', 'tìm trên web tin AI'). KHÔNG dùng khi đã có URL cụ thể (dùng fetch), khi tìm trên Twitter (dùng social_search/timeline), khi tìm paper arXiv (dùng papers), hoặc tìm policy công ty (dùng policy). QUAN TRỌNG: Khi tìm tin tức, BẮT BUỘC truyền topic='news' và query CHỈ gồm từ khóa chủ đề gốc (như 'AI', 'robotics', 'OpenAI'), TUYỆT ĐỐI KHÔNG thêm chữ 'news', 'tin tức', 'today', 'hôm nay' vào query.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "CHỈ truyền từ khóa chủ đề ngắn gọn nhất (ví dụ: 'AI', 'robotics', 'OpenAI'). TUYỆT ĐỐI KHÔNG thêm các từ 'news', 'tin tức', 'tin', 'mới nhất', 'today', 'hôm nay', 'tuần này' vào query vì đã có tham số topic và timeframe. Ví dụ: 'Tin tức AI hôm nay' hoặc 'Tìm trên web tin AI hôm nay' -> query='AI'."
+            },
+            "topic": {
+              "type": "string",
+              "enum": [
+                "general",
+                "news"
+              ],
+              "default": "general",
+              "description": "Phân loại tìm kiếm: BẮT BUỘC truyền 'news' khi yêu cầu có từ 'tin', 'tin tức', 'news', 'thời sự', 'hôm nay', 'tuần này'. Chỉ dùng 'general' cho câu hỏi kiến thức chung không mang tính tin tức."
+            },
+            "timeframe": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week",
+                "month",
+                "year"
+              ],
+              "default": "week",
+              "description": "Khoảng thời gian lọc kết quả: 'day' (hôm nay / 24h qua), 'week' (tuần này / 7 ngày qua), 'month' (tháng này), 'year' (năm nay)."
+            },
+            "max_results": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng kết quả tối đa (mặc định 5)."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "fetch",
+        "description": "Đọc và trích xuất nội dung chi tiết từ một địa chỉ URL web cụ thể mà người dùng đã cung cấp (ví dụ: 'https://openai.com/...'). Dùng khi trong yêu cầu đã có sẵn link http/https. KHÔNG dùng để tìm kiếm từ khóa (dùng lookup), KHÔNG dùng khi người dùng chưa đưa URL (dùng clarify), và KHÔNG dùng để đọc PDF arXiv theo ID (dùng paper_text).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "default": "",
+              "description": "Địa chỉ URL đầy đủ (bắt đầu bằng http:// hoặc https://) mà người dùng cung cấp. Không tự bịa URL."
+            }
+          },
+          "required": [
+            "url"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "format",
+        "description": "Định dạng danh sách các mục thông tin (items) đã thu thập được thành bản tin Markdown hoàn chỉnh theo khuôn mẫu. Chỉ dùng khi đã có sẵn danh sách items cần trình bày. KHÔNG dùng để tìm kiếm thông tin mới.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "default": [],
+              "description": "Danh sách các item đã có để định dạng thành bản tin.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "section": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "template": {
+              "type": "string",
+              "enum": [
+                "brief",
+                "sections",
+                "bullets",
+                "thread",
+                "daily_ai_vn"
+              ],
+              "default": "sections",
+              "description": "Khuôn trình bày: 'brief' (tóm tắt tối đa 5 mục), 'sections' (chia theo mục ##), 'bullets' (danh sách gạch đầu dòng), 'thread' (đánh số 1/, 2/...), 'daily_ai_vn' (bản tin tiếng Việt)."
+            },
+            "headline": {
+              "type": "string",
+              "default": "",
+              "description": "Tiêu đề chính của bản tin."
+            }
+          },
+          "required": [
+            "items",
+            "template"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "send",
+        "description": "Đăng/gửi một bản tin văn bản lên kênh Telegram bên ngoài. CHỈ gọi tool này khi người dùng ĐÃ XÁC NHẬN đồng ý gửi ở lượt hội thoại trước (confirmed=true). Nếu người dùng mới yêu cầu 'Đăng/gửi bản tin này lên Telegram' lần đầu mà chưa xác nhận, TUYỆT ĐỐI KHÔNG gọi send mà phải gọi clarify(response_type='yes_no') trước. KHÔNG BAO GIỜ dùng send để trả lời người dùng trong chat.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "default": "",
+              "description": "Nội dung văn bản cần đăng lên kênh Telegram."
+            },
+            "confirmed": {
+              "type": "boolean",
+              "default": false,
+              "description": "Cờ xác nhận: chỉ đặt true khi người dùng đã trả lời đồng ý/xác nhận rõ ràng. Nếu chưa xác nhận, không gọi tool này."
+            }
+          },
+          "required": [
+            "text"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "policy",
+        "description": "Tra cứu quy định và chính sách nội bộ của công ty (Company Policy) về trích dẫn nguồn (source_citation), bảo mật dữ liệu & API key (data_privacy), quy định đăng tin ra ngoài như Telegram (external_publishing), quy trình nghiên cứu AI (ai_research), và sử dụng công cụ (tool_usage). Dùng khi câu hỏi nhắc tới 'company policy', 'policy công ty', 'quy định nội bộ'. KHÔNG dùng lookup cho câu hỏi về chính sách nội bộ.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Từ khóa tiếng Anh hoặc tiếng Việt mô tả nội dung chính sách cần tìm (ví dụ: 'viral tweet source citation', 'API key customer data privacy', 'Telegram publishing confirmation', 'arXiv citation', 'ai research workflow')."
+            },
+            "policy_area": {
+              "type": "string",
+              "enum": [
+                "all",
+                "ai_research",
+                "source_citation",
+                "data_privacy",
+                "external_publishing",
+                "tool_usage"
+              ],
+              "default": "all",
+              "description": "Nhóm chính sách: 'source_citation' (nguồn tin, trích dẫn tweet/arXiv), 'data_privacy' (API key, dữ liệu khách hàng, bảo mật), 'external_publishing' (đăng bài Telegram/ra ngoài), 'ai_research' (quy trình research), 'tool_usage' (sử dụng tool), hoặc 'all'."
+            },
+            "top_k": {
+              "type": "integer",
+              "default": 3,
+              "description": "Số mục kết quả trả về (mặc định 3)."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "papers",
+        "description": "Tìm kiếm bài báo khoa học / preprint trên arXiv theo chủ đề hoặc từ khóa nghiên cứu (ví dụ: 'Tìm paper arXiv về RAG evaluation', 'Tìm paper mới về AI agents'). KHÔNG dùng khi đã có mã arXiv ID cụ thể và muốn đọc toàn văn PDF (dùng paper_text), và KHÔNG dùng cho tin tức web thông thường (dùng lookup).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Từ khóa chủ đề nghiên cứu khoa học cần tìm trên arXiv (ví dụ: 'retrieval augmented generation evaluation', 'AI agent evaluation')."
+            },
+            "max_results": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng bài báo tối đa trả về (mặc định 5)."
+            },
+            "sort_by": {
+              "type": "string",
+              "enum": [
+                "relevance",
+                "lastUpdatedDate",
+                "submittedDate"
+              ],
+              "default": "relevance",
+              "description": "Tiêu chí sắp xếp: 'relevance' (liên quan nhất), 'lastUpdatedDate', hoặc 'submittedDate' (mới nộp)."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "paper_text",
+        "description": "Tải PDF của một bài báo arXiv cụ thể theo arXiv ID hoặc URL arXiv (ví dụ: '1706.03762' hoặc 'https://arxiv.org/abs/1706.03762') và trích xuất nội dung văn bản. Chỉ dùng khi đã biết mã số arXiv ID hoặc link arXiv và người dùng muốn đọc nội dung/trang bài báo. KHÔNG dùng để tìm kiếm danh sách paper theo chủ đề (dùng papers).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "arxiv_url": {
+              "type": "string",
+              "default": "",
+              "description": "Mã arXiv ID (ví dụ: '1706.03762') hoặc URL arXiv của bài báo."
+            },
+            "max_pages": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số trang đầu tối đa cần trích xuất văn bản (mặc định 5; nếu người dùng yêu cầu '2 trang đầu' thì truyền 2)."
+            },
+            "max_chars": {
+              "type": "integer",
+              "default": 8000,
+              "description": "Số ký tự tối đa trả về (mặc định 8000)."
+            }
+          },
+          "required": [
+            "arxiv_url"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "github_repos",
+        "description": "Tìm kiếm kho mã nguồn mở (repositories) trên GitHub theo từ khóa, ngôn ngữ lập trình và tiêu chí sắp xếp (stars, forks, updated). Chỉ dùng khi người dùng yêu cầu tìm repo/project mã nguồn mở trên GitHub. KHÔNG dùng khi người dùng yêu cầu tự viết code/thuật toán.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "",
+              "description": "Từ khóa chủ đề cần tìm trên GitHub (ví dụ: 'AI agent', 'RAG', 'MCP server')."
+            },
+            "language": {
+              "type": "string",
+              "default": "",
+              "description": "Ngôn ngữ lập trình lọc theo (ví dụ: 'python', 'typescript'). Để trống nếu không lọc."
+            },
+            "sort": {
+              "type": "string",
+              "enum": [
+                "stars",
+                "forks",
+                "updated"
+              ],
+              "default": "stars",
+              "description": "Tiêu chí sắp xếp: 'stars' (nhiều sao nhất), 'forks', hoặc 'updated' (mới cập nhật)."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 5,
+              "description": "Số lượng repository trả về (1-20, mặc định 5)."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    }
+  ]
+}
